@@ -15,6 +15,7 @@ import {
   type Lang,
   type ReportLog,
 } from "@access-tools/place";
+import { searchCopy } from "../i18n.js";
 import { emptySearchQuery, type SearchQuery } from "../search.js";
 import { SearchPanel } from "../react/SearchPanel.js";
 
@@ -41,14 +42,10 @@ function Demo() {
   return (
     <div className="app-ui" lang={lang}>
       <style>{a11yCss}</style>
-      <a href="#search-main">{lang === "fr" ? "Aller au contenu" : "Skip to content"}</a>
+      <a href="#search-main">{searchCopy("nav.skip", lang)}</a>
       <header>
-        <h1>{lang === "fr" ? "l'application — recherche" : "the application — search"}</h1>
-        <p>
-          {lang === "fr"
-            ? "Démonstration sur le jeu d'essai étiqueté. Les lieux réels viendront d'access-maps."
-            : "Demo on the labelled fixture pack. Real places will come from access-maps."}
-        </p>
+        <h1>{searchCopy("demo.title", lang)}</h1>
+        <p>{searchCopy("demo.intro", lang)}</p>
         <button
           type="button"
           onClick={() => {
@@ -58,7 +55,7 @@ function Demo() {
             document.documentElement.lang = next;
           }}
         >
-          {lang === "en" ? "Français" : "English"}
+          {lang === "en" ? searchCopy("lang.show-french", lang) : <span lang="en">{searchCopy("lang.show-english", "en")}</span>}
         </button>
       </header>
       <main id="search-main">
@@ -87,7 +84,7 @@ function Demo() {
             }}
           />
         ) : (
-          <p>{lang === "fr" ? "Choisissez un lieu dans les résultats." : "Choose a place from the results."}</p>
+          <p>{searchCopy("demo.choose", lang)}</p>
         )}
       </main>
     </div>

@@ -82,6 +82,47 @@ export const COPY = {
     en: "English only. This is sample fixture text and has no French translation.",
     fr: "Anglais seulement. Ce texte est un texte de jeu d'essai et n'a pas de traduction française.",
   },
+  "note.english-only-label": { en: "English only.", fr: "English only." },
+  "nav.skip": { en: "Skip to content", fr: "Aller au contenu" },
+  "lang.show-french": { en: "Français", fr: "Français" },
+  "lang.show-english": { en: "English", fr: "English" },
+  "demo.place-title": { en: "the application — place pages", fr: "l'application — pages de lieux" },
+  "nav.fixture-places": { en: "Fixture places", fr: "Lieux du jeu d'essai" },
+  "nav.labelled-places": { en: "Labelled places", fr: "Lieux étiquetés" },
+  "place.peer-tips": { en: "Peer tips, not facts", fr: "Notes de pairs, pas des faits" },
+  "place.pending": { en: "Pending on this device", fr: "En attente sur cet appareil" },
+  "place.pending.counts": {
+    en: "{corrections} pending correction(s), {changes} pending change report(s). The displayed record is unchanged.",
+    fr: "{corrections} correction(s) en attente, {changes} signalement(s) en attente. La fiche affichée est inchangée.",
+  },
+  "place.no-report": { en: "No report is saved on this device.", fr: "Aucun signalement enregistré sur cet appareil." },
+  "place.pending-correction": { en: "Pending correction", fr: "Correction en attente" },
+  "place.pending-change": { en: "Pending change report", fr: "Signalement en attente" },
+  "place.field": { en: "Field", fr: "Champ" },
+  "place.suggest": { en: "Suggest a correction", fr: "Proposer une correction" },
+  "place.report-change": { en: "Report a change", fr: "Signaler un changement" },
+  "form.correction.intro": {
+    en: "The correction stays on this device, pending. It does not change the record. Moderation is not running in this prototype.",
+    fr: "La correction reste sur cet appareil, en attente. Elle ne change pas la fiche. La modération ne tourne pas dans ce prototype.",
+  },
+  "form.correction.error": { en: "Write the suggested correction.", fr: "Écrivez la correction proposée." },
+  "form.correction.suggested": { en: "Suggested correction", fr: "Correction proposée" },
+  "form.note-optional": { en: "Note (optional)", fr: "Note (facultative)" },
+  "form.correction.save": { en: "Save correction on this device", fr: "Enregistrer la correction sur cet appareil" },
+  "form.change.intro": {
+    en: "Report a change. The report stays pending and does not erase the record.",
+    fr: "Signaler un changement. Le signalement est en attente et n'efface pas la fiche.",
+  },
+  "form.problem": { en: "Problem", fr: "Problème" },
+  "form.change.save": { en: "Save report on this device", fr: "Enregistrer le signalement sur cet appareil" },
+  "table.col.field": { en: "Field", fr: "Champ" },
+  "table.col.value": { en: "Value", fr: "Valeur" },
+  "table.col.tier": { en: "Tier", fr: "Niveau" },
+  "table.col.source": { en: "Source", fr: "Source" },
+  "table.col.source-date": { en: "Source date", fr: "Date de source" },
+  "table.col.record-date": { en: "Record date", fr: "Date de fiche" },
+  "table.fields": { en: "fields", fr: "champs" },
+  "table.caption.prefix": { en: "Fields: ", fr: "Champs : " },
   "provenance.source.labelled-fixture": {
     en: "access-tools labelled fixture",
     fr: "jeu d'essai étiqueté access-tools",
@@ -119,6 +160,13 @@ export type CopyKey = keyof typeof COPY;
 export function copy(key: CopyKey, lang: Lang): string {
   const row = COPY[key];
   return lang === "fr" ? row.fr : row.en;
+}
+
+/** Fills `{name}` placeholders in a catalogue string. */
+export function fill(text: string, values: Record<string, string | number>): string {
+  return text.replace(/\{([A-Za-z0-9_]+)\}/g, (match, key: string) =>
+    Object.prototype.hasOwnProperty.call(values, key) ? String(values[key]) : match,
+  );
 }
 
 /** Looks up a catalogue key. An unknown key stays visible so a missing translation fails the French screen test. */
