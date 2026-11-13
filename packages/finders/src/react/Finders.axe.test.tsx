@@ -64,6 +64,29 @@ describe("finder accessibility", () => {
     );
   });
 
+  it("puts a no-break space before the colon in French hidden records", () => {
+    render(
+      <WashroomFinder
+        pack={fixturePack}
+        query={{
+          text: "",
+          lang: "fr",
+          origin: null,
+          transferSide: "any",
+          changeTable: true,
+          hoist: false,
+          registerOnly: false,
+          openAt: null,
+          showHidden: true,
+        }}
+      />,
+    );
+    const hidden = screen.getByRole("heading", { name: "Fiches cachées" }).closest("section");
+    const item = hidden?.querySelector("li");
+    expect(item?.textContent ?? "").toContain("\u00A0:");
+    expect(item?.textContent ?? "").not.toMatch(/[^\u00A0]:/);
+  });
+
   it("stacks the demo filter labels in English and French", async () => {
     const view = render(<FinderDemo />);
     const hidden = screen.getByText("Show hidden records").closest("label");

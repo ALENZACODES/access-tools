@@ -1,6 +1,7 @@
 import { useEffect, useId, type CSSProperties } from "react";
 import { TIMING_BOUNDARY } from "../boundaries.js";
 import { EMERGENCY_PATHWAYS } from "../emergency.js";
+import { timingCopy } from "../i18n.js";
 import type { Language } from "../types.js";
 
 export interface TimingPanelProps {
@@ -25,7 +26,11 @@ const linkStyle: CSSProperties = {
 export function TimingPanel(props: TimingPanelProps): JSX.Element {
   const baseId = useId();
   const { language } = props;
-  const copy = language === "fr" ? fr : en;
+  const copy = {
+    title: timingCopy("timing.title", language),
+    emergencyLabel: timingCopy("timing.emergency-label", language),
+    source: timingCopy("timing.source", language),
+  };
 
   useEffect(() => {
     document.documentElement.lang = language;
@@ -38,7 +43,7 @@ export function TimingPanel(props: TimingPanelProps): JSX.Element {
           {copy.title}
         </h1>
         <button type="button" onClick={() => props.onLanguage(language === "en" ? "fr" : "en")} style={buttonStyle}>
-          {language === "en" ? "Français" : "English"}
+          {language === "en" ? timingCopy("lang.show-french", "en") : timingCopy("lang.show-english", "en")}
         </button>
       </div>
       <p role="note" style={noteStyle}>
@@ -87,14 +92,3 @@ const noteStyle: CSSProperties = {
   borderLeft: "4px solid #102a43",
 };
 
-const en = {
-  title: "Emergency pathways",
-  emergencyLabel: "Emergency pathways",
-  source: "Official page",
-};
-
-const fr = {
-  title: "Voies d'urgence",
-  emergencyLabel: "Voies d'urgence",
-  source: "Page officielle",
-};

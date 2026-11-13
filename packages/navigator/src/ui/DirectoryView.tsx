@@ -1,5 +1,6 @@
 import { useEffect, useId, useMemo, useState, type CSSProperties } from "react";
 import { DIRECTORY_FRAMING, READING_CONTEXT_NOTE, TIER_MAPPING_NOTE } from "../boundaries.js";
+import { directoryCopy } from "../i18n.js";
 import { CATEGORY_LABEL, searchDirectory } from "../search.js";
 import type { Category, DirectoryRecord, Language, NavigatorNote } from "../types.js";
 
@@ -42,7 +43,23 @@ const frame: CSSProperties = {
 export function DirectoryView(props: DirectoryViewProps) {
   const titleId = useId();
   const { language } = props;
-  const copy = language === "fr" ? fr : en;
+  const copy = {
+    title: directoryCopy("dir.title", language),
+    search: directoryCopy("dir.search", language),
+    filters: directoryCopy("dir.filters", language),
+    results: directoryCopy("dir.results", language),
+    checked: directoryCopy("dir.checked", language),
+    open: directoryCopy("dir.open", language),
+    frenchPage: directoryCopy("dir.french-page", language),
+    call: directoryCopy("dir.call", language),
+    text988: directoryCopy("dir.text-988", language),
+    textConnex: directoryCopy("dir.text-connex", language),
+    englishOnly: directoryCopy("dir.english-only", language),
+    save: directoryCopy("dir.save", language),
+    clear: directoryCopy("dir.clear", language),
+    confirmClear: directoryCopy("dir.confirm-clear", language),
+    noteMeaning: directoryCopy("dir.note", language),
+  };
   const [text, setText] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
   const results = useMemo(
@@ -62,7 +79,7 @@ export function DirectoryView(props: DirectoryViewProps) {
           {copy.title}
         </h1>
         <button type="button" style={button} onClick={() => props.onLanguage(language === "en" ? "fr" : "en")}>
-          {language === "en" ? "Français" : "English"}
+          {language === "en" ? directoryCopy("lang.show-french", "en") : directoryCopy("lang.show-english", "en")}
         </button>
       </header>
       <p role="note" style={{ margin: 0, padding: "0.75rem", background: "#f4f7fb", borderLeft: "4px solid #102a43" }}>
@@ -201,40 +218,4 @@ const linkStyle: CSSProperties = {
   maxWidth: "100%",
   color: "#102a43",
   overflowWrap: "anywhere",
-};
-
-const en = {
-  title: "Directory",
-  search: "Search programs and services",
-  filters: "Categories",
-  results: "records. Each one links out. None is an application.",
-  checked: "Page checked",
-  open: "Official page:",
-  frenchPage: "Official French page",
-  call: "Call",
-  text988: "Text 9-8-8 Suicide Crisis Helpline",
-  textConnex: "Text CONNEX to 247247",
-  englishOnly: "English only",
-  save: "Save this title on this device",
-  clear: "Delete the on-device list",
-  confirmClear: "Confirm delete of the on-device list",
-  noteMeaning: "The on-device list is only titles you marked. It is not an application and it is not sent anywhere.",
-};
-
-const fr: typeof en = {
-  title: "Répertoire",
-  search: "Chercher des programmes et des services",
-  filters: "Catégories",
-  results: "fiches. Chacune mène ailleurs. Aucune n'est une demande.",
-  checked: "Page consultée",
-  open: "Page officielle :",
-  frenchPage: "Page officielle en français",
-  call: "Appeler",
-  text988: "Texter le 9-8-8 Ligne d'aide en cas de crise de suicide",
-  textConnex: "Texter CONNEX au 247247",
-  englishOnly: "En anglais seulement",
-  save: "Garder ce titre sur cet appareil",
-  clear: "Effacer la liste sur l'appareil",
-  confirmClear: "Confirmer l'effacement de la liste sur l'appareil",
-  noteMeaning: "La liste sur l'appareil ne contient que les titres que vous avez marqués. Ce n'est pas une demande et elle n'est envoyée nulle part.",
 };

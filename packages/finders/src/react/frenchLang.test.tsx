@@ -23,7 +23,7 @@ const REQUIRED = [
   "Fixture bay B",
   "Fixture centre outlet",
   "Ceiling track, fixture text",
-  "Fixture note: ask at the synthetic desk.",
+  "Fixture note: ask at the synthetic desk",
 ];
 
 afterEach(() => cleanup());

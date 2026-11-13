@@ -422,7 +422,7 @@ export function projectPlace(place: PlaceRecord, lang: Lang, today: string, pack
     place.parking.bays.length === 0
       ? { text: u, unknown: true }
       : {
-          text: place.parking.bays.map((bay) => `${bay.name}${copy("sep.colon", lang)}${labelOf(`bay.${bay.kind}`, lang)}`).join("; "),
+          text: place.parking.bays.map((bay) => `${bay.name}${copy("sep.colon", lang)}${labelOf(`bay.${bay.kind}`, lang)}`).join(copy("sep.semicolon", lang)),
           unknown: false,
         };
   const vanSummary =

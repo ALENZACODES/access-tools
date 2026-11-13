@@ -23,6 +23,7 @@ const NON_TEXT_ATTRS = new Set([
   "className",
   "id",
   "htmlFor",
+  "style",
   "role",
   "type",
   "href",
@@ -160,6 +161,16 @@ function inCatalogCall(node: ts.Node): boolean {
       return current.arguments.some((argument) => argument === node || isInside(argument, node));
     }
     if (ts.isSourceFile(current)) return false;
+    current = current.parent;
+  }
+  return false;
+}
+
+function inThrow(node: ts.Node): boolean {
+  let current: ts.Node | undefined = node.parent;
+  while (current) {
+    if (ts.isThrowStatement(current)) return true;
+    if (ts.isSourceFile(current) || ts.isFunctionLike(current)) return false;
     current = current.parent;
   }
   return false;
@@ -345,7 +356,7 @@ export function findHardcodedUiCopy(file: string, sourceText: string, model = fa
   const seen = new Set<number>();
 
   const push = (node: ts.Node, text: string, forced: boolean) => {
-    if (isComparisonOperand(node) || inTypePosition(node)) return;
+    if (isComparisonOperand(node) || inTypePosition(node) || inThrow(node)) return;
     if (node.parent && (ts.isImportDeclaration(node.parent) || ts.isExportDeclaration(node.parent))) return;
     if (isIgnorableUiText(text, inCatalogCall(node), model)) return;
     if (!forced && !model && !isRendered(node, text)) return;
@@ -369,7 +380,8 @@ export function findHardcodedUiCopy(file: string, sourceText: string, model = fa
     const text = literalText(node);
     if (text !== null) push(node, text, false);
     if (ts.isJsxText(node)) push(node, node.getText(source), false);
-    if (ts.isIdentifier(node) && isRendered(node, "")) {
+    const tagName = node.parent && (ts.isJsxOpeningElement(node.parent) || ts.isJsxClosingElement(node.parent) || ts.isJsxSelfClosingElement(node.parent));
+    if (ts.isIdentifier(node) && !tagName && isRendered(node, node.text)) {
       const initializer = resolveInitializer(node);
       if (initializer) flagInitializer(initializer);
     }

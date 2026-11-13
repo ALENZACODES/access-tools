@@ -1,4 +1,3 @@
-import { copy } from "./i18n.js";
 import type { PlacePack, PlaceRecord, PlaceType, Provenance, Repairer, SupplyStore } from "./types.js";
 
 /**
@@ -136,7 +135,7 @@ export function canonicalCitySkeleton(place: PlaceRecord): Record<string, unknow
     place.recordProvenance,
     {
       city_name: place.identity.municipality,
-      province: copy("geo.province", "en"),
+      province: "Ontario",
       transit_system_names: [],
       paratransit_name: "unknown",
       booking_contact: "unknown",

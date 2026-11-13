@@ -1,28 +1,27 @@
 import { PRACTICE_DONE, ROUND_DONE } from "./boundaries.js";
+import { gameCopy, gamePhrase, type GameCopyKey } from "./i18n.js";
 import { mulberry32, shuffle } from "./rng.js";
 import type { Choice, CreateOptions, GameData, GameMeta, GameSession, GameView, Language, TaskFamily } from "./types.js";
 
-const UNTIMED: Record<Language, string> = { en: "Untimed. No clock runs.", fr: "Sans minuterie. Aucune horloge ne tourne." };
-const INPUT: Record<Language, string> = {
-  en: "Single tap, keyboard, or switch: Next, then Choose. No drag and no typing.",
-  fr: "Un toucher, le clavier, ou un contacteur : Suivant, puis Choisir. Aucun glisser et aucune saisie.",
-};
-const COLOUR: Record<Language, string> = {
-  en: "Shape and text labels carry the meaning. Colour is not the only signal.",
-  fr: "La forme et le texte portent le sens. La couleur n'est pas le seul signal.",
-};
+function pair(key: GameCopyKey): Record<Language, string> {
+  return { en: gameCopy(key, "en"), fr: gameCopy(key, "fr") };
+}
+
+const UNTIMED = pair("note.untimed");
+const INPUT = pair("note.input");
+const COLOUR = pair("note.colour");
 
 export const TASK_FAMILY_LABEL: Record<TaskFamily, Record<Language, string>> = {
-  spatial_recall: { en: "Spatial recall", fr: "Rappel spatial" },
-  working_memory_sequence: { en: "Working memory, sequence matching", fr: "Mémoire de travail, suite" },
-  planning: { en: "Planning", fr: "Planification" },
-  rule_discovery: { en: "Rule discovery", fr: "Découverte de règle" },
-  word_roots: { en: "Word roots", fr: "Racines de mots" },
-  quantity: { en: "Quantity", fr: "Quantité" },
-  selective_attention: { en: "Selective attention", fr: "Attention sélective" },
-  task_switching: { en: "Task switching", fr: "Changement de règle" },
-  spatial_assembly: { en: "Spatial assembly", fr: "Assemblage spatial" },
-  running_inventory: { en: "Running inventory", fr: "Inventaire courant" },
+  spatial_recall: pair("family.spatial_recall"),
+  working_memory_sequence: pair("family.working_memory_sequence"),
+  planning: pair("family.planning"),
+  rule_discovery: pair("family.rule_discovery"),
+  word_roots: pair("family.word_roots"),
+  quantity: pair("family.quantity"),
+  selective_attention: pair("family.selective_attention"),
+  task_switching: pair("family.task_switching"),
+  spatial_assembly: pair("family.spatial_assembly"),
+  running_inventory: pair("family.running_inventory"),
 };
 
 function meta(
@@ -34,80 +33,56 @@ function meta(
   return { id, name, taskFamily, summary, timingNote: UNTIMED, inputNote: INPUT, estimatedMinutes: 3 };
 }
 
+function named(id: string, nameKey: GameCopyKey, taskFamily: TaskFamily, summaryKey: GameCopyKey): GameMeta {
+  return meta(id, gameCopy(nameKey, "en"), taskFamily, pair(summaryKey));
+}
+
 export const CATALOG: readonly GameMeta[] = [
-  meta("grid-recall", "Grid Recall", "spatial_recall", {
-    en: "Remember which cells were marked, then select them after they hide.",
-    fr: "Retenir les cases marquées, puis les choisir après qu'elles disparaissent.",
-  }),
-  meta("pair-sequence", "Pair Sequence", "working_memory_sequence", {
-    en: "Decide whether the current symbol matches the one from two steps earlier.",
-    fr: "Décider si le symbole actuel correspond à celui d'il y a deux étapes.",
-  }),
-  meta("route-planner", "Route Planner", "planning", {
-    en: "Move across a made-up grid to the far corner within a move budget. Not a real place.",
-    fr: "Traverser une grille inventée jusqu'au coin opposé, dans un budget de déplacements. Pas un lieu réel.",
-  }),
-  meta("pattern-rules", "Pattern Rules", "rule_discovery", {
-    en: "Read the examples, choose the rule, then apply it to a new item.",
-    fr: "Lire les exemples, choisir la règle, puis l'appliquer à un nouvel élément.",
-  }),
-  meta("word-roots-builder", "Word Roots Builder", "word_roots", {
-    en: "Build a word by choosing a root and an affix from the options.",
-    fr: "Construire un mot en choisissant une racine et un affixe parmi les options.",
-  }),
-  meta("number-compare", "Number Compare", "quantity", {
-    en: "Choose the larger quantity. Each one is shown as a number and a bar.",
-    fr: "Choisir la plus grande quantité. Chacune est montrée comme un nombre et une barre.",
-  }),
-  meta("focus-flankers", "Focus Flankers", "selective_attention", {
-    en: "Name the direction of the centre arrow. The side arrows are labelled and can be ignored.",
-    fr: "Nommer la direction de la flèche du centre. Les flèches des côtés sont étiquetées et peuvent être ignorées.",
-  }),
-  meta("switch-rules", "Switch Rules", "task_switching", {
-    en: "Sort an item by the rule written on the screen. The rule changes and stays visible.",
-    fr: "Classer un élément selon la règle écrite à l'écran. La règle change et reste visible.",
-  }),
-  meta("shape-assembly", "Shape Assembly", "spatial_assembly", {
-    en: "Tap a piece, tap Rotate if it needs a turn, then tap the slot where it belongs.",
-    fr: "Toucher une pièce, toucher Tourner si elle doit pivoter, puis toucher la case où elle va.",
-  }),
-  meta("order-keeper", "Order Keeper", "running_inventory", {
-    en: "The list stays on screen. After one item arrives or leaves, choose the list that matches.",
-    fr: "La liste reste à l'écran. Après l'arrivée ou le départ d'un élément, choisir la liste qui correspond.",
-  }),
+  named("grid-recall", "name.grid-recall", "spatial_recall", "summary.grid-recall"),
+  named("pair-sequence", "name.pair-sequence", "working_memory_sequence", "summary.pair-sequence"),
+  named("route-planner", "name.route-planner", "planning", "summary.route-planner"),
+  named("pattern-rules", "name.pattern-rules", "rule_discovery", "summary.pattern-rules"),
+  named("word-roots-builder", "name.word-roots-builder", "word_roots", "summary.word-roots-builder"),
+  named("number-compare", "name.number-compare", "quantity", "summary.number-compare"),
+  named("focus-flankers", "name.focus-flankers", "selective_attention", "summary.focus-flankers"),
+  named("switch-rules", "name.switch-rules", "task_switching", "summary.switch-rules"),
+  named("shape-assembly", "name.shape-assembly", "spatial_assembly", "summary.shape-assembly"),
+  named("order-keeper", "name.order-keeper", "running_inventory", "summary.order-keeper"),
 ];
 
-const SHAPE: Record<Language, Record<string, string>> = {
-  en: { circle: "circle", square: "square", triangle: "triangle", star: "star" },
-  fr: { circle: "cercle", square: "carré", triangle: "triangle", star: "étoile" },
-};
+function shapeName(language: Language, shape: string): string {
+  if (shape === "square") return gameCopy("shape.square", language);
+  if (shape === "triangle") return gameCopy("shape.triangle", language);
+  if (shape === "star") return gameCopy("shape.star", language);
+  return gameCopy("shape.circle", language);
+}
 
-const ROOT_TRIALS: Array<{ meaning: Record<Language, string>; answer: string; options: Array<{ id: string; label: string }> }> = [
+const ROOT_TRIALS: Array<{ meaning: GameCopyKey; answer: string; options: Array<{ id: string; label: GameCopyKey }> }> = [
   {
-    meaning: { en: "not happy", fr: "pas content" },
+    meaning: "root.meaning.un-happy",
     answer: "un-happy",
     options: [
-      { id: "un-happy", label: "un + happy" },
-      { id: "re-view", label: "re + view" },
-      { id: "pre-pay", label: "pre + pay" },
+      { id: "un-happy", label: "root.label.un-happy" },
+      { id: "re-view", label: "root.label.re-view" },
+      { id: "pre-pay", label: "root.label.pre-pay" },
     ],
   },
   {
-    meaning: { en: "view again", fr: "voir de nouveau" },
+    meaning: "root.meaning.re-view",
     answer: "re-view",
     options: [
-      { id: "un-happy", label: "un + happy" },
-      { id: "re-view", label: "re + view" },
-      { id: "pre-view", label: "pre + view" },
+      { id: "un-happy", label: "root.label.un-happy" },
+      { id: "re-view", label: "root.label.re-view" },
+      { id: "pre-view", label: "root.label.pre-view" },
     ],
   },
   {
-    meaning: { en: "pay before", fr: "payer avant" },
+    meaning: "root.meaning.pre-pay",
     answer: "pre-pay",
     options: [
-      { id: "pre-pay", label: "pre + pay" },
-      { id: "re-pay", label: "re + pay" },
-      { id: "un-view", label: "un + view" },
+      { id: "pre-pay", label: "root.label.pre-pay" },
+      { id: "re-pay", label: "root.label.re-pay" },
+      { id: "un-view", label: "root.label.un-view" },
     ],
   },
 ];
@@ -132,10 +107,10 @@ const SWITCH_ITEMS: Array<{ shape: "circle" | "square"; size: "large" | "small";
   { shape: "circle", size: "small", rule: "large" },
 ];
 
-const ORDER_STEPS: Array<{ add: string | null; remove: string | null; event: Record<Language, string> }> = [
-  { add: "tea", remove: null, event: { en: "Add tea.", fr: "Ajouter thé." } },
-  { add: null, remove: "bread", event: { en: "Remove bread.", fr: "Retirer pain." } },
-  { add: "apple", remove: null, event: { en: "Add apple.", fr: "Ajouter pomme." } },
+const ORDER_STEPS: Array<{ add: string | null; remove: string | null; event: GameCopyKey }> = [
+  { add: "tea", remove: null, event: "order.add-tea" },
+  { add: null, remove: "bread", event: "order.remove-bread" },
+  { add: "apple", remove: null, event: "order.add-apple" },
 ];
 
 const BLOCKED = 4;
@@ -212,7 +187,7 @@ export function viewSession(session: GameSession): GameView {
   const game = metaById(session.metaId);
   const body = describe(session);
   const doneText = session.practice ? PRACTICE_DONE[session.language] : ROUND_DONE[session.language];
-  const announcement = session.paused ? (session.language === "fr" ? "Pause." : "Paused.") : session.done ? doneText : body.prompt;
+  const announcement = session.paused ? gameCopy("status.paused", session.language) : session.done ? doneText : body.prompt;
   return {
     gameId: session.metaId,
     title: game.name,
@@ -445,8 +420,8 @@ function neighbor(position: number, direction: string): number | null {
 function cellLabel(language: Language, cell: number, selected: boolean): string {
   const row = Math.floor(cell / 3) + 1;
   const column = (cell % 3) + 1;
-  const mark = selected ? (language === "fr" ? ", choisie" : ", selected") : "";
-  return language === "fr" ? `Rangée ${row}, colonne ${column}${mark}` : `Row ${row}, column ${column}${mark}`;
+  const mark = selected ? gameCopy("cell.selected", language) : "";
+  return gamePhrase("cell.label", language, { row, column, mark });
 }
 
 function describe(session: GameSession): { prompt: string; detail: string; choices: Choice[] } {
@@ -482,38 +457,37 @@ function describeGrid(language: Language, data: Extract<GameData, { kind: "grid-
   if (data.phase === "study") {
     const marks = data.lit.map((cell) => cellLabel(language, cell, false)).join("; ");
     return {
-      prompt: language === "fr" ? `Cases avec une étoile : ${marks}.` : `Cells with a star: ${marks}.`,
-      detail: language === "fr" ? "Chaque étoile a aussi le mot étoile." : "Each star also has the word star.",
-      choices: [{ id: "ready", label: language === "fr" ? "Cacher le motif" : "Hide the pattern" }],
+      prompt: gamePhrase("grid.study.prompt", language, { marks }),
+      detail: gameCopy("grid.study.detail", language),
+      choices: [{ id: "ready", label: gameCopy("grid.hide", language) }],
     };
   }
   const choices = [0, 1, 2, 3, 4, 5, 6, 7, 8].map((cell) => ({ id: cellId(cell), label: cellLabel(language, cell, data.selected.includes(cell)) }));
-  choices.push({ id: "check", label: language === "fr" ? "Vérifier" : "Check" });
-  if (!data.replayed) choices.push({ id: "replay", label: language === "fr" ? "Revoir le motif une fois" : "Replay the pattern once" });
+  choices.push({ id: "check", label: gameCopy("grid.check", language) });
+  if (!data.replayed) choices.push({ id: "replay", label: gameCopy("grid.replay", language) });
   return {
-    prompt: language === "fr" ? "Le motif est caché. Choisissez les cases qui avaient une étoile, puis vérifiez." : "The pattern is hidden. Select the cells that had a star, then check.",
-    detail: language === "fr" ? "Vous pouvez revoir le motif une fois." : "You can replay the pattern once.",
+    prompt: gameCopy("grid.hidden.prompt", language),
+    detail: gameCopy("grid.hidden.detail", language),
     choices,
   };
 }
 
 function describePair(language: Language, data: Extract<GameData, { kind: "pair-sequence" }>): { prompt: string; detail: string; choices: Choice[] } {
-  const names = SHAPE[language];
-  const current = names[data.symbols[data.index] ?? "circle"] ?? "";
+  const current = shapeName(language, data.symbols[data.index] ?? "circle");
   if (data.index < 2) {
     return {
-      prompt: language === "fr" ? `Maintenant : ${current}. La question de correspondance commence dans deux étapes.` : `Now: ${current}. The match question starts two steps in.`,
-      detail: language === "fr" ? "Le rythme est le vôtre." : "The pace is yours.",
-      choices: [{ id: "next", label: language === "fr" ? "Étape suivante" : "Next step" }],
+      prompt: gamePhrase("pair.early.prompt", language, { current }),
+      detail: gameCopy("pair.pace", language),
+      choices: [{ id: "next", label: gameCopy("pair.next", language) }],
     };
   }
-  const earlier = names[data.symbols[data.index - 2] ?? "circle"] ?? "";
+  const earlier = shapeName(language, data.symbols[data.index - 2] ?? "circle");
   return {
-    prompt: language === "fr" ? `Maintenant : ${current}. Deux étapes plus tôt : ${earlier}. Est-ce le même symbole?` : `Now: ${current}. Two steps earlier: ${earlier}. Is it the same symbol?`,
-    detail: language === "fr" ? "Oui et Non sont de grandes cibles. Aucune pénalité de temps." : "Yes and No are large targets. There is no time penalty.",
+    prompt: gamePhrase("pair.match.prompt", language, { current, earlier }),
+    detail: gameCopy("pair.match.detail", language),
     choices: [
-      { id: "yes", label: language === "fr" ? "Oui" : "Yes" },
-      { id: "no", label: language === "fr" ? "Non" : "No" },
+      { id: "yes", label: gameCopy("pair.yes", language) },
+      { id: "no", label: gameCopy("pair.no", language) },
     ],
   };
 }
@@ -524,15 +498,13 @@ function describeRoute(language: Language, data: Extract<GameData, { kind: "rout
   for (const direction of ["left", "right", "up", "down"] as const) {
     const next = neighbor(data.position, direction);
     if (next === null || next === BLOCKED || moves >= data.budget) continue;
-    const label = { left: language === "fr" ? "Gauche" : "Left", right: language === "fr" ? "Droite" : "Right", up: language === "fr" ? "Haut" : "Up", down: language === "fr" ? "Bas" : "Down" }[direction];
+    const label = gameCopy(`route.${direction}`, language);
     choices.push({ id: direction, label });
   }
-  if (data.path.length > 1) choices.push({ id: "undo", label: language === "fr" ? "Annuler" : "Undo" });
+  if (data.path.length > 1) choices.push({ id: "undo", label: gameCopy("route.undo", language) });
   return {
-    prompt: language === "fr"
-      ? `Grille inventée, pas un lieu réel. Départ en haut à gauche, but en bas à droite. Centre bloqué. Déplacements : ${moves} sur ${data.budget}.`
-      : `Made-up grid, not a real place. Start at the top left, goal at the bottom right. Centre cell blocked. Moves: ${moves} of ${data.budget}.`,
-    detail: language === "fr" ? "Touchez une direction. Annuler est toujours offert après un pas." : "Tap a direction. Undo is available after a step.",
+    prompt: gamePhrase("route.prompt", language, { moves, budget: data.budget }),
+    detail: gameCopy("route.detail", language),
     choices,
   };
 }
@@ -540,24 +512,22 @@ function describeRoute(language: Language, data: Extract<GameData, { kind: "rout
 function describePattern(language: Language, data: Extract<GameData, { kind: "pattern-rules" }>): { prompt: string; detail: string; choices: Choice[] } {
   if (data.step === 0) {
     return {
-      prompt: language === "fr"
-        ? "Exemples qui vont ensemble : étoile pleine, carré plein. Exemple à part : cercle vide."
-        : "Examples that belong together: filled star, filled square. Example set apart: open circle.",
-      detail: language === "fr" ? "L'indice répète la règle et n'enlève pas de points." : "The hint repeats the rule and does not remove points.",
+      prompt: gameCopy("pattern.examples", language),
+      detail: gameCopy("pattern.detail", language),
       choices: [
-        { id: "rule-filled", label: language === "fr" ? "Les formes pleines vont ensemble" : "Filled shapes belong together" },
-        { id: "rule-star", label: language === "fr" ? "Seules les étoiles vont ensemble" : "Only stars belong together" },
-        { id: "rule-circle", label: language === "fr" ? "Seuls les cercles vont ensemble" : "Only circles belong together" },
-        { id: "hint", label: language === "fr" ? "Indice : formes pleines" : "Hint: filled shapes" },
+        { id: "rule-filled", label: gameCopy("pattern.rule-filled", language) },
+        { id: "rule-star", label: gameCopy("pattern.rule-star", language) },
+        { id: "rule-circle", label: gameCopy("pattern.rule-circle", language) },
+        { id: "hint", label: gameCopy("pattern.hint", language) },
       ],
     };
   }
   return {
-    prompt: language === "fr" ? "Nouvel élément : carré plein. La règle des formes pleines l'inclut-elle?" : "New item: filled square. Does the filled-shape rule include it?",
-    detail: language === "fr" ? "Le mot plein est écrit, pas seulement une couleur." : "The word filled is written, not colour alone.",
+    prompt: gameCopy("pattern.new", language),
+    detail: gameCopy("pattern.new.detail", language),
     choices: [
-      { id: "apply-yes", label: language === "fr" ? "Oui" : "Yes" },
-      { id: "apply-no", label: language === "fr" ? "Non" : "No" },
+      { id: "apply-yes", label: gameCopy("pair.yes", language) },
+      { id: "apply-no", label: gameCopy("pair.no", language) },
     ],
   };
 }
@@ -565,25 +535,26 @@ function describePattern(language: Language, data: Extract<GameData, { kind: "pa
 function describeRoots(language: Language, data: Extract<GameData, { kind: "word-roots" }>): { prompt: string; detail: string; choices: Choice[] } {
   const trial = ROOT_TRIALS[data.index];
   return {
-    prompt: language === "fr" ? `Construire le sens : ${trial?.meaning.fr ?? ""}.` : `Build the meaning: ${trial?.meaning.en ?? ""}.`,
-    detail: language === "fr" ? "Choisissez les parties. Aucune saisie." : "Choose the parts. No typing.",
-    choices: (trial?.options ?? []).map((option) => ({ id: option.id, label: option.label })),
+    prompt: gamePhrase("roots.prompt", language, { meaning: trial ? gameCopy(trial.meaning, language) : "" }),
+    detail: gameCopy("roots.detail", language),
+    choices: (trial?.options ?? []).map((option) => ({ id: option.id, label: gameCopy(option.label, language) })),
   };
 }
 
 function describeNumbers(language: Language, data: Extract<GameData, { kind: "number-compare" }>): { prompt: string; detail: string; choices: Choice[] } {
   const item = QUANTITIES[data.index];
-  const left = item ? `${item.left}, ${language === "fr" ? "barre" : "bar"} ${item.leftBar}` : "";
-  const right = item ? `${item.right}, ${language === "fr" ? "barre" : "bar"} ${item.rightBar}` : "";
+  const bar = gameCopy("numbers.bar", language);
+  const left = item ? `${item.left}, ${bar} ${item.leftBar}` : "";
+  const right = item ? `${item.right}, ${bar} ${item.rightBar}` : "";
   const same = item?.left === item?.right;
   return {
     prompt: same
-      ? language === "fr" ? `Les deux quantités sont ${left} et ${right}. Choisissez la gauche quand elles sont égales.` : `Both quantities are ${left} and ${right}. Choose the left one when they are equal.`
-      : language === "fr" ? `Quelle quantité est plus grande? Gauche : ${left}. Droite : ${right}.` : `Which quantity is larger? Left: ${left}. Right: ${right}.`,
-    detail: language === "fr" ? "Le nombre et la barre sont ensemble." : "The number and the bar are shown together.",
+      ? gamePhrase("numbers.same", language, { left, right })
+      : gamePhrase("numbers.which", language, { left, right }),
+    detail: gameCopy("numbers.detail", language),
     choices: [
-      { id: "left", label: language === "fr" ? `Gauche, ${left}` : `Left, ${left}` },
-      { id: "right", label: language === "fr" ? `Droite, ${right}` : `Right, ${right}` },
+      { id: "left", label: gamePhrase("numbers.left", language, { value: left }) },
+      { id: "right", label: gamePhrase("numbers.right", language, { value: right }) },
     ],
   };
 }
@@ -592,52 +563,46 @@ function describeFlankers(language: Language, data: Extract<GameData, { kind: "f
   const item = FLANKERS[data.index];
   const center = item?.center ?? "left";
   const flank = item?.flank ?? "left";
-  const word = (value: string) => (language === "fr" ? (value === "left" ? "gauche" : "droite") : value);
+  const word = (value: "left" | "right") => gameCopy(value === "left" ? "dir.left" : "dir.right", language);
   return {
-    prompt: language === "fr"
-      ? `La flèche du centre pointe ${word(center)} et elle est aussi un triangle ${word(center)}. Les flèches des côtés pointent ${word(flank)} et portent le mot ${word(flank)}.`
-      : `The centre arrow points ${word(center)} and is also a ${word(center)} triangle. The side arrows point ${word(flank)} and are labelled ${word(flank)}.`,
-    detail: language === "fr" ? "Nommez seulement le centre. Aucune horloge." : "Name only the centre. No clock.",
+    prompt: gamePhrase("flankers.prompt", language, { center: word(center), flank: word(flank) }),
+    detail: gameCopy("flankers.detail", language),
     choices: [
-      { id: "left", label: language === "fr" ? "Le centre pointe à gauche" : "Centre points left" },
-      { id: "right", label: language === "fr" ? "Le centre pointe à droite" : "Centre points right" },
+      { id: "left", label: gameCopy("flankers.left", language) },
+      { id: "right", label: gameCopy("flankers.right", language) },
     ],
   };
 }
 
 function describeSwitch(language: Language, data: Extract<GameData, { kind: "switch-rules" }>): { prompt: string; detail: string; choices: Choice[] } {
   const item = SWITCH_ITEMS[data.index];
-  const rule = item?.rule === "large"
-    ? language === "fr" ? "Règle actuelle, en texte : garder les grands éléments." : "Current rule, as text: keep large items."
-    : language === "fr" ? "Règle actuelle, en texte : garder les cercles." : "Current rule, as text: keep circles.";
-  const shape = item ? SHAPE[language][item.shape] : "";
-  const size = item?.size === "large" ? (language === "fr" ? "grand" : "large") : language === "fr" ? "petit" : "small";
+  const rule = gameCopy(item?.rule === "large" ? "switch.rule-large" : "switch.rule-circles", language);
+  const shape = item ? shapeName(language, item.shape) : "";
+  const size = gameCopy(item?.size === "large" ? "switch.size-large" : "switch.size-small", language);
   return {
-    prompt: `${rule} ${language === "fr" ? "Élément" : "Item"}: ${size} ${shape}.`,
-    detail: language === "fr" ? "La règle reste écrite pendant le choix." : "The rule stays written while you choose.",
+    prompt: `${rule} ${gameCopy("switch.item", language)}${gameCopy("sep.colon", language)}${size} ${shape}.`,
+    detail: gameCopy("switch.detail", language),
     choices: [
-      { id: "matches", label: language === "fr" ? "Correspond à la règle" : "Matches the rule" },
-      { id: "other", label: language === "fr" ? "Ne correspond pas à la règle" : "Does not match the rule" },
+      { id: "matches", label: gameCopy("switch.matches", language) },
+      { id: "other", label: gameCopy("switch.other", language) },
     ],
   };
 }
 
 function describeShape(language: Language, data: Extract<GameData, { kind: "shape-assembly" }>): { prompt: string; detail: string; choices: Choice[] } {
-  const slots = data.placed.map((piece, index) => piece ?? (language === "fr" ? `case ${index + 1} vide` : `slot ${index + 1} empty`)).join(", ");
-  const turn = language === "fr" ? `Triangle tourné de ${data.rotation} degrés.` : `Triangle turned ${data.rotation} degrees.`;
+  const slots = data.placed.map((piece, index) => piece ?? gamePhrase("shape.slot-empty", language, { n: index + 1 })).join(", ");
+  const turn = gamePhrase("shape.turn", language, { degrees: data.rotation });
   return {
-    prompt: language === "fr"
-      ? `But : triangle, carré, cercle. Cases : ${slots}. ${turn}`
-      : `Target: triangle, square, circle. Slots: ${slots}. ${turn}`,
-    detail: language === "fr" ? "Touchez une pièce, puis une case. Tourner est un bouton, pas un glisser." : "Tap a piece, then a slot. Rotate is a button, not a drag.",
+    prompt: gamePhrase("shape.prompt", language, { slots, turn }),
+    detail: gameCopy("shape.detail", language),
     choices: [
-      { id: "piece-triangle", label: language === "fr" ? "Pièce triangle" : "Triangle piece" },
-      { id: "piece-square", label: language === "fr" ? "Pièce carré" : "Square piece" },
-      { id: "piece-circle", label: language === "fr" ? "Pièce cercle" : "Circle piece" },
-      { id: "rotate", label: language === "fr" ? "Tourner le triangle" : "Rotate the triangle" },
-      { id: "slot-0", label: language === "fr" ? "Case 1" : "Slot 1" },
-      { id: "slot-1", label: language === "fr" ? "Case 2" : "Slot 2" },
-      { id: "slot-2", label: language === "fr" ? "Case 3" : "Slot 3" },
+      { id: "piece-triangle", label: gameCopy("shape.piece-triangle", language) },
+      { id: "piece-square", label: gameCopy("shape.piece-square", language) },
+      { id: "piece-circle", label: gameCopy("shape.piece-circle", language) },
+      { id: "rotate", label: gameCopy("shape.rotate", language) },
+      { id: "slot-0", label: gameCopy("shape.slot-1", language) },
+      { id: "slot-1", label: gameCopy("shape.slot-2", language) },
+      { id: "slot-2", label: gameCopy("shape.slot-3", language) },
     ],
   };
 }
@@ -648,10 +613,8 @@ function describeOrder(language: Language, data: Extract<GameData, { kind: "orde
   const correct = step ? nextList(data.list, step).join(", ") : current;
   const wrong = data.list.slice(0, 1).join(", ") || "empty";
   return {
-    prompt: language === "fr"
-      ? `Liste visible : ${current}. ${step?.event.fr ?? ""} Quelle liste correspond?`
-      : `Visible list: ${current}. ${step?.event.en ?? ""} Which list matches?`,
-    detail: language === "fr" ? "La liste reste affichée. Un seul changement." : "The list stays on screen. One change.",
+    prompt: gamePhrase("order.prompt", language, { current, event: step ? gameCopy(step.event, language) : "" }),
+    detail: gameCopy("order.detail", language),
     choices: [
       { id: "correct", label: correct },
       { id: "wrong", label: wrong },
