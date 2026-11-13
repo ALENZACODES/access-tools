@@ -1,20 +1,28 @@
 import { useId } from "react";
+import { copy, type CopyKey } from "../i18n.js";
 import type { FieldRowView } from "../project.js";
 import type { Lang } from "../types.js";
 import { EnglishText } from "./EnglishText.js";
 
 /** French table name. "Identité" becomes "Champs d'identité", not "Identité champs". */
 export function frenchFieldCaption(heading: string): string {
-  if (heading === "S'y rendre") return "Champs pour s'y rendre";
-  if (heading === "À l'intérieur") return "Champs de l'intérieur";
+  if (heading === copy("section.getting-there", "fr")) return copy("table.caption.getting-there", "fr");
+  if (heading === copy("section.inside", "fr")) return copy("table.caption.inside", "fr");
   const lower = heading.slice(0, 1).toLocaleLowerCase("fr-CA") + heading.slice(1);
-  return /^[aeiouyàâäéèêëîïôöùûüœh]/i.test(lower) ? `Champs d'${lower}` : `Champs de ${lower}`;
+  const prefix = /^[aeiouyàâäéèêëîïôöùûüœh]/i.test(lower)
+    ? copy("table.caption.elided", "fr")
+    : copy("table.caption.of", "fr");
+  return `${prefix}${lower}`;
 }
 
-const COLUMNS = {
-  en: ["Field", "Value", "Tier", "Source", "Source date", "Record date"],
-  fr: ["Champ", "Valeur", "Niveau", "Source", "Date de source", "Date de fiche"],
-} as const;
+const COLUMN_KEYS = [
+  "table.col.field",
+  "table.col.value",
+  "table.col.tier",
+  "table.col.source",
+  "table.col.source-date",
+  "table.col.record-date",
+] as const satisfies readonly CopyKey[];
 
 export function FieldTable({
   rows,
@@ -30,7 +38,7 @@ export function FieldTable({
 }) {
   const captionId = useId();
   if (rows.length === 0) return null;
-  const columns = COLUMNS[lang];
+  const columns = COLUMN_KEYS.map((key) => copy(key, lang));
   return (
     // A group names the keyboard scroll stop without adding a landmark.
     // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- keyboard scroll container
@@ -40,14 +48,14 @@ export function FieldTable({
           {lang === "fr" ? (
             captionEnglish ? (
               <>
-                {"Champs : "}
+                {copy("table.caption.prefix", lang)}
                 <span lang="en">{caption}</span>
               </>
             ) : (
               frenchFieldCaption(caption)
             )
           ) : (
-            `${caption} fields`
+            `${caption} ${copy("table.fields", lang)}`
           )}
         </caption>
         <thead>

@@ -65,7 +65,7 @@ export function EnglishOnlyNote({ lang }: { lang: Lang }) {
   if (lang !== "fr") return null;
   return (
     <p role="note">
-      <span lang="en">English only.</span> {copy("note.english-only", "fr")}
+      <span lang="en">{copy("note.english-only-label", "en")}</span> {copy("note.english-only", "fr")}
     </p>
   );
 }

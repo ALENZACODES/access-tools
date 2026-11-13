@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   a11yCss,
@@ -15,10 +15,11 @@ import {
   type Lang,
   type ReportLog,
 } from "@access-tools/place";
+import { searchCopy } from "../i18n.js";
 import { emptySearchQuery, type SearchQuery } from "../search.js";
 import { SearchPanel } from "../react/SearchPanel.js";
 
-function Demo() {
+export function SearchDemo() {
   const [lang, setLang] = useState<Lang>("en");
   const [query, setQuery] = useState<SearchQuery>(emptySearchQuery("en"));
   const [placeId, setPlaceId] = useState<string | null>(null);
@@ -30,6 +31,9 @@ function Demo() {
     }
   });
   const place = fixturePack.places.find((item) => item.id === placeId) ?? null;
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
   const save = (next: ReportLog) => {
     setLog(next);
     try {
@@ -41,24 +45,20 @@ function Demo() {
   return (
     <div className="app-ui" lang={lang}>
       <style>{a11yCss}</style>
-      <a href="#search-main">{lang === "fr" ? "Aller au contenu" : "Skip to content"}</a>
+      <a href="#search-main">{searchCopy("nav.skip", lang)}</a>
       <header>
-        <h1>{lang === "fr" ? "l'application — recherche" : "the application — search"}</h1>
-        <p>
-          {lang === "fr"
-            ? "Démonstration sur le jeu d'essai étiqueté. Les lieux réels viendront d'access-maps."
-            : "Demo on the labelled fixture pack. Real places will come from access-maps."}
-        </p>
+        <h1>{searchCopy("demo.title", lang)}</h1>
+        <p>{searchCopy("demo.intro", lang)}</p>
         <button
           type="button"
+          lang={lang === "en" ? "fr" : "en"}
           onClick={() => {
             const next = lang === "en" ? "fr" : "en";
             setLang(next);
             setQuery((current) => ({ ...current, lang: next }));
-            document.documentElement.lang = next;
           }}
         >
-          {lang === "en" ? "Français" : "English"}
+          {lang === "en" ? searchCopy("lang.show-french", "en") : searchCopy("lang.show-english", "en")}
         </button>
       </header>
       <main id="search-main">
@@ -87,7 +87,7 @@ function Demo() {
             }}
           />
         ) : (
-          <p>{lang === "fr" ? "Choisissez un lieu dans les résultats." : "Choose a place from the results."}</p>
+          <p>{searchCopy("demo.choose", lang)}</p>
         )}
       </main>
     </div>
@@ -95,4 +95,4 @@ function Demo() {
 }
 
 const root = document.getElementById("root");
-if (root) createRoot(root).render(<Demo />);
+if (root?.dataset.demo === "search") createRoot(root).render(<SearchDemo />);

@@ -42,3 +42,44 @@ test("directory, timing, and a game are usable without advice or a timer", async
   });
   expect(violations).toEqual([]);
 });
+
+test("place, search, and finders pass axe in English and French", async ({ page }) => {
+  await page.goto("/");
+  await page.addScriptTag({ content: axe.source });
+  const viewports = [
+    { width: 1280, height: 800 },
+    { width: 320, height: 700 },
+  ];
+  for (const screen of ["Place", "Search", "Finders"]) {
+    await page.getByRole("button", { name: screen, exact: true }).click();
+    await expect.poll(() => page.evaluate(() => document.documentElement.lang)).toBe("en");
+    for (const viewport of viewports) {
+      await page.setViewportSize(viewport);
+      for (const lang of ["en", "fr"] as const) {
+        const current = await page.evaluate(() => document.documentElement.lang);
+        if (current !== lang) {
+          await page.getByRole("button", { name: lang === "fr" ? "Français" : "English" }).click();
+        }
+        await expect.poll(() => page.evaluate(() => document.documentElement.lang)).toBe(lang);
+        const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+        expect(overflow, `${screen} ${lang} ${viewport.width}`).toBeLessThanOrEqual(0);
+        const violations = await page.evaluate(async () => {
+          const axeRuntime = (window as unknown as { axe: typeof axe }).axe;
+          const screenRoot = document.querySelector("[data-screen]");
+          if (!screenRoot) return ["missing screen"];
+          const results = await axeRuntime.run(screenRoot, {
+            runOnly: {
+              type: "tag",
+              values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"],
+            },
+          });
+          return results.violations.map((violation) => {
+            const target = violation.nodes[0]?.target.join(" ") ?? "";
+            return `${violation.id}: ${violation.help}${target ? ` [${target}]` : ""}`;
+          });
+        });
+        expect(violations, `${screen} ${lang} ${viewport.width}`).toEqual([]);
+      }
+    }
+  }
+});

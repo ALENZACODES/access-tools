@@ -1,4 +1,4 @@
-import { labelOf } from "../i18n.js";
+import { copy, fill, labelOf } from "../i18n.js";
 import type { ChangeReport, Correction, Lang, PlacePack, PlaceRecord } from "../types.js";
 import type { ChangeProblem } from "../types.js";
 import { correctableFields, projectPlace } from "../project.js";
@@ -30,14 +30,14 @@ export function PlacePage({
   headingLevel?: 1 | 2;
 }) {
   const view = projectPlace(place, lang, today, pack);
-  const pending =
-    lang === "fr"
-      ? `${corrections.length} correction(s) en attente, ${changes.length} signalement(s) en attente. La fiche affichée est inchangée.`
-      : `${corrections.length} pending correction(s), ${changes.length} pending change report(s). The displayed record is unchanged.`;
+  const pending = fill(copy("place.pending.counts", lang), {
+    corrections: corrections.length,
+    changes: changes.length,
+  });
   return (
     <article className="app-ui" lang={lang}>
       <style>{a11yCss}</style>
-      <a href="#place-main">{lang === "fr" ? "Aller au contenu" : "Skip to content"}</a>
+      <a href="#place-main">{copy("nav.skip", lang)}</a>
       <header>
         {headingLevel === 2 ? (
           <h2>{lang === "fr" && !place.nameFr ? <RecordText lang={lang} text={view.title} /> : view.title}</h2>
@@ -134,7 +134,7 @@ export function PlacePage({
         ))}
         {view.peerTips.length > 0 ? (
           <section aria-labelledby="h-peer">
-            <h2 id="h-peer">{lang === "fr" ? "Notes de pairs, pas des faits" : "Peer tips, not facts"}</h2>
+            <h2 id="h-peer">{copy("place.peer-tips", lang)}</h2>
             <ul>
               {view.peerTips.map((tip) => (
                 <li key={tip.text}>
@@ -145,30 +145,30 @@ export function PlacePage({
           </section>
         ) : null}
         <section aria-labelledby="h-pending">
-          <h2 id="h-pending">{lang === "fr" ? "En attente sur cet appareil" : "Pending on this device"}</h2>
+          <h2 id="h-pending">{copy("place.pending", lang)}</h2>
           <p role="status">{pending}</p>
           {corrections.length === 0 && changes.length === 0 ? (
-            <p>{lang === "fr" ? "Aucun signalement enregistré sur cet appareil." : "No report is saved on this device."}</p>
+            <p>{copy("place.no-report", lang)}</p>
           ) : (
             <ul>
               {corrections.map((correction) => (
                 <li key={correction.id}>
-                  {lang === "fr" ? "Correction en attente" : "Pending correction"}:{" "}
+                  {copy("place.pending-correction", lang)}:{" "}
                   {correctableFields(place, lang).find((field) => field.id === correction.fieldId)?.label ??
-                    (lang === "fr" ? "Champ" : "Field")}
+                    copy("place.field", lang)}
                   . {correction.suggestedCorrection}
                 </li>
               ))}
               {changes.map((change) => (
                 <li key={change.id}>
-                  {lang === "fr" ? "Signalement en attente" : "Pending change report"}: {labelOf(`problem.${change.problem}`, lang)}
+                  {copy("place.pending-change", lang)}: {labelOf(`problem.${change.problem}`, lang)}
                 </li>
               ))}
             </ul>
           )}
-          <h3>{lang === "fr" ? "Proposer une correction" : "Suggest a correction"}</h3>
+          <h3>{copy("place.suggest", lang)}</h3>
           <CorrectionForm place={place} lang={lang} onSubmit={onCorrection} />
-          <h3>{lang === "fr" ? "Signaler un changement" : "Report a change"}</h3>
+          <h3>{copy("place.report-change", lang)}</h3>
           <ChangeReportForm place={place} lang={lang} onSubmit={onChange} />
         </section>
       </div>

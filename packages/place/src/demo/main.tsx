@@ -1,13 +1,14 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { appendChange, appendCorrection, correctionsFor, changesFor, emptyLog, readLog, writeLog } from "../corrections.js";
 import { fixturePack, FIXTURE_DAY } from "../fixtures.js";
+import { copy } from "../i18n.js";
 import { FixturePlaceNav } from "../react/FixturePlaceNav.js";
 import { PlacePage } from "../react/PlacePage.js";
 import { a11yCss } from "../react/a11yCss.js";
 import type { Lang, ReportLog } from "../types.js";
 
-function Demo() {
+export function PlaceDemo() {
   const [lang, setLang] = useState<Lang>("en");
   const [placeId, setPlaceId] = useState(fixturePack.places[0]?.id ?? "");
   const [log, setLog] = useState<ReportLog>(() => {
@@ -18,6 +19,9 @@ function Demo() {
     }
   });
   const place = useMemo(() => fixturePack.places.find((item) => item.id === placeId) ?? fixturePack.places[0], [placeId]);
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
   if (!place) return null;
   const save = (next: ReportLog) => {
     setLog(next);
@@ -30,18 +34,18 @@ function Demo() {
   return (
     <div className="app-ui" lang={lang}>
       <style>{a11yCss}</style>
-      <a href="#demo-main">{lang === "fr" ? "Aller au contenu" : "Skip to content"}</a>
+      <a href="#demo-main">{copy("nav.skip", lang)}</a>
       <header>
-        <p>{lang === "fr" ? "l'application — pages de lieux" : "the application — place pages"}</p>
+        <p>{copy("demo.place-title", lang)}</p>
         <button
           type="button"
+          lang={lang === "en" ? "fr" : "en"}
           onClick={() => {
             const next = lang === "en" ? "fr" : "en";
             setLang(next);
-            document.documentElement.lang = next;
           }}
         >
-          {lang === "en" ? "Français" : "English"}
+          {lang === "en" ? copy("lang.show-french", "en") : copy("lang.show-english", "en")}
         </button>
       </header>
       <FixturePlaceNav places={fixturePack.places} lang={lang} currentId={place.id} onSelect={setPlaceId} />
@@ -68,4 +72,4 @@ function Demo() {
 }
 
 const root = document.getElementById("root");
-if (root) createRoot(root).render(<Demo />);
+if (root?.dataset.demo === "place") createRoot(root).render(<PlaceDemo />);

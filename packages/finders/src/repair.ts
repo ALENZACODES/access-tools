@@ -109,7 +109,7 @@ export function findRepairAndSupply(pack: PlacePack, query: RepairQuery): Repair
               ? `Couverture : ${repairer.coverageNote ?? "Inconnu"}`
               : `Coverage: ${repairer.coverageNote ?? "Unknown"}`
             : query.lang === "fr"
-              ? `Rayon mobile enregistré : ${repairer.mobileRadiusKm} km. ${repairer.coverageNote ?? ""}`
+              ? `Rayon mobile enregistré\u00A0: ${repairer.mobileRadiusKm} km. ${repairer.coverageNote ?? ""}`
               : `Recorded mobile radius: ${repairer.mobileRadiusKm} km. ${repairer.coverageNote ?? ""}`,
         englishFragments: query.lang === "fr" ? [repairer.coverageNote, repairer.hoursText].filter((item): item is string => Boolean(item)) : [],
         hiddenReasons: reasons,

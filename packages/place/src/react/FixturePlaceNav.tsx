@@ -1,3 +1,4 @@
+import { copy } from "../i18n.js";
 import type { Lang, PlaceRecord } from "../types.js";
 import { RecordText } from "./EnglishText.js";
 
@@ -14,8 +15,8 @@ export function FixturePlaceNav({
   onSelect?: (id: string) => void;
 }) {
   return (
-    <nav aria-label={lang === "fr" ? "Lieux du jeu d'essai" : "Fixture places"}>
-      <h2>{lang === "fr" ? "Lieux étiquetés" : "Labelled places"}</h2>
+    <nav aria-label={copy("nav.fixture-places", lang)}>
+      <h2>{copy("nav.labelled-places", lang)}</h2>
       <ul>
         {places.map((item) => (
           <li key={item.id}>
@@ -30,7 +31,7 @@ export function FixturePlaceNav({
             >
               {lang === "fr" && item.nameFr ? item.nameFr : <RecordText lang={lang} text={item.identity.name} />}
               {" — "}
-              <span lang="en">PROTOTYPE-UNVERIFIED</span>
+              <span lang="en">{copy("status.prototype-unverified", "en")}</span>
             </a>
           </li>
         ))}

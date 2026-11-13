@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { a11yCss, fixturePack, type Lang } from "@access-tools/place";
+import { finderCopy } from "../i18n.js";
 import { ChargingFinder, ParkingFinder, RepairSupplyFinder, WashroomFinder } from "../react/Finders.js";
 
-function Demo() {
+export function FinderDemo() {
   const [lang, setLang] = useState<Lang>("en");
   const [registerOnly, setRegisterOnly] = useState(false);
   const [vanLift, setVanLift] = useState(false);
@@ -11,44 +12,46 @@ function Demo() {
   const [range, setRange] = useState("");
   const parsedRange = range.trim() === "" ? null : Number(range);
   const userTestedRangeMetres = parsedRange !== null && Number.isFinite(parsedRange) ? parsedRange : null;
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
   return (
     <div className="app-ui" lang={lang}>
       <style>{a11yCss}</style>
-      <a href="#finder-main">{lang === "fr" ? "Aller au contenu" : "Skip to content"}</a>
+      <a href="#finder-main">{finderCopy("nav.skip", lang)}</a>
       <header>
-        <h1>{lang === "fr" ? "l'application — outils de recherche" : "the application — finders"}</h1>
-        <p>
-          {lang === "fr"
-            ? "Démonstration sur le jeu d'essai étiqueté. Ce n'est pas une carte. Les lieux réels viendront d'access-maps."
-            : "Demo on the labelled fixture pack. This is not a map. Real places will come from access-maps."}
-        </p>
+        <h1>{finderCopy("demo.title", lang)}</h1>
+        <p>{finderCopy("demo.intro", lang)}</p>
         <button
           type="button"
+          lang={lang === "en" ? "fr" : "en"}
           onClick={() => {
             const next = lang === "en" ? "fr" : "en";
             setLang(next);
-            document.documentElement.lang = next;
           }}
         >
-          {lang === "en" ? "Français" : "English"}
+          {lang === "en" ? finderCopy("lang.show-french", "en") : finderCopy("lang.show-english", "en")}
         </button>
       </header>
       <main id="finder-main" className="stack">
         <fieldset>
-          <legend>{lang === "fr" ? "Filtres de démonstration" : "Demo filters"}</legend>
+          <legend>{finderCopy("demo.filters", lang)}</legend>
           <label>
             <input type="checkbox" checked={registerOnly} onChange={(event) => setRegisterOnly(event.target.checked)} />
-            {lang === "fr" ? " Registre des tables de change et lève-personnes" : " Adult change table and hoist register"}
+            {" "}
+            {finderCopy("demo.register", lang)}
           </label>
           <label>
             <input type="checkbox" checked={vanLift} onChange={(event) => setVanLift(event.target.checked)} />
-            {lang === "fr" ? " Hayon latéral" : " Side lift"}
+            {" "}
+            {finderCopy("demo.lift", lang)}
           </label>
           <label>
             <input type="checkbox" checked={showHidden} onChange={(event) => setShowHidden(event.target.checked)} />
-            {lang === "fr" ? " Afficher les fiches cachées" : " Show hidden records"}
+            {" "}
+            {finderCopy("demo.hidden", lang)}
           </label>
-          <label htmlFor="range">{lang === "fr" ? "Votre autonomie essayée, en mètres (facultatif)" : "Your tested range, in metres (optional)"}</label>
+          <label htmlFor="range">{finderCopy("demo.range", lang)}</label>
           <input id="range" type="text" inputMode="decimal" value={range} onChange={(event) => setRange(event.target.value)} />
         </fieldset>
         <WashroomFinder
@@ -107,4 +110,4 @@ function Demo() {
 }
 
 const root = document.getElementById("root");
-if (root) createRoot(root).render(<Demo />);
+if (root?.dataset.demo === "finders") createRoot(root).render(<FinderDemo />);

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { MODERATION_NOTE } from "../corrections.js";
-import { labelOf } from "../i18n.js";
+import { copy, labelOf } from "../i18n.js";
 import { correctableFields } from "../project.js";
 import { CHANGE_PROBLEMS, type ChangeProblem, type Lang, type PlaceRecord } from "../types.js";
 
@@ -25,7 +25,7 @@ export function CorrectionForm({
       onSubmit={(event) => {
         event.preventDefault();
         if (!suggested.trim()) {
-          setError(lang === "fr" ? "Écrivez la correction proposée." : "Write the suggested correction.");
+          setError(copy("form.correction.error", lang));
           return;
         }
         setError("");
@@ -35,11 +35,9 @@ export function CorrectionForm({
       }}
     >
       <p>
-        {lang === "fr"
-          ? "La correction reste sur cet appareil, en attente. Elle ne change pas la fiche. La modération ne tourne pas dans ce prototype."
-          : "The correction stays on this device, pending. It does not change the record. Moderation is not running in this prototype."}
+        {copy("form.correction.intro", lang)}
       </p>
-      <label htmlFor="correction-field">{lang === "fr" ? "Champ" : "Field"}</label>
+      <label htmlFor="correction-field">{copy("place.field", lang)}</label>
       <select id="correction-field" value={fieldId} onChange={(event) => setFieldId(event.target.value)}>
         {groups.map((group) => {
           const groupEnglish = fields.some((field) => field.group === group && field.groupEnglish);
@@ -56,7 +54,7 @@ export function CorrectionForm({
           );
         })}
       </select>
-      <label htmlFor="correction-suggested">{lang === "fr" ? "Correction proposée" : "Suggested correction"}</label>
+      <label htmlFor="correction-suggested">{copy("form.correction.suggested", lang)}</label>
       <textarea
         id="correction-suggested"
         value={suggested}
@@ -65,14 +63,14 @@ export function CorrectionForm({
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? "correction-error" : undefined}
       />
-      <label htmlFor="correction-note">{lang === "fr" ? "Note (facultative)" : "Note (optional)"}</label>
+      <label htmlFor="correction-note">{copy("form.note-optional", lang)}</label>
       <textarea id="correction-note" value={note} onChange={(event) => setNote(event.target.value)} />
       {error ? (
         <p id="correction-error" className="error" role="alert">
           {error}
         </p>
       ) : null}
-      <button type="submit">{lang === "fr" ? "Enregistrer la correction sur cet appareil" : "Save correction on this device"}</button>
+      <button type="submit">{copy("form.correction.save", lang)}</button>
     </form>
   );
 }
@@ -98,11 +96,9 @@ export function ChangeReportForm({
       }}
     >
       <p>
-        {lang === "fr"
-          ? "Signaler un changement. Le signalement est en attente et n'efface pas la fiche."
-          : "Report a change. The report stays pending and does not erase the record."}
+        {copy("form.change.intro", lang)}
       </p>
-      <label htmlFor="change-problem">{lang === "fr" ? "Problème" : "Problem"}</label>
+      <label htmlFor="change-problem">{copy("form.problem", lang)}</label>
       <select id="change-problem" value={problem} onChange={(event) => setProblem(event.target.value as ChangeProblem)}>
         {CHANGE_PROBLEMS.map((item) => (
           <option key={item} value={item}>
@@ -110,9 +106,9 @@ export function ChangeReportForm({
           </option>
         ))}
       </select>
-      <label htmlFor="change-note">{lang === "fr" ? "Note (facultative)" : "Note (optional)"}</label>
+      <label htmlFor="change-note">{copy("form.note-optional", lang)}</label>
       <textarea id="change-note" value={note} onChange={(event) => setNote(event.target.value)} />
-      <button type="submit">{lang === "fr" ? "Enregistrer le signalement sur cet appareil" : "Save report on this device"}</button>
+      <button type="submit">{copy("form.change.save", lang)}</button>
       <p>{lang === "fr" ? MODERATION_NOTE.fr : MODERATION_NOTE.en}</p>
     </form>
   );
