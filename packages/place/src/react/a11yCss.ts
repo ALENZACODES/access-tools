@@ -12,7 +12,8 @@ export const a11yCss = `
 :where(.app-ui) button:focus-visible,
 :where(.app-ui) input:focus-visible,
 :where(.app-ui) select:focus-visible,
-:where(.app-ui) textarea:focus-visible {
+:where(.app-ui) textarea:focus-visible,
+:where(.app-ui) .table-scroll:focus-visible {
   outline: 3px solid #0b3a82;
   outline-offset: 2px;
 }

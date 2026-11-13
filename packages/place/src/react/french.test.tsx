@@ -118,4 +118,43 @@ describe("French place page", () => {
       expect(row.fr.trim().length, key).toBeGreaterThan(0);
     }
   });
+
+  it("names every focusable field scroll container in English and French", () => {
+    const place = placeById("fix-community-centre");
+    if (!place) throw new Error("missing");
+    for (const lang of ["en", "fr"] as const) {
+      cleanup();
+      render(
+        <PlacePage
+          place={place}
+          pack={fixturePack}
+          lang={lang}
+          today={FIXTURE_DAY}
+          corrections={[]}
+          changes={[]}
+          onCorrection={() => undefined}
+          onChange={() => undefined}
+        />,
+      );
+      const scrolls = [...document.querySelectorAll<HTMLElement>(".table-scroll")];
+      expect(scrolls.length, lang).toBeGreaterThan(0);
+      for (const scroll of scrolls) {
+        expect(scroll.tabIndex, lang).toBe(0);
+        expect(scroll.getAttribute("role"), lang).toBe("group");
+        const labelledBy = scroll.getAttribute("aria-labelledby");
+        expect(labelledBy, lang).toBeTruthy();
+        const caption = labelledBy ? document.getElementById(labelledBy) : null;
+        expect(caption?.tagName, lang).toBe("CAPTION");
+        const name = caption?.textContent?.replace(/\s+/g, " ").trim() ?? "";
+        expect(name.length, lang).toBeGreaterThan(0);
+        expect(screen.getAllByRole("group", { name, exact: true }), lang).toContain(scroll);
+      }
+      const expected = lang === "fr" ? "Champs d'identité" : "Identity fields";
+      expect(screen.getByRole("group", { name: expected, exact: true }).classList.contains("table-scroll")).toBe(true);
+      expect(document.querySelectorAll(".table-scroll[role='region']")).toHaveLength(0);
+    }
+    const css = document.querySelector("style")?.textContent ?? "";
+    expect(css).toContain(".table-scroll:focus-visible");
+    expect(css).toContain("outline: 3px solid #0b3a82");
+  });
 });

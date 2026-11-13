@@ -1,3 +1,4 @@
+import { useId } from "react";
 import type { FieldRowView } from "../project.js";
 import type { Lang } from "../types.js";
 import { EnglishText } from "./EnglishText.js";
@@ -27,14 +28,15 @@ export function FieldTable({
   /** The caption is an English record name on a French screen. */
   captionEnglish?: boolean;
 }) {
+  const captionId = useId();
   if (rows.length === 0) return null;
   const columns = COLUMNS[lang];
   return (
-    // Keyboard scroll container. The section heading is the landmark, so this is not a region.
+    // A group names the keyboard scroll stop without adding a landmark.
     // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- keyboard scroll container
-    <div className="table-scroll" tabIndex={0}>
+    <div className="table-scroll" tabIndex={0} role="group" aria-labelledby={captionId}>
       <table>
-        <caption className="visually-hidden">
+        <caption id={captionId} className="visually-hidden">
           {lang === "fr" ? (
             captionEnglish ? (
               <>
