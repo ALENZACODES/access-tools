@@ -1,4 +1,5 @@
 import {
+  copy,
   AVAILABILITY_DISCLAIMER,
   distanceMetres,
   formatMm,
@@ -15,6 +16,7 @@ import {
   type ParkingBay,
   type PlacePack,
 } from "@access-tools/place";
+import { finderCopy } from "./i18n.js";
 
 export interface ParkingQuery {
   text: string;
@@ -99,7 +101,7 @@ export function findParking(pack: PlacePack, query: ParkingQuery): ParkingResult
   return {
     hits: shown,
     hidden,
-    disclaimer: query.lang === "fr" ? AVAILABILITY_DISCLAIMER.fr : AVAILABILITY_DISCLAIMER.en,
+    disclaimer: AVAILABILITY_DISCLAIMER[query.lang],
     empty: shown.length === 0,
   };
 }
@@ -108,13 +110,5 @@ function parkingReasons(bay: ParkingBay, query: ParkingQuery): string[] {
   if (!query.vanLift) return [];
   const reading = vanLiftReading(bay);
   if (reading === "aisle-recorded") return [];
-  const en =
-    reading === "no-deployment-space"
-      ? "Type B bay. No side-lift deployment space is recorded."
-      : "Lift space is unknown, so this bay is not shown for a side lift.";
-  const fr =
-    reading === "no-deployment-space"
-      ? "Place de type B. Aucun espace de déploiement de hayon latéral n'est enregistré."
-      : "L'espace de hayon est inconnu, donc cette place n'est pas affichée pour un hayon latéral.";
-  return [query.lang === "fr" ? fr : en];
+  return [reading === "no-deployment-space" ? copy("lift.type-b", query.lang) : finderCopy("finder.lift-hidden", query.lang)];
 }

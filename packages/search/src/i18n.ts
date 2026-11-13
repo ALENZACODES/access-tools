@@ -64,6 +64,29 @@ export const SEARCH_COPY = {
     fr: "Démonstration sur le jeu d'essai étiqueté. Les lieux réels viendront d'access-maps.",
   },
   "demo.choose": { en: "Choose a place from the results.", fr: "Choisissez un lieu dans les résultats." },
+  "search.reason.step-free": {
+    en: "Step-free entrance is not recorded as yes, so this place is not shown as step-free.",
+    fr: "L'entrée sans marche n'est pas enregistrée comme oui, donc ce lieu n'est pas affiché comme sans marche.",
+  },
+  "search.reason.transfer": {
+    en: "No washroom record matches that transfer side. Unknown is not a match.",
+    fr: "Aucune fiche de toilettes ne correspond à ce côté de transfert. Inconnu n'est pas une correspondance.",
+  },
+  "search.reason.change-table": {
+    en: "No adult change table is recorded as present.",
+    fr: "Aucune table de change adulte n'est enregistrée comme présente.",
+  },
+  "search.reason.hoist": { en: "No hoist is recorded as present.", fr: "Aucun lève-personne n'est enregistré comme présent." },
+  "search.reason.van": {
+    en: "No Type A bay with a recorded width and aisle is in this record.",
+    fr: "Aucune place de type A avec largeur et allée enregistrées n'est dans cette fiche.",
+  },
+  "search.reason.charging": { en: "No charging-point record is linked.", fr: "Aucune fiche de point de recharge n'est liée." },
+  "search.reason.repair": { en: "No repairer record is linked.", fr: "Aucune fiche de réparateur n'est liée." },
+  "search.reason.supply": {
+    en: "No linked supply record publishes that category.",
+    fr: "Aucune fiche de fournitures liée ne publie cette catégorie.",
+  },
 } as const;
 
 export type SearchKey = keyof typeof SEARCH_COPY;

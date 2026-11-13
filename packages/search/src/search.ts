@@ -16,6 +16,7 @@ import {
   type PlaceType,
   type SupplyCategory,
 } from "@access-tools/place";
+import { searchCopy } from "./i18n.js";
 import { tokenSet } from "./tokenize.js";
 
 export interface SciFilters {
@@ -88,54 +89,22 @@ function documentText(place: PlaceRecord): string {
 
 function reasons(place: PlaceRecord, pack: PlacePack, sci: SciFilters, lang: Lang): string[] {
   const list: string[] = [];
-  const say = (en: string, fr: string) => list.push(lang === "fr" ? fr : en);
-  if (sci.stepFreeEntrance && !placeHasStepFreeEntrance(place)) {
-    say(
-      "Step-free entrance is not recorded as yes, so this place is not shown as step-free.",
-      "L'entrée sans marche n'est pas enregistrée comme oui, donc ce lieu n'est pas affiché comme sans marche.",
-    );
-  }
+  if (sci.stepFreeEntrance && !placeHasStepFreeEntrance(place)) list.push(searchCopy("search.reason.step-free", lang));
   if (sci.transferSide) {
     const needed = sci.transferSide;
     const ok = place.washrooms.some((washroom) => transferSideMatches(washroom.transfer.value?.side ?? null, needed));
-    if (!ok) {
-      say(
-        "No washroom record matches that transfer side. Unknown is not a match.",
-        "Aucune fiche de toilettes ne correspond à ce côté de transfert. Inconnu n'est pas une correspondance.",
-      );
-    }
+    if (!ok) list.push(searchCopy("search.reason.transfer", lang));
   }
-  if (sci.adultChangeTable && !placeHasAdultChangeTable(place)) {
-    say(
-      "No adult change table is recorded as present.",
-      "Aucune table de change adulte n'est enregistrée comme présente.",
-    );
-  }
-  if (sci.hoist && !placeHasHoist(place)) {
-    say("No hoist is recorded as present.", "Aucun lève-personne n'est enregistré comme présent.");
-  }
-  if (sci.vanAccessibleBay && !placeHasVanBay(place)) {
-    say(
-      "No Type A bay with a recorded width and aisle is in this record.",
-      "Aucune place de type A avec largeur et allée enregistrées n'est dans cette fiche.",
-    );
-  }
-  if (sci.chargingRecorded && place.chargingPoints.length === 0) {
-    say("No charging-point record is linked.", "Aucune fiche de point de recharge n'est liée.");
-  }
-  if (sci.repairLinked && place.linkedRepairerIds.length === 0) {
-    say("No repairer record is linked.", "Aucune fiche de réparateur n'est liée.");
-  }
+  if (sci.adultChangeTable && !placeHasAdultChangeTable(place)) list.push(searchCopy("search.reason.change-table", lang));
+  if (sci.hoist && !placeHasHoist(place)) list.push(searchCopy("search.reason.hoist", lang));
+  if (sci.vanAccessibleBay && !placeHasVanBay(place)) list.push(searchCopy("search.reason.van", lang));
+  if (sci.chargingRecorded && place.chargingPoints.length === 0) list.push(searchCopy("search.reason.charging", lang));
+  if (sci.repairLinked && place.linkedRepairerIds.length === 0) list.push(searchCopy("search.reason.repair", lang));
   if (sci.supplyCategory) {
     const wanted = sci.supplyCategory;
     const stores = pack.supplyStores.filter((store) => place.linkedSupplyStoreIds.includes(store.id));
     const ok = stores.some((store) => store.categoriesPublished.includes(wanted));
-    if (!ok) {
-      say(
-        "No linked supply record publishes that category.",
-        "Aucune fiche de fournitures liée ne publie cette catégorie.",
-      );
-    }
+    if (!ok) list.push(searchCopy("search.reason.supply", lang));
   }
   return list;
 }

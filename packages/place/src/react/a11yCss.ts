@@ -80,6 +80,10 @@ export const a11yCss = `
   border: 0;
 }
 :where(.app-ui) .stack { display: grid; gap: 0.75rem; max-width: 42rem; }
+:where(.app-ui) fieldset > label,
+:where(.app-ui) fieldset > select {
+  display: block;
+}
 :where(.app-ui) .error { color: #7a1020; font-weight: 700; }
 @media (prefers-reduced-motion: reduce) {
   :where(.app-ui) * { scroll-behavior: auto; }

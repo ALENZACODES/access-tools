@@ -1,4 +1,5 @@
 import { verifiedLabelAllowed } from "./evidence.js";
+import { copy, phrase } from "./i18n.js";
 import type { DatasetStatus, Lang, Provenance, PublicationContext, VerificationTier } from "./types.js";
 
 export type FreshnessLayer = "washroom" | "venue" | "policy" | "charging" | "repair" | "parking";
@@ -56,41 +57,25 @@ export function tierPhrase(
 ): string {
   const context = publicationOf(dataset, publicationContext);
   if (context === "prototype" || provenance.prototypeLabel === "PROTOTYPE-UNVERIFIED" || provenance.verifierType === "fixture-author") {
-    if (dataset === "prototype-seed") {
-      return lang === "fr"
-        ? "PROTOTYPE-UNVERIFIED. Graine de prototype. Non vérifié par l'application."
-        : "PROTOTYPE-UNVERIFIED. Prototype seed. Unverified by the App.";
-    }
-    return lang === "fr"
-      ? "PROTOTYPE-UNVERIFIED. Jeu d'essai étiqueté. Non vérifié par l'application."
-      : "PROTOTYPE-UNVERIFIED. Labelled fixture. Unverified by the App.";
+    if (dataset === "prototype-seed") return copy("tier.prototype-seed", lang);
+    return copy("tier.fixture", lang);
   }
   if (verifiedLabelAllowed({ provenance, publicationContext: context, requirePhoto: options?.requirePhoto })) {
-    return lang === "fr" ? "Vérifié par un enquêteur" : "Verified by surveyor";
+    return copy("tier.surveyor", lang);
   }
   if (provenance.tier === 3 || provenance.prototypeLabel === "VERIFIED") {
-    return lang === "fr"
-      ? "Niveau 3 sans preuve suffisante. Pas affiché comme vérifié. Il faut la version du protocole, le rôle de l'enquêteur, la méthode et la date de visite."
-      : "Tier 3 without enough evidence. Not shown as verified. Protocol version, verifier role, method, and visit date are required.";
+    return copy("tier.insufficient", lang);
   }
   if (provenance.prototypeLabel === "SEEDED-OPEN-DATA" || provenance.tier === 0) {
-    return lang === "fr"
-      ? "SEEDED-OPEN-DATA. Import de données ouvertes, non vérifié par l'application."
-      : "SEEDED-OPEN-DATA. Open-data import, unverified by the App.";
+    return copy("tier.open-data", lang);
   }
   if (provenance.tier === 2 || provenance.prototypeLabel === "COMMUNITY-REPORTED") {
-    return lang === "fr" ? "Signalé par un pair" : "Peer-reported";
+    return copy("tier.peer", lang);
   }
-  if (provenance.tier === 1) {
-    return lang === "fr" ? "Déclaré par le lieu, non vérifié" : "Business-claimed, unverified";
-  }
-  if (provenance.tier === 4) {
-    return lang === "fr" ? "Statut en direct" : "Live status";
-  }
-  if (provenance.tier === "E") {
-    return lang === "fr" ? "Vérification documentaire, sans décision d'admissibilité" : "Desk check, with no eligibility decision";
-  }
-  return lang === "fr" ? "Niveau inconnu" : "Unknown tier";
+  if (provenance.tier === 1) return copy("tier.business", lang);
+  if (provenance.tier === 4) return copy("tier.live", lang);
+  if (provenance.tier === "E") return copy("tier.desk", lang);
+  return copy("tier.unknown", lang);
 }
 
 export function freshness(provenance: Provenance | null, today: string, layer: FreshnessLayer, lang: Lang): Freshness {
@@ -99,7 +84,7 @@ export function freshness(provenance: Provenance | null, today: string, layer: F
       state: "not-checked",
       ageDays: null,
       limitDays: null,
-      text: lang === "fr" ? "Pas de source au dossier." : "No source on file.",
+      text: copy("fresh.none", lang),
     };
   }
   const ageDays = daysBetween(provenance.sourceDate, today);
@@ -112,10 +97,7 @@ export function freshness(provenance: Provenance | null, today: string, layer: F
       state: "import",
       ageDays,
       limitDays: null,
-      text:
-        lang === "fr"
-          ? "Date de source affichée. Ce niveau n'est pas une vérification par l'application."
-          : "Source date shown. This tier is not verification by the App.",
+      text: copy("fresh.import", lang),
     };
   }
   if (provenance.tier === 4) {
@@ -127,20 +109,14 @@ export function freshness(provenance: Provenance | null, today: string, layer: F
       state: "stale",
       ageDays,
       limitDays: limit,
-      text:
-        lang === "fr"
-          ? `Périmé selon l'estimation du plan (${limit} jours). La fiche reste affichée.`
-          : `Stale under the plan's estimate (${limit} days). The field stays visible.`,
+      text: phrase("fresh.stale", lang, { limit }),
     };
   }
   return {
     state: "within-estimate",
     ageDays,
     limitDays: limit,
-    text:
-      lang === "fr"
-        ? `Dans la fenêtre estimée du plan${limit === null ? "" : ` (${limit} jours)`}. Estimation, pas une garantie.`
-        : `Within the plan's estimated window${limit === null ? "" : ` (${limit} days)`}. An estimate, not a guarantee.`,
+    text: limit === null ? copy("fresh.window", lang) : phrase("fresh.window-days", lang, { limit }),
   };
 }
 
@@ -168,20 +144,14 @@ function liveFreshness(provenance: Provenance, today: string, ageDays: number | 
       state: "live-age-unknown",
       ageDays,
       limitDays: null,
-      text:
-        lang === "fr"
-          ? `Statut en direct inconnu. Le flux est absent, sans horloge, expiré, ou plus vieux que ${LIVE_STATUS_MAX_HOURS} heures. Un statut périmé n'est pas affiché comme fonctionnel.`
-          : `Live status unknown. The feed is missing, has no clock time, is expired, or is older than ${LIVE_STATUS_MAX_HOURS} hours. A stale status is not shown as working.`,
+      text: phrase("fresh.live-unknown", lang, { hours: LIVE_STATUS_MAX_HOURS }),
     };
   }
   return {
     state: "within-estimate",
     ageDays,
     limitDays: null,
-    text:
-      lang === "fr"
-        ? `Horodatage du flux : ${provenance.observedAt}. Dans la fenêtre de ${LIVE_STATUS_MAX_HOURS} heures. Ce n'est pas une promesse que l'équipement fonctionne.`
-        : `Feed timestamp: ${provenance.observedAt}. Within the ${LIVE_STATUS_MAX_HOURS}-hour window. This is not a promise the equipment is working.`,
+      text: phrase("fresh.live-ok", lang, { observed: provenance.observedAt ?? "", hours: LIVE_STATUS_MAX_HOURS }),
   };
 }
 
@@ -192,13 +162,9 @@ export function isWinterMonth(month: number): boolean {
 
 export function winterClearanceText(clearedOn: string | null, month: number, lang: Lang): string {
   if (!isWinterMonth(month)) {
-    if (!clearedOn) return lang === "fr" ? "Inconnu" : "Unknown";
-    return lang === "fr"
-      ? `Dernier déneigement enregistré : ${clearedOn}. L'étiquette d'hiver s'applique de novembre à avril.`
-      : `Last recorded clearance: ${clearedOn}. The winter label applies from November through April.`;
+    if (!clearedOn) return copy("value.unknown", lang);
+    return phrase("winter.last", lang, { date: clearedOn });
   }
-  if (!clearedOn) {
-    return lang === "fr" ? "Déneigement hivernal inconnu" : "Winter clearance unknown";
-  }
-  return lang === "fr" ? `Déneigement enregistré le ${clearedOn}.` : `Clearance recorded on ${clearedOn}.`;
+  if (!clearedOn) return copy("winter.unknown", lang);
+  return phrase("winter.recorded", lang, { date: clearedOn });
 }

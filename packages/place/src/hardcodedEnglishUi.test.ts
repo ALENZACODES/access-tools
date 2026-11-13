@@ -2,6 +2,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { COPY, frenchColonViolations } from "./i18n.js";
 import { findHardcodedUiCopy } from "./hardcodedEnglishUi.js";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
@@ -141,6 +142,39 @@ describe("French language coverage for component copy", () => {
     expect(hits).not.toContain("repair");
     expect(hits).not.toContain("{slot} m");
     expect(hits).not.toContain("tel:911");
+  });
+
+  it("fails when a model file types a sentence instead of reading the catalogue", () => {
+    const hits = findHardcodedUiCopy(
+      "sample.ts",
+      `export function label(lang: "en" | "fr") { return lang === "fr" ? "Bonjour." : "Hello there."; }`,
+      true,
+    ).map((hit) => hit.text);
+    expect(hits).toContain("Hello there.");
+    expect(hits).toContain("Bonjour.");
+    expect(findHardcodedUiCopy("sample.ts", `export const id = "entrance.step-free";`, true)).toEqual([]);
+  });
+
+  const MODEL_FILES = [
+    "packages/place/src/format.ts",
+    "packages/place/src/project.ts",
+    "packages/place/src/staleness.ts",
+    "packages/place/src/recommend.ts",
+    "packages/finders/src/coverage.ts",
+    "packages/finders/src/repair.ts",
+    "packages/finders/src/charging.ts",
+    "packages/finders/src/parking.ts",
+    "packages/finders/src/washrooms.ts",
+    "packages/search/src/search.ts",
+  ];
+
+  it("fails when English UI text is typed into a model file instead of the i18n catalogue", () => {
+    const hits = MODEL_FILES.flatMap((file) => findHardcodedUiCopy(file, readFileSync(path.join(repoRoot, file), "utf8"), true));
+    expect(hits.map((hit) => `${hit.file}:${hit.line} ${hit.text}`)).toEqual([]);
+  });
+
+  it("puts a no-break space before every French colon in the place catalogue", () => {
+    expect(frenchColonViolations(COPY)).toEqual([]);
   });
 
   it("fails when English UI text is typed into a component instead of the i18n catalogue", () => {

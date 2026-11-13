@@ -62,6 +62,69 @@ export const FINDER_COPY = {
   "demo.lift": { en: "Side lift", fr: "Hayon latéral" },
   "demo.hidden": { en: "Show hidden records", fr: "Afficher les fiches cachées" },
   "demo.range": { en: "Your tested range, in metres (optional)", fr: "Votre autonomie testée, en mètres (facultatif)" },
+  "finder.reason.not-mobile": {
+    en: "Mobile repair is not in the published list.",
+    fr: "La réparation mobile n'est pas dans la liste publiée.",
+  },
+  "finder.reason.not-after-hours": {
+    en: "Out-of-hours service is not in the published list.",
+    fr: "Le service hors heures n'est pas dans la liste publiée.",
+  },
+  "finder.reason.not-open": {
+    en: "Not shown as open at the time you entered.",
+    fr: "Pas affiché comme ouvert à l'heure saisie.",
+  },
+  "finder.reason.category": {
+    en: "That category is not in the published list.",
+    fr: "Cette catégorie n'est pas dans la liste publiée.",
+  },
+  "finder.reason.not-mobile-repair": {
+    en: "This is not a mobile-repair record.",
+    fr: "Ce n'est pas une fiche de réparation mobile.",
+  },
+  "finder.coverage": { en: "Coverage: {note}", fr: "Couverture\u00A0: {note}" },
+  "finder.radius": {
+    en: "Recorded mobile radius: {km} km. {note}",
+    fr: "Rayon mobile enregistré\u00A0: {km} km. {note}",
+  },
+  "finder.delivery": { en: "Delivery: {delivery}. {stock}", fr: "Livraison\u00A0: {delivery}. {stock}" },
+  "finder.hours-unknown-open": {
+    en: "Hours are unknown, so this point is not shown as open.",
+    fr: "Les heures sont inconnues, donc ce point n'est pas affiché comme ouvert.",
+  },
+  "finder.closed": { en: "Closed at the time you entered.", fr: "Fermé à l'heure que vous avez saisie." },
+  "finder.range-reminder": {
+    en: "The application does not use a generic chair range. A straight-line distance is not a journey.",
+    fr: "L'application n'utilise pas d'autonomie générique de fauteuil. Une distance à vol d'oiseau n'est pas un trajet.",
+  },
+  "finder.lift-hidden": {
+    en: "Lift space is unknown, so this bay is not shown for a side lift.",
+    fr: "L'espace de hayon est inconnu, donc cette place n'est pas affichée pour un hayon latéral.",
+  },
+  "finder.reason.transfer": {
+    en: "Transfer side does not match. Unknown is not a match.",
+    fr: "Le côté de transfert ne correspond pas. Inconnu n'est pas une correspondance.",
+  },
+  "finder.reason.no-table": {
+    en: "No adult change table is recorded as present.",
+    fr: "Aucune table de change adulte n'est enregistrée comme présente.",
+  },
+  "finder.reason.no-hoist": {
+    en: "No hoist is recorded as present.",
+    fr: "Aucun lève-personne n'est enregistré comme présent.",
+  },
+  "finder.reason.no-register": {
+    en: "No adult change table or hoist is recorded as present.",
+    fr: "Aucune table de change adulte ni lève-personne n'est enregistré comme présent.",
+  },
+  "finder.reason.hours-unknown": {
+    en: "Hours are unknown, so this record is not shown as open.",
+    fr: "Les heures sont inconnues, donc cette fiche n'est pas affichée comme ouverte.",
+  },
+  "finder.coverage-sentence": {
+    en: "This pack names {count} municipalities: {list}. Ontario has 444 municipalities. This pack does not describe provincial coverage.",
+    fr: "Ce paquet nomme {count} municipalité(s)\u00A0: {list}. L'Ontario compte 444 municipalités. Ce paquet ne décrit pas la couverture provinciale.",
+  },
 } as const;
 
 export type FinderKey = keyof typeof FINDER_COPY;

@@ -1,4 +1,4 @@
-import { labelOf } from "./i18n.js";
+import { copy, labelOf, type CopyKey } from "./i18n.js";
 import type { Lang } from "./types.js";
 import type {
   ChangeTableFact,
@@ -14,11 +14,11 @@ import type {
 } from "./types.js";
 
 export function unknownLabel(lang: Lang): string {
-  return lang === "fr" ? "Inconnu" : "Unknown";
+  return copy("value.unknown", lang);
 }
 
 export function notApplicableLabel(lang: Lang): string {
-  return lang === "fr" ? "Sans objet" : "Not applicable";
+  return copy("value.not-applicable", lang);
 }
 
 export function formatMm(mm: number | null, lang: Lang): string {
@@ -34,12 +34,15 @@ export function formatMetres(m: number | null, lang: Lang): string {
 
 export function formatYesNo(value: "yes" | "no" | null, lang: Lang): string {
   if (value === null) return unknownLabel(lang);
-  if (lang === "fr") return value === "yes" ? "Oui" : "Non";
-  return value === "yes" ? "Yes" : "No";
+  return value === "yes" ? copy("value.yes", lang) : copy("value.no", lang);
 }
 
-function part(label: string, value: string): string {
-  return `${label}: ${value}`;
+function part(label: string, value: string, lang: Lang): string {
+  return `${label}${copy("sep.colon", lang)}${value}`;
+}
+
+function named(key: CopyKey, value: string, lang: Lang): string {
+  return part(copy(key, lang), value, lang);
 }
 
 export function formatDoor(door: DoorFact | null, lang: Lang): string {
@@ -49,12 +52,12 @@ export function formatDoor(door: DoorFact | null, lang: Lang): string {
   const swing = door.swing === null ? u : labelOf(`door.swing.${door.swing}`, lang);
   const lock = door.lock === null ? u : labelOf(`door.lock.${door.lock}`, lang);
   return [
-    part(lang === "fr" ? "Opérateur" : "Operator", operator),
-    part(lang === "fr" ? "Hauteur de la plaque" : "Push-plate height", formatMm(door.pushPlateHeightMm, lang)),
-    part(lang === "fr" ? "Force" : "Force", door.forceNote ?? u),
-    part(lang === "fr" ? "Vitesse de fermeture" : "Closing speed", door.closingSpeedNote ?? u),
-    part(lang === "fr" ? "Sens" : "Swing", swing),
-    part(lang === "fr" ? "Verrou" : "Lock", lock),
+    named("format.operator", operator, lang),
+    named("format.push-plate", formatMm(door.pushPlateHeightMm, lang), lang),
+    named("format.force", door.forceNote ?? u, lang),
+    named("format.closing-speed", door.closingSpeedNote ?? u, lang),
+    named("format.swing", swing, lang),
+    named("format.lock", lock, lang),
   ].join(". ");
 }
 
@@ -62,12 +65,12 @@ export function formatRampGeometry(ramp: RampGeometry | null, lang: Lang): strin
   if (!ramp) return unknownLabel(lang);
   const u = unknownLabel(lang);
   return [
-    part(lang === "fr" ? "Pente" : "Slope", ramp.slopeRatio ?? u),
-    part(lang === "fr" ? "Largeur" : "Width", formatMm(ramp.widthMm, lang)),
-    part(lang === "fr" ? "Palier" : "Landing", formatMm(ramp.landingMm, lang)),
-    part(lang === "fr" ? "Mains courantes" : "Handrails", formatYesNo(ramp.handrails, lang)),
-    part(lang === "fr" ? "Surface" : "Surface", ramp.surface ?? u),
-    part(lang === "fr" ? "Drainage" : "Drainage", ramp.drainage ?? u),
+    named("format.slope", ramp.slopeRatio ?? u, lang),
+    named("format.width", formatMm(ramp.widthMm, lang), lang),
+    named("format.landing", formatMm(ramp.landingMm, lang), lang),
+    named("format.handrails", formatYesNo(ramp.handrails, lang), lang),
+    named("format.surface", ramp.surface ?? u, lang),
+    named("format.drainage", ramp.drainage ?? u, lang),
   ].join(". ");
 }
 
@@ -75,10 +78,10 @@ export function formatRampLength(ramp: RampLengthRise | null, lang: Lang): strin
   if (!ramp) return unknownLabel(lang);
   const u = unknownLabel(lang);
   return [
-    part(lang === "fr" ? "Longueur" : "Length", formatMm(ramp.lengthMm, lang)),
-    part(lang === "fr" ? "Dénivelé" : "Rise", formatMm(ramp.riseMm, lang)),
-    part(lang === "fr" ? "Paliers de repos" : "Rest landings", ramp.restLandings ?? u),
-    part(lang === "fr" ? "Surface mouillée et hiver" : "Wet and winter surface", ramp.surfaceWetWinter ?? u),
+    named("format.length", formatMm(ramp.lengthMm, lang), lang),
+    named("format.rise", formatMm(ramp.riseMm, lang), lang),
+    named("format.rest-landings", ramp.restLandings ?? u, lang),
+    named("format.wet-winter", ramp.surfaceWetWinter ?? u, lang),
   ].join(". ");
 }
 
@@ -86,28 +89,26 @@ export function formatElevator(elevator: ElevatorFact | null, lang: Lang): strin
   if (!elevator) return unknownLabel(lang);
   const u = unknownLabel(lang);
   return [
-    part(lang === "fr" ? "Présent" : "Present", formatYesNo(elevator.present, lang)),
-    part(lang === "fr" ? "Largeur de cabine" : "Car width", formatMm(elevator.carWidthMm, lang)),
-    part(lang === "fr" ? "Profondeur de cabine" : "Car depth", formatMm(elevator.carDepthMm, lang)),
-    part(lang === "fr" ? "Largeur de porte" : "Door width", formatMm(elevator.doorWidthMm, lang)),
-    part(lang === "fr" ? "Hauteur des commandes" : "Control height", formatMm(elevator.controlHeightMm, lang)),
-    part(lang === "fr" ? "Signaux" : "Signals", elevator.signals ?? u),
+    named("format.present", formatYesNo(elevator.present, lang), lang),
+    named("format.car-width", formatMm(elevator.carWidthMm, lang), lang),
+    named("format.car-depth", formatMm(elevator.carDepthMm, lang), lang),
+    named("format.door-width", formatMm(elevator.doorWidthMm, lang), lang),
+    named("format.control-height", formatMm(elevator.controlHeightMm, lang), lang),
+    named("format.signals", elevator.signals ?? u, lang),
   ].join(". ");
 }
 
 export function formatTransfer(transfer: TransferFact | null, lang: Lang): string {
   if (!transfer) return unknownLabel(lang);
   const side =
-    lang === "fr"
-      ? transfer.side === "left"
-        ? "gauche"
-        : transfer.side === "right"
-          ? "droite"
-          : "les deux"
-      : transfer.side;
+    transfer.side === "left"
+      ? copy("transfer.side.left", lang)
+      : transfer.side === "right"
+        ? copy("transfer.side.right", lang)
+        : copy("transfer.side.both", lang);
   return [
-    part(lang === "fr" ? "Côté" : "Side", side),
-    part(lang === "fr" ? "Dégagement au sol" : "Clear floor beside the toilet", formatMm(transfer.clearFloorBesideMm, lang)),
+    named("format.side", side, lang),
+    named("format.clear-floor", formatMm(transfer.clearFloorBesideMm, lang), lang),
   ].join(". ");
 }
 
@@ -115,11 +116,11 @@ export function formatGrabBars(bars: GrabBarFact | null, lang: Lang): string {
   if (!bars) return unknownLabel(lang);
   const u = unknownLabel(lang);
   return [
-    part(lang === "fr" ? "Configuration" : "Configuration", bars.configuration ?? u),
-    part(lang === "fr" ? "Côté" : "Side", bars.side ?? u),
-    part(lang === "fr" ? "Hauteur" : "Height", formatMm(bars.heightMm, lang)),
-    part(lang === "fr" ? "Longueur" : "Length", formatMm(bars.lengthMm, lang)),
-    part(lang === "fr" ? "Solidité" : "Sturdiness", bars.sturdinessNote ?? u),
+    named("format.configuration", bars.configuration ?? u, lang),
+    named("format.side", bars.side ?? u, lang),
+    named("format.height", formatMm(bars.heightMm, lang), lang),
+    named("format.length", formatMm(bars.lengthMm, lang), lang),
+    named("format.sturdiness", bars.sturdinessNote ?? u, lang),
   ].join(". ");
 }
 
@@ -127,79 +128,61 @@ export function formatSink(sink: SinkFact | null, lang: Lang): string {
   if (!sink) return unknownLabel(lang);
   const u = unknownLabel(lang);
   return [
-    part(lang === "fr" ? "Hauteur du lavabo" : "Sink height", formatMm(sink.heightMm, lang)),
-    part(lang === "fr" ? "Profondeur du dégagement" : "Knee clearance depth", formatMm(sink.kneeClearanceDepthMm, lang)),
-    part(lang === "fr" ? "Hauteur du dégagement" : "Knee clearance height", formatMm(sink.kneeClearanceHeightMm, lang)),
-    part(lang === "fr" ? "Robinet" : "Tap", sink.tap ?? u),
-    part(lang === "fr" ? "Hauteur du miroir" : "Mirror height", formatMm(sink.mirrorHeightMm, lang)),
+    named("format.sink-height", formatMm(sink.heightMm, lang), lang),
+    named("format.knee-depth", formatMm(sink.kneeClearanceDepthMm, lang), lang),
+    named("format.knee-height", formatMm(sink.kneeClearanceHeightMm, lang), lang),
+    named("format.tap", sink.tap ?? u, lang),
+    named("format.mirror-height", formatMm(sink.mirrorHeightMm, lang), lang),
   ].join(". ");
 }
 
 export function formatCord(cord: EmergencyCordFact | null, lang: Lang): string {
   if (!cord) return unknownLabel(lang);
   const working =
-    cord.working === "not-tested"
-      ? lang === "fr"
-        ? "Non testé. L'application ne déclenche pas les alarmes."
-        : "Not tested. The application does not activate emergency alarms."
+    cord.working === "not-tested" || cord.working === null
+      ? cord.working === "not-tested"
+        ? copy("format.cord.not-tested", lang)
+        : unknownLabel(lang)
       : formatYesNo(cord.working, lang);
   return [
-    part(lang === "fr" ? "Présent" : "Present", formatYesNo(cord.present, lang)),
-    part(lang === "fr" ? "Descend au sol" : "Reaches the floor", formatYesNo(cord.reachesFloor, lang)),
-    part(lang === "fr" ? "Fonctionnement" : "Working", working),
+    named("format.present", formatYesNo(cord.present, lang), lang),
+    named("format.reaches-floor", formatYesNo(cord.reachesFloor, lang), lang),
+    named("format.working", working, lang),
   ].join(". ");
 }
 
 export function formatChangeTable(table: ChangeTableFact | null, lang: Lang): string {
   if (!table) return unknownLabel(lang);
   const u = unknownLabel(lang);
-  const present =
-    table.present === "yes"
-      ? lang === "fr"
-        ? "Table de change adulte enregistrée comme présente"
-        : "Adult change table recorded as present"
-      : lang === "fr"
-        ? "Aucune table de change adulte enregistrée"
-        : "No adult change table recorded";
+  const present = table.present === "yes" ? copy("format.table.present", lang) : copy("format.table.absent", lang);
   return [
     present,
-    part(lang === "fr" ? "Longueur" : "Length", formatMm(table.lengthMm, lang)),
-    part(lang === "fr" ? "Largeur" : "Width", formatMm(table.widthMm, lang)),
-    part(lang === "fr" ? "Plage de hauteur" : "Height range", table.heightRange ?? u),
-    part(lang === "fr" ? "Charge" : "Load", table.loadKg === null ? u : `${table.loadKg} kg`),
-    part(lang === "fr" ? "Étiquette produit" : "Product label", table.productLabel ?? u),
+    named("format.length", formatMm(table.lengthMm, lang), lang),
+    named("format.width", formatMm(table.widthMm, lang), lang),
+    named("format.height-range", table.heightRange ?? u, lang),
+    named("format.load", table.loadKg === null ? u : `${table.loadKg} kg`, lang),
+    named("format.product-label", table.productLabel ?? u, lang),
   ].join(". ");
 }
 
 export function formatHoist(hoist: HoistFact | null, lang: Lang): string {
   if (!hoist) return unknownLabel(lang);
   const u = unknownLabel(lang);
-  const present =
-    hoist.present === "yes"
-      ? lang === "fr"
-        ? "Lève-personne enregistré comme présent"
-        : "Hoist recorded as present"
-      : lang === "fr"
-        ? "Aucun lève-personne enregistré"
-        : "No hoist recorded";
+  const present = hoist.present === "yes" ? copy("format.hoist.present", lang) : copy("format.hoist.absent", lang);
   const sling =
     hoist.slingProvided === "yes"
-      ? lang === "fr"
-        ? "Oui"
-        : "Yes"
+      ? copy("value.yes", lang)
       : hoist.slingProvided === "no"
-        ? lang === "fr"
-          ? "Non. Le harnais n'est pas fourni selon cette fiche."
-          : "No. The sling is recorded as not provided."
+        ? copy("format.sling.absent", lang)
         : u;
   return [
     present,
-    part(lang === "fr" ? "Type" : "Type", hoist.type ?? u),
-    part(lang === "fr" ? "Fonctionnement" : "Working", formatYesNo(hoist.working, lang)),
-    part(lang === "fr" ? "Politique du harnais" : "Sling policy", hoist.slingPolicy ?? u),
-    part(lang === "fr" ? "Harnais fourni" : "Sling provided", sling),
-    part(lang === "fr" ? "Opérateur" : "Operator availability", hoist.operatorAvailability ?? u),
-    part(lang === "fr" ? "Capacité" : "Weight capacity", hoist.weightCapacityKg === null ? u : `${hoist.weightCapacityKg} kg`),
+    named("format.hoist-type", hoist.type ?? u, lang),
+    named("format.working", formatYesNo(hoist.working, lang), lang),
+    named("format.sling-policy", hoist.slingPolicy ?? u, lang),
+    named("format.sling-provided", sling, lang),
+    named("format.operator-availability", hoist.operatorAvailability ?? u, lang),
+    named("format.weight-capacity", hoist.weightCapacityKg === null ? u : `${hoist.weightCapacityKg} kg`, lang),
   ].join(". ");
 }
 

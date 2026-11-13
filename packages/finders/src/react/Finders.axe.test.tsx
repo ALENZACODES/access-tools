@@ -1,8 +1,10 @@
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import axe from "axe-core";
 import type { ReactElement } from "react";
 import { describe, expect, it } from "vitest";
 import { fixturePack } from "@access-tools/place";
+import { FinderDemo } from "../demo/main.js";
 import { ChargingFinder, ParkingFinder, RepairSupplyFinder, WashroomFinder } from "./Finders.js";
 
 async function expectClean(ui: ReactElement) {
@@ -60,5 +62,19 @@ describe("finder accessibility", () => {
         }}
       />,
     );
+  });
+
+  it("stacks the demo filter labels in English and French", async () => {
+    const view = render(<FinderDemo />);
+    const hidden = screen.getByText("Show hidden records").closest("label");
+    const range = screen.getByText("Your tested range, in metres (optional)");
+    expect(window.getComputedStyle(hidden as HTMLElement).display).toBe("block");
+    expect(window.getComputedStyle(range).display).toBe("block");
+    await userEvent.setup().click(screen.getByRole("button", { name: "Français" }));
+    const frenchHidden = screen.getByText("Afficher les fiches cachées").closest("label");
+    const frenchRange = screen.getByText("Votre autonomie testée, en mètres (facultatif)");
+    expect(window.getComputedStyle(frenchHidden as HTMLElement).display).toBe("block");
+    expect(window.getComputedStyle(frenchRange).display).toBe("block");
+    view.unmount();
   });
 });

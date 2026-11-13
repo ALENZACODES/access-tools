@@ -1,4 +1,5 @@
 import { evidenceComplete } from "./evidence.js";
+import { copy, phrase } from "./i18n.js";
 import type { ChargingPoint, DatasetStatus, Lang, ParkingBay, PlaceRecord, Provenance, Washroom } from "./types.js";
 
 /**
@@ -26,14 +27,8 @@ export function washroomUseLabel(dataset: DatasetStatus, washroom: Washroom): Us
 }
 
 export function useLabelText(label: UseLabel, lang: Lang): string {
-  if (label === "peer-or-surveyor-measurements") {
-    return lang === "fr"
-      ? "Mesures de pair ou d'enquêteur au dossier. Vérifiez la date. Ce n'est pas une garantie."
-      : "Peer or surveyor measurements are on file. Check the date. This is not a guarantee.";
-  }
-  return lang === "fr"
-    ? "Non vérifié — appelez avant d'y aller. Cette fiche n'est pas une recommandation."
-    : "Unverified — call ahead. This record is not a recommendation.";
+  if (label === "peer-or-surveyor-measurements") return copy("use.measured", lang);
+  return copy("use.call-ahead", lang);
 }
 
 export function chargingUseLabel(dataset: DatasetStatus, point: ChargingPoint): UseLabel {
@@ -55,21 +50,15 @@ export function vanLiftReading(bay: ParkingBay): VanLiftReading {
 export function vanLiftText(reading: VanLiftReading, lang: Lang): string {
   switch (reading) {
     case "aisle-recorded":
-      return lang === "fr"
-        ? "Une allée et une largeur sont enregistrées pour cette place de type A. Cela ne dit pas que votre hayon passe."
-        : "An aisle and a width are recorded for this Type A bay. That does not say your lift will fit.";
+      return copy("lift.aisle", lang);
     case "no-deployment-space":
-      return lang === "fr"
-        ? "Place de type B. Aucun espace de déploiement de hayon latéral n'est enregistré."
-        : "Type B bay. No side-lift deployment space is recorded.";
+      return copy("lift.type-b", lang);
     case "drop-off":
-      return lang === "fr"
-        ? "Point de dépose, pas une place de stationnement."
-        : "Drop-off point, not a parking bay.";
+      return copy("lift.drop-off", lang);
     case "unknown":
-      return lang === "fr" ? "Espace de hayon inconnu." : "Lift space is unknown.";
+      return copy("lift.unknown", lang);
     default:
-      return lang === "fr" ? "Inconnu" : "Unknown";
+      return copy("value.unknown", lang);
   }
 }
 
@@ -78,15 +67,15 @@ export function privilegeText(bay: ParkingBay, lang: Lang): string {
   const complete = Boolean(
     privilege.municipality && privilege.bylaw && privilege.statement && privilege.checkedOn,
   );
-  if (!complete) {
-    return lang === "fr"
-      ? "Privilège de stationnement inconnu. Cette fiche ne dit pas que le stationnement est gratuit ou illimité."
-      : "Parking privilege is unknown. This record does not say that parking is free or unlimited.";
-  }
+  if (!complete) return copy("privilege.unknown", lang);
   const page = privilege.page ? `, ${privilege.page}` : "";
-  return lang === "fr"
-    ? `${privilege.municipality} — ${privilege.bylaw}${page}, vérifié le ${privilege.checkedOn} : ${privilege.statement}`
-    : `${privilege.municipality} — ${privilege.bylaw}${page}, checked ${privilege.checkedOn}: ${privilege.statement}`;
+  return phrase("privilege.quote", lang, {
+    municipality: privilege.municipality ?? "",
+    bylaw: privilege.bylaw ?? "",
+    page,
+    date: privilege.checkedOn ?? "",
+    statement: privilege.statement ?? "",
+  });
 }
 
 /**
@@ -95,10 +84,8 @@ export function privilegeText(bay: ParkingBay, lang: Lang): string {
  */
 export function rangeNote(distanceMetres: number | null, userTestedRangeMetres: number | null, lang: Lang): string | null {
   if (userTestedRangeMetres === null) return null;
-  const distance = distanceMetres === null ? (lang === "fr" ? "inconnue" : "unknown") : String(distanceMetres);
-  return lang === "fr"
-    ? `Vous avez saisi une autonomie essayée de ${userTestedRangeMetres} m. La distance à vol d'oiseau est ${distance} m. Ce n'est pas une garantie. L'application n'utilise pas d'autonomie générique de fauteuil.`
-    : `You entered a tested range of ${userTestedRangeMetres} m. The straight-line distance is ${distance} m. This is not a guarantee. The application does not use a generic chair range.`;
+  const distance = distanceMetres === null ? copy("range.unknown", lang) : String(distanceMetres);
+  return phrase("range.note", lang, { range: userTestedRangeMetres, distance });
 }
 
 export function transferSideMatches(side: "left" | "right" | "both" | null, needed: "left" | "right" | "both"): boolean {
@@ -124,21 +111,21 @@ export function placeHasStepFreeEntrance(place: PlaceRecord): boolean {
 }
 
 export const AVAILABILITY_DISCLAIMER = {
-  en: "This list does not show whether a bay is free right now. No live availability feed is connected.",
-  fr: "Cette liste ne dit pas si une place est libre maintenant. Aucun flux de disponibilité en direct n'est branché.",
+  en: copy("disclaimer.availability", "en"),
+  fr: copy("disclaimer.availability", "fr"),
 } as const;
 
 export const REPAIR_DISCLAIMER = {
-  en: "The application lists services a record publishes. It does not recommend a repairer, a product, or a repair. It does not promise funding. It does not give medical or supply advice.",
-  fr: "L'application liste les services publiés dans la fiche. Elle ne recommande ni réparateur, ni produit, ni réparation. Elle ne promet pas de financement. Elle ne donne pas de conseil médical ni de conseil sur les fournitures.",
+  en: copy("disclaimer.repair", "en"),
+  fr: copy("disclaimer.repair", "fr"),
 } as const;
 
 export const SUPPLY_STOCK_NOTE = {
-  en: "A published category is not a statement that a specific product is in stock. Call the store to check stock.",
-  fr: "Une catégorie publiée ne dit pas qu'un produit précis est en stock. Appelez le magasin pour vérifier le stock.",
+  en: copy("disclaimer.supply", "en"),
+  fr: copy("disclaimer.supply", "fr"),
 } as const;
 
 export const PROTOTYPE_NOTICE = {
-  en: "PROTOTYPE-UNVERIFIED. This screen is a prototype. Unknown means unknown. A labelled fixture is not a real place and not a verified visit.",
-  fr: "PROTOTYPE-UNVERIFIED. Cet écran est un prototype. Inconnu veut dire inconnu. Un jeu d'essai étiqueté n'est pas un lieu réel ni une visite vérifiée.",
+  en: copy("notice.prototype", "en"),
+  fr: copy("notice.prototype", "fr"),
 } as const;
