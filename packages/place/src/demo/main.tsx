@@ -31,7 +31,7 @@ function Demo() {
       <style>{a11yCss}</style>
       <a href="#demo-main">{lang === "fr" ? "Aller au contenu" : "Skip to content"}</a>
       <header>
-        <p>{lang === "fr" ? "l'application — pages de lieux" : "the App — place pages"}</p>
+        <p>{lang === "fr" ? "l'application — pages de lieux" : "the application — place pages"}</p>
         <button
           type="button"
           onClick={() => {
@@ -43,7 +43,7 @@ function Demo() {
           {lang === "en" ? "Français" : "English"}
         </button>
       </header>
-      <nav id="demo-main" aria-label={lang === "fr" ? "Lieux du jeu d'essai" : "Fixture places"}>
+      <nav aria-label={lang === "fr" ? "Lieux du jeu d'essai" : "Fixture places"}>
         <h2>{lang === "fr" ? "Lieux étiquetés" : "Labelled places"}</h2>
         <ul>
           {fixturePack.places.map((item) => (
@@ -56,12 +56,14 @@ function Demo() {
                   setPlaceId(item.id);
                 }}
               >
-                {lang === "fr" && item.nameFr ? item.nameFr : item.identity.name} — {item.recordProvenance.tier}
+                {lang === "fr" && item.nameFr ? item.nameFr : item.identity.name} —{" "}
+                <span lang="en">PROTOTYPE-UNVERIFIED</span>
               </a>
             </li>
           ))}
         </ul>
       </nav>
+      <main id="demo-main">
       <PlacePage
         place={place}
         pack={fixturePack}
@@ -78,6 +80,7 @@ function Demo() {
           save(appendChange(log, { ...input, placeId: place.id }, new Date().toISOString(), id));
         }}
       />
+      </main>
     </div>
   );
 }

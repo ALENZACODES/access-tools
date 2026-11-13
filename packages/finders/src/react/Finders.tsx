@@ -91,7 +91,7 @@ export function ParkingFinder({ pack, query }: { pack: PlacePack; query: Parking
       <p>
         {lang === "fr"
           ? "Le privilège municipal n'est cité que si la municipalité, le règlement et la date sont tous présents. L'application ne conseille pas sur l'admissibilité au permis."
-          : "A municipal privilege is quoted only when the municipality, bylaw, and date are all present. The App does not advise on permit eligibility."}
+          : "A municipal privilege is quoted only when the municipality, bylaw, and date are all present. The application does not advise on permit eligibility."}
       </p>
       <ul>
         {result.hits.map((hit) => (

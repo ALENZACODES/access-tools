@@ -1,31 +1,64 @@
 import Ajv from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 
+const evidence = {
+  type: "object",
+  additionalProperties: false,
+  required: ["protocolVersion", "verifierRole", "method", "observedAt", "photoIds"],
+  properties: {
+    protocolVersion: { type: "string", minLength: 1 },
+    verifierRole: { enum: ["trained_verifier", "peer", "operator", "importer", "desk_reviewer"] },
+    method: { type: "string", minLength: 1 },
+    observedAt: { type: "string", format: "date" },
+    photoIds: { type: "array", items: { type: "string", minLength: 1 } },
+  },
+} as const;
+
 const provenance = {
   type: "object",
-  required: ["sourceName", "licence", "sourceDate", "recordDate", "tier", "verifierType"],
-  additionalProperties: true,
+  required: ["sourceName", "sourceId", "licence", "sourceDate", "recordDate", "retrievedAt", "tier", "verifierType"],
+  additionalProperties: false,
   properties: {
     sourceName: { type: "string", minLength: 1 },
+    sourceId: { type: "string", minLength: 1 },
     sourceUrl: { type: "string" },
     licence: { type: "string", minLength: 1 },
     sourceDate: { type: "string", format: "date" },
     recordDate: { type: "string", format: "date" },
-    tier: {
-      enum: [
-        "tier-0-open-data",
-        "tier-1-business-claimed",
-        "tier-2-peer",
-        "tier-3-surveyor",
-        "tier-4-live-feed",
-      ],
+    retrievedAt: { type: "string", format: "date" },
+    tier: { enum: [0, 1, 2, 3, 4, "E"] },
+    prototypeLabel: {
+      enum: ["PROTOTYPE-UNVERIFIED", "SEEDED-OPEN-DATA", "COMMUNITY-REPORTED", "VERIFIED"],
     },
     verifierType: {
-      enum: ["open-data-import", "business", "peer", "surveyor", "operator-feed", "fixture-author"],
+      enum: ["open-data-import", "business", "peer", "surveyor", "operator-feed", "fixture-author", "desk-reviewer"],
     },
-    protocolVersion: { type: "string" },
+    evidence,
     observedAt: { type: "string" },
+    expiresAt: { type: "string" },
   },
+  allOf: [
+    {
+      if: { properties: { tier: { const: 3 } }, required: ["tier"] },
+      then: { required: ["evidence"] },
+    },
+    {
+      if: { properties: { prototypeLabel: { const: "VERIFIED" } }, required: ["prototypeLabel"] },
+      then: { required: ["evidence"], properties: { tier: { const: 3 } } },
+    },
+    {
+      if: { properties: { prototypeLabel: { const: "PROTOTYPE-UNVERIFIED" } }, required: ["prototypeLabel"] },
+      then: { properties: { tier: { enum: [0, 1] } } },
+    },
+    {
+      if: { properties: { prototypeLabel: { const: "SEEDED-OPEN-DATA" } }, required: ["prototypeLabel"] },
+      then: { properties: { tier: { const: 0 } } },
+    },
+    {
+      if: { properties: { prototypeLabel: { const: "COMMUNITY-REPORTED" } }, required: ["prototypeLabel"] },
+      then: { properties: { tier: { const: 2 } } },
+    },
+  ],
 } as const;
 
 const sourced = {
@@ -66,7 +99,9 @@ export const placePackSchema = {
       required: [
         "id",
         "datasetStatus",
+        "publicationContext",
         "honestyNote",
+        "honestyNoteFr",
         "depth",
         "identity",
         "nameFr",
@@ -87,7 +122,9 @@ export const placePackSchema = {
       properties: {
         id: { type: "string", minLength: 1 },
         datasetStatus: { enum: ["labelled-fixture", "prototype-seed", "access-maps"] },
+        publicationContext: { enum: ["prototype", "canonical"] },
         honestyNote: { type: "string", minLength: 1 },
+        honestyNoteFr: { type: "string", minLength: 1 },
         depth: { enum: ["bounded-seed", "skeleton"] },
         nameFr: { anyOf: [{ type: "string" }, { type: "null" }] },
         recordProvenance: { $ref: "#/$defs/provenance" },
@@ -107,24 +144,30 @@ export const placePackSchema = {
     },
     repairer: {
       type: "object",
-      required: ["id", "name", "datasetStatus", "honestyNote", "servicesPublished", "provenance"],
+      required: ["id", "name", "datasetStatus", "publicationContext", "honestyNote", "honestyNoteFr", "servicesPublished", "provenance"],
       properties: {
         id: { type: "string", minLength: 1 },
         name: { type: "string", minLength: 1 },
+        nameFr: { anyOf: [{ type: "string" }, { type: "null" }] },
         datasetStatus: { enum: ["labelled-fixture", "prototype-seed", "access-maps"] },
+        publicationContext: { enum: ["prototype", "canonical"] },
         honestyNote: { type: "string", minLength: 1 },
+        honestyNoteFr: { type: "string", minLength: 1 },
         servicesPublished: { type: "array", items: { type: "string" } },
         provenance: { $ref: "#/$defs/provenance" },
       },
     },
     supplyStore: {
       type: "object",
-      required: ["id", "name", "datasetStatus", "honestyNote", "categoriesPublished", "provenance"],
+      required: ["id", "name", "datasetStatus", "publicationContext", "honestyNote", "honestyNoteFr", "categoriesPublished", "provenance"],
       properties: {
         id: { type: "string", minLength: 1 },
         name: { type: "string", minLength: 1 },
+        nameFr: { anyOf: [{ type: "string" }, { type: "null" }] },
         datasetStatus: { enum: ["labelled-fixture", "prototype-seed", "access-maps"] },
+        publicationContext: { enum: ["prototype", "canonical"] },
         honestyNote: { type: "string", minLength: 1 },
+        honestyNoteFr: { type: "string", minLength: 1 },
         categoriesPublished: { type: "array", items: { type: "string" } },
         provenance: { $ref: "#/$defs/provenance" },
       },

@@ -3,6 +3,7 @@ import {
   distanceMetres,
   formatYesNo,
   isGeoPoint,
+  labelOf,
   isOpenAt,
   rangeNote,
   tierPhrase,
@@ -79,11 +80,11 @@ export function findCharging(pack: PlacePack, query: ChargingQuery): ChargingRes
         placeName,
         pointName: point.name,
         distanceMetres: metres,
-        accessText: point.accessMethod.value ?? unknownLabel(query.lang),
+        accessText: point.accessMethod.value ? labelOf(`access.${point.accessMethod.value}`, query.lang) : unknownLabel(query.lang),
         hoursText: point.hoursText.value ?? unknownLabel(query.lang),
         seatingText: formatYesNo(point.seating.value, query.lang),
         verificationDate: provenance?.sourceDate ?? unknownLabel(query.lang),
-        tierText: provenance ? tierPhrase(provenance.tier, place.datasetStatus, query.lang) : unknownLabel(query.lang),
+        tierText: provenance ? tierPhrase(provenance, place.datasetStatus, query.lang, place.publicationContext) : unknownLabel(query.lang),
         recommendation: useLabelText(chargingUseLabel(place.datasetStatus, point), query.lang),
         phone: point.permissionContact.value ?? place.identity.phone,
         rangeText: rangeNote(metres, query.userTestedRangeMetres, query.lang),
@@ -110,6 +111,6 @@ export function findCharging(pack: PlacePack, query: ChargingQuery): ChargingRes
     rangeReminder:
       query.lang === "fr"
         ? "L'application n'utilise pas d'autonomie générique de fauteuil. Une distance à vol d'oiseau n'est pas un trajet."
-        : "The App does not use a generic chair range. A straight-line distance is not a journey.",
+        : "The application does not use a generic chair range. A straight-line distance is not a journey.",
   };
 }

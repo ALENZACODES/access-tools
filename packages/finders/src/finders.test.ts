@@ -98,7 +98,9 @@ describe("repair and supply finder", () => {
       name: "Fixture Power Electronics",
       nameFr: null,
       datasetStatus: "labelled-fixture",
+      publicationContext: "prototype",
       honestyNote: "Labelled fixture. Not a real repairer.",
+      honestyNoteFr: "Jeu d'essai étiqueté. Pas un réparateur réel.",
       servicesPublished: ["tyre"],
       coverageNote: null,
       mobileRadiusKm: null,
@@ -125,7 +127,7 @@ describe("repair and supply finder", () => {
       showHidden: false,
     });
     expect(result.hits).toHaveLength(1);
-    expect(result.hits[0]?.servicesText).toBe("tyre");
+    expect(result.hits[0]?.servicesText).toBe("Tyre");
     expect(result.hits[0]?.servicesText).not.toContain("power-chair");
     expect(result.disclaimer).toContain("does not recommend");
     expect(result.disclaimer).toContain("medical");

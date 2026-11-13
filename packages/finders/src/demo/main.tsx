@@ -16,7 +16,7 @@ function Demo() {
       <style>{a11yCss}</style>
       <a href="#finder-main">{lang === "fr" ? "Aller au contenu" : "Skip to content"}</a>
       <header>
-        <h1>{lang === "fr" ? "l'application — outils de recherche" : "the App — finders"}</h1>
+        <h1>{lang === "fr" ? "l'application — outils de recherche" : "the application — finders"}</h1>
         <p>
           {lang === "fr"
             ? "Démonstration sur le jeu d'essai étiqueté. Ce n'est pas une carte. Les lieux réels viendront d'access-maps."

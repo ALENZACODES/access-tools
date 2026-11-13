@@ -1,7 +1,9 @@
 import {
   distanceMetres,
   isGeoPoint,
+  labelOf,
   placeHasAdultChangeTable,
+  tierPhrase,
   placeHasHoist,
   placeHasStepFreeEntrance,
   placeHasVanBay,
@@ -45,7 +47,7 @@ export interface SearchHit {
   name: string;
   municipality: string;
   category: string;
-  tier: PlaceRecord["recordProvenance"]["tier"];
+  tier: string;
   sourceName: string;
   sourceDate: string;
   recordDate: string;
@@ -168,8 +170,8 @@ export function searchPack(pack: PlacePack, query: SearchQuery): SearchResponse 
       placeId: place.id,
       name: query.lang === "fr" && place.nameFr ? place.nameFr : place.identity.name,
       municipality: place.identity.municipality,
-      category: place.identity.category,
-      tier: place.recordProvenance.tier,
+      category: labelOf(`category.${place.identity.category}`, query.lang),
+      tier: tierPhrase(place.recordProvenance, place.datasetStatus, query.lang, place.publicationContext),
       sourceName: place.recordProvenance.sourceName,
       sourceDate: place.recordProvenance.sourceDate,
       recordDate: place.recordProvenance.recordDate,

@@ -12,19 +12,25 @@ export const FIXTURE_DAY = "2026-11-13";
 
 export const FIXTURE_PROVENANCE: Provenance = {
   sourceName: "access-tools labelled fixture",
+  sourceId: "access-tools-labelled-fixture",
   licence: "Labelled fixture. Not a data licence. Not a real-world observation.",
   sourceDate: FIXTURE_DAY,
   recordDate: FIXTURE_DAY,
-  tier: "tier-0-open-data",
+  retrievedAt: FIXTURE_DAY,
+  tier: 1,
+  prototypeLabel: "PROTOTYPE-UNVERIFIED",
   verifierType: "fixture-author",
 };
 
 const SEED_PROVENANCE: Provenance = {
   sourceName: "access-tools skeleton seed",
+  sourceId: "access-tools-skeleton-seed",
   licence: "Skeleton seed. Not a data licence. No venue is identified.",
   sourceDate: FIXTURE_DAY,
   recordDate: FIXTURE_DAY,
-  tier: "tier-0-open-data",
+  retrievedAt: FIXTURE_DAY,
+  tier: 1,
+  prototypeLabel: "PROTOTYPE-UNVERIFIED",
   verifierType: "fixture-author",
 };
 
@@ -38,9 +44,10 @@ const WEEKDAY: HoursWindow[] = [1, 2, 3, 4, 5].map((day) => ({
   close: "17:00",
 }));
 
-function shell(input: Pick<PlaceRecord, "id" | "honestyNote" | "identity"> & Partial<PlaceRecord>): PlaceRecord {
+function shell(input: Pick<PlaceRecord, "id" | "honestyNote" | "honestyNoteFr" | "identity"> & Partial<PlaceRecord>): PlaceRecord {
   return {
     datasetStatus: "labelled-fixture",
+    publicationContext: "prototype",
     depth: "bounded-seed",
     nameFr: null,
     recordProvenance: FIXTURE_PROVENANCE,
@@ -218,6 +225,8 @@ const places: PlaceRecord[] = [
     id: "fix-community-centre",
     honestyNote:
       "Labelled fixture. Not a real place. Values are synthetic and unverified. Real records come from access-maps.",
+    honestyNoteFr:
+      "Jeu d'essai étiqueté. Pas un lieu réel. Les valeurs sont synthétiques et non vérifiées. Les fiches réelles viennent d'access-maps.",
     nameFr: "Centre communautaire (jeu d'essai)",
     identity: {
       name: "Fixture: Synthetic Community Centre",
@@ -247,7 +256,7 @@ const places: PlaceRecord[] = [
         fieldId: "entrance.door-clear-width-mm",
         description: "Synthetic description of a doorway for the fixture. Not a photograph of a real entrance.",
         capturedOn: FIXTURE_DAY,
-        tier: "tier-0-open-data",
+        tier: 1,
         status: "described",
       },
       {
@@ -272,6 +281,7 @@ const places: PlaceRecord[] = [
   shell({
     id: "fix-cafe",
     honestyNote: "Labelled fixture. Not a real place. Almost every access field is unknown on purpose.",
+    honestyNoteFr: "Jeu d'essai étiqueté. Pas un lieu réel. Presque tous les champs d'accès sont inconnus, volontairement.",
     nameFr: "Café (jeu d'essai)",
     identity: {
       name: "Fixture: Synthetic Café",
@@ -293,6 +303,7 @@ const places: PlaceRecord[] = [
   shell({
     id: "fix-change-hoist",
     honestyNote: "Labelled fixture. Not a real place. Change-table and hoist figures are synthetic.",
+    honestyNoteFr: "Jeu d'essai étiqueté. Pas un lieu réel. Les chiffres de la table de change et du lève-personne sont synthétiques.",
     nameFr: "Salle de change (jeu d'essai)",
     identity: {
       name: "Fixture: Change Table and Hoist Room",
@@ -315,6 +326,7 @@ const places: PlaceRecord[] = [
   shell({
     id: "fix-parking-lot",
     honestyNote: "Labelled fixture. Not a real parking lot. Bay figures are synthetic.",
+    honestyNoteFr: "Jeu d'essai étiqueté. Pas un stationnement réel. Les chiffres des places sont synthétiques.",
     identity: {
       name: "Fixture: Synthetic Parking Lot",
       placeType: "parking-lot",
@@ -340,6 +352,7 @@ const places: PlaceRecord[] = [
   shell({
     id: "fix-library-charging",
     honestyNote: "Labelled fixture. Not a real library. The outlet record is synthetic.",
+    honestyNoteFr: "Jeu d'essai étiqueté. Pas une bibliothèque réelle. La fiche de prise est synthétique.",
     nameFr: "Bibliothèque (jeu d'essai)",
     identity: {
       name: "Fixture: Synthetic Library",
@@ -362,6 +375,8 @@ const places: PlaceRecord[] = [
   shell({
     id: "fix-repair-shop",
     honestyNote: "Labelled fixture. Not a real business. The service list is the published list in this fixture and nothing more.",
+    honestyNoteFr:
+      "Jeu d'essai étiqueté. Pas un commerce réel. La liste de services est seulement la liste publiée dans ce jeu d'essai.",
     identity: {
       name: "Fixture: Repair Bench Premises",
       placeType: "simple-venue",
@@ -383,6 +398,7 @@ const places: PlaceRecord[] = [
   shell({
     id: "fix-trailhead",
     honestyNote: "Labelled fixture. Not a real trail. Trail fields are present and unknown.",
+    honestyNoteFr: "Jeu d'essai étiqueté. Pas un sentier réel. Les champs de sentier sont présents et inconnus.",
     identity: {
       name: "Fixture: Synthetic Trailhead",
       placeType: "trailhead",
@@ -412,6 +428,7 @@ const places: PlaceRecord[] = [
     datasetStatus: "prototype-seed",
     depth: "skeleton",
     honestyNote: "Skeleton seed for Thunder Bay. No venue is identified. This seed is not a real place.",
+    honestyNoteFr: "Graine squelette pour Thunder Bay. Aucun lieu n'est identifié. Cette graine n'est pas un lieu réel.",
     recordProvenance: SEED_PROVENANCE,
     nameFr: "Graine incomplète — Thunder Bay",
     identity: {
@@ -436,6 +453,7 @@ const places: PlaceRecord[] = [
     datasetStatus: "prototype-seed",
     depth: "skeleton",
     honestyNote: "Skeleton seed for Ottawa. No venue is identified. This seed is not a real place.",
+    honestyNoteFr: "Graine squelette pour Ottawa. Aucun lieu n'est identifié. Cette graine n'est pas un lieu réel.",
     recordProvenance: SEED_PROVENANCE,
     nameFr: "Graine incomplète — Ottawa",
     identity: {
@@ -463,7 +481,9 @@ const repairers: Repairer[] = [
     name: "Fixture Repair Bench",
     nameFr: "Établi de réparation (jeu d'essai)",
     datasetStatus: "labelled-fixture",
+    publicationContext: "prototype",
     honestyNote: "Labelled fixture. Not a real repairer. Services are only the list below.",
+    honestyNoteFr: "Jeu d'essai étiqueté. Pas un réparateur réel. Les services sont seulement la liste ci-dessous.",
     servicesPublished: ["tyre", "caster", "mobile"],
     coverageNote: "Synthetic coverage note: 15 km around the fixture point. Not a real service area.",
     mobileRadiusKm: 15,
@@ -485,7 +505,9 @@ const supplyStores: SupplyStore[] = [
     name: "Fixture Pharmacy Counter",
     nameFr: "Comptoir de pharmacie (jeu d'essai)",
     datasetStatus: "labelled-fixture",
+    publicationContext: "prototype",
     honestyNote: "Labelled fixture. Not a real pharmacy. Categories are not stock of a named product.",
+    honestyNoteFr: "Jeu d'essai étiqueté. Pas une pharmacie réelle. Les catégories ne sont pas le stock d'un produit nommé.",
     storeType: "pharmacy",
     categoriesPublished: ["catheter-supplies", "continence-products"],
     hoursText: "Fixture hours: weekdays 09:00–17:00.",
@@ -506,7 +528,7 @@ export const fixturePack: PlacePack = {
   kind: "labelled-fixture",
   generatedOn: FIXTURE_DAY,
   notice:
-    "Labelled fixtures for the interface and tests. Not real places. Not verified. Not open data. Real records come from access-maps.",
+    "Labelled fixtures for the interface and tests. Not real places. Not verified. Not an open-data import. Real records come from access-maps.",
   places,
   repairers,
   supplyStores,

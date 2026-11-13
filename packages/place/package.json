@@ -8,12 +8,16 @@
     ".": "./src/index.ts"
   },
   "scripts": {
+    "pretest": "tsc -p ../../node_modules/access-main/packages/schema/tsconfig.json",
+    "pretypecheck": "tsc -p ../../node_modules/access-main/packages/schema/tsconfig.json",
+    "prebuild": "tsc -p ../../node_modules/access-main/packages/schema/tsconfig.json",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "build": "vite build",
     "demo": "vite"
   },
   "dependencies": {
+    "access-main": "github:ALENZACODES/access-main#cursor/schema-package-61db",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
     "react": "^18.3.1",
@@ -22,6 +26,7 @@
   "devDependencies": {
     "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "^14.5.2",
+    "@types/node": "^22.20.5",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",

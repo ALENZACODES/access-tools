@@ -1,23 +1,6 @@
 import { useState } from "react";
-import { a11yCss, type PlacePack, type PlaceType, type SupplyCategory } from "@access-tools/place";
+import { a11yCss, labelOf, type PlacePack, type PlaceType, type SupplyCategory } from "@access-tools/place";
 import { emptySearchQuery, searchPack, type SearchQuery } from "../search.js";
-
-const CATEGORIES = ["community-centre", "cafe", "parking", "library", "repair", "trail", "not-seeded"];
-const PLACE_TYPES: PlaceType[] = [
-  "simple-venue",
-  "complex-venue",
-  "transit-station",
-  "trailhead",
-  "hotel-room",
-  "parking-lot",
-  "skeleton",
-];
-const SUPPLY: SupplyCategory[] = [
-  "catheter-supplies",
-  "continence-products",
-  "bowel-care-supplies",
-  "skin-care-products",
-];
 
 export function SearchPanel({
   pack,
@@ -48,6 +31,9 @@ export function SearchPanel({
     });
   };
   const municipalities = [...new Set(pack.places.map((place) => place.identity.municipality))];
+  const categories = [...new Set(pack.places.map((place) => place.identity.category))].sort();
+  const placeTypes = [...new Set(pack.places.map((place) => place.identity.placeType))].sort();
+  const supplyCategories = [...new Set(pack.supplyStores.flatMap((store) => store.categoriesPublished))].sort();
   return (
     <section className="app-ui" aria-labelledby="search-heading" lang={lang}>
       <style>{a11yCss}</style>
@@ -90,9 +76,9 @@ export function SearchPanel({
           onChange={(event) => set({ category: event.target.value || undefined })}
         >
           <option value="">{lang === "fr" ? "Toutes" : "Any"}</option>
-          {CATEGORIES.map((category) => (
+          {categories.map((category) => (
             <option key={category} value={category}>
-              {category}
+              {labelOf(`category.${category}`, lang)}
             </option>
           ))}
         </select>
@@ -103,9 +89,9 @@ export function SearchPanel({
           onChange={(event) => set({ placeType: (event.target.value || undefined) as PlaceType | undefined })}
         >
           <option value="">{lang === "fr" ? "Tous" : "Any"}</option>
-          {PLACE_TYPES.map((placeType) => (
+          {placeTypes.map((placeType) => (
             <option key={placeType} value={placeType}>
-              {placeType}
+              {labelOf(`placeType.${placeType}`, lang)}
             </option>
           ))}
         </select>
@@ -219,9 +205,9 @@ export function SearchPanel({
             }
           >
             <option value="">{lang === "fr" ? "Toutes" : "Any"}</option>
-            {SUPPLY.map((category) => (
+            {supplyCategories.map((category) => (
               <option key={category} value={category}>
-                {category}
+                {labelOf(`supply.${category}`, lang)}
               </option>
             ))}
           </select>

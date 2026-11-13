@@ -1,3 +1,4 @@
+import { labelOf } from "./i18n.js";
 import type { Lang } from "./types.js";
 import type {
   ChangeTableFact,
@@ -28,7 +29,7 @@ export function formatMm(mm: number | null, lang: Lang): string {
 
 export function formatMetres(m: number | null, lang: Lang): string {
   if (m === null || Number.isNaN(m)) return unknownLabel(lang);
-  return lang === "fr" ? `${m} m` : `${m} m`;
+  return `${m} m`;
 }
 
 export function formatYesNo(value: "yes" | "no" | null, lang: Lang): string {
@@ -44,15 +45,16 @@ function part(label: string, value: string): string {
 export function formatDoor(door: DoorFact | null, lang: Lang): string {
   if (!door) return unknownLabel(lang);
   const u = unknownLabel(lang);
-  const operator =
-    door.operator === null ? u : door.operator === "power-assist" ? (lang === "fr" ? "assistance électrique" : "power-assist") : door.operator;
+  const operator = door.operator === null ? u : labelOf(`door.operator.${door.operator}`, lang);
+  const swing = door.swing === null ? u : labelOf(`door.swing.${door.swing}`, lang);
+  const lock = door.lock === null ? u : labelOf(`door.lock.${door.lock}`, lang);
   return [
     part(lang === "fr" ? "Opérateur" : "Operator", operator),
     part(lang === "fr" ? "Hauteur de la plaque" : "Push-plate height", formatMm(door.pushPlateHeightMm, lang)),
     part(lang === "fr" ? "Force" : "Force", door.forceNote ?? u),
     part(lang === "fr" ? "Vitesse de fermeture" : "Closing speed", door.closingSpeedNote ?? u),
-    part(lang === "fr" ? "Sens" : "Swing", door.swing ?? u),
-    part(lang === "fr" ? "Verrou" : "Lock", door.lock ?? u),
+    part(lang === "fr" ? "Sens" : "Swing", swing),
+    part(lang === "fr" ? "Verrou" : "Lock", lock),
   ].join(". ");
 }
 
@@ -139,7 +141,7 @@ export function formatCord(cord: EmergencyCordFact | null, lang: Lang): string {
     cord.working === "not-tested"
       ? lang === "fr"
         ? "Non testé. L'application ne déclenche pas les alarmes."
-        : "Not tested. The App does not activate emergency alarms."
+        : "Not tested. The application does not activate emergency alarms."
       : formatYesNo(cord.working, lang);
   return [
     part(lang === "fr" ? "Présent" : "Present", formatYesNo(cord.present, lang)),

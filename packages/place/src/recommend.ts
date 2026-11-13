@@ -1,4 +1,5 @@
-import type { ChargingPoint, DatasetStatus, Lang, ParkingBay, PlaceRecord, Washroom } from "./types.js";
+import { evidenceComplete } from "./evidence.js";
+import type { ChargingPoint, DatasetStatus, Lang, ParkingBay, PlaceRecord, Provenance, Washroom } from "./types.js";
 
 /**
  * A filled fixture is still not a recommendation.
@@ -7,10 +8,11 @@ import type { ChargingPoint, DatasetStatus, Lang, ParkingBay, PlaceRecord, Washr
  */
 export type UseLabel = "not-a-recommendation" | "peer-or-surveyor-measurements";
 
-const STRONG = new Set(["tier-2-peer", "tier-3-surveyor"]);
-
-function strong(provenanceTier: string | undefined, dataset: DatasetStatus): boolean {
-  return dataset === "access-maps" && provenanceTier !== undefined && STRONG.has(provenanceTier);
+function strong(provenance: Provenance | null, dataset: DatasetStatus): boolean {
+  if (dataset !== "access-maps" || !provenance) return false;
+  if (provenance.tier === 2) return true;
+  if (provenance.tier === 3) return evidenceComplete(provenance.evidence);
+  return false;
 }
 
 export function washroomUseLabel(dataset: DatasetStatus, washroom: Washroom): UseLabel {
@@ -19,9 +21,7 @@ export function washroomUseLabel(dataset: DatasetStatus, washroom: Washroom): Us
   const transfer = washroom.transfer;
   const criticalKnown = door.value !== null && turning.value !== null && transfer.value !== null;
   const allStrong =
-    strong(door.provenance?.tier, dataset) &&
-    strong(turning.provenance?.tier, dataset) &&
-    strong(transfer.provenance?.tier, dataset);
+    strong(door.provenance, dataset) && strong(turning.provenance, dataset) && strong(transfer.provenance, dataset);
   return criticalKnown && allStrong ? "peer-or-surveyor-measurements" : "not-a-recommendation";
 }
 
@@ -38,8 +38,7 @@ export function useLabelText(label: UseLabel, lang: Lang): string {
 
 export function chargingUseLabel(dataset: DatasetStatus, point: ChargingPoint): UseLabel {
   const known = point.accessMethod.value !== null && point.locationNote.value !== null;
-  const allStrong =
-    strong(point.accessMethod.provenance?.tier, dataset) && strong(point.locationNote.provenance?.tier, dataset);
+  const allStrong = strong(point.accessMethod.provenance, dataset) && strong(point.locationNote.provenance, dataset);
   return known && allStrong ? "peer-or-surveyor-measurements" : "not-a-recommendation";
 }
 
@@ -99,7 +98,7 @@ export function rangeNote(distanceMetres: number | null, userTestedRangeMetres: 
   const distance = distanceMetres === null ? (lang === "fr" ? "inconnue" : "unknown") : String(distanceMetres);
   return lang === "fr"
     ? `Vous avez saisi une autonomie essayée de ${userTestedRangeMetres} m. La distance à vol d'oiseau est ${distance} m. Ce n'est pas une garantie. L'application n'utilise pas d'autonomie générique de fauteuil.`
-    : `You entered a tested range of ${userTestedRangeMetres} m. The straight-line distance is ${distance} m. This is not a guarantee. The App does not use a generic chair range.`;
+    : `You entered a tested range of ${userTestedRangeMetres} m. The straight-line distance is ${distance} m. This is not a guarantee. The application does not use a generic chair range.`;
 }
 
 export function transferSideMatches(side: "left" | "right" | "both" | null, needed: "left" | "right" | "both"): boolean {
@@ -130,7 +129,7 @@ export const AVAILABILITY_DISCLAIMER = {
 } as const;
 
 export const REPAIR_DISCLAIMER = {
-  en: "The App lists services a record publishes. It does not recommend a repairer, a product, or a repair. It does not promise funding. It does not give medical or supply advice.",
+  en: "The application lists services a record publishes. It does not recommend a repairer, a product, or a repair. It does not promise funding. It does not give medical or supply advice.",
   fr: "L'application liste les services publiés dans la fiche. Elle ne recommande ni réparateur, ni produit, ni réparation. Elle ne promet pas de financement. Elle ne donne pas de conseil médical ni de conseil sur les fournitures.",
 } as const;
 
@@ -140,6 +139,6 @@ export const SUPPLY_STOCK_NOTE = {
 } as const;
 
 export const PROTOTYPE_NOTICE = {
-  en: "PROTOTYPE and UNVERIFIED. This screen is a prototype. Unknown means unknown. A labelled fixture is not a real place and not a verified visit.",
-  fr: "PROTOTYPE and UNVERIFIED. Cet écran est un prototype. Inconnu veut dire inconnu. Un jeu d'essai étiqueté n'est pas un lieu réel ni une visite vérifiée.",
+  en: "PROTOTYPE-UNVERIFIED. This screen is a prototype. Unknown means unknown. A labelled fixture is not a real place and not a verified visit.",
+  fr: "PROTOTYPE-UNVERIFIED. Cet écran est un prototype. Inconnu veut dire inconnu. Un jeu d'essai étiqueté n'est pas un lieu réel ni une visite vérifiée.",
 } as const;

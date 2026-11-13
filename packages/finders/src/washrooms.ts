@@ -5,6 +5,7 @@ import {
   formatTransfer,
   isGeoPoint,
   isOpenAt,
+  labelOf,
   tierPhrase,
   transferSideMatches,
   unknownLabel,
@@ -112,11 +113,11 @@ export function findWashrooms(pack: PlacePack, query: WashroomQuery): WashroomRe
         changeTableText: formatChangeTable(washroom.changeTable.value, query.lang),
         hoistText: formatHoist(washroom.hoist.value, query.lang),
         accessText: washroom.accessPolicy.value
-          ? `${washroom.accessPolicy.value.method}. ${washroom.accessPolicy.value.howToObtain ?? unknownLabel(query.lang)}`
+          ? `${labelOf(`access.${washroom.accessPolicy.value.method}`, query.lang)}. ${washroom.accessPolicy.value.howToObtain ?? unknownLabel(query.lang)}`
           : unknownLabel(query.lang),
         hoursText: washroom.hoursReliability.value?.hoursText ?? unknownLabel(query.lang),
         verificationDate: provenance?.sourceDate ?? unknownLabel(query.lang),
-        tierText: provenance ? tierPhrase(provenance.tier, place.datasetStatus, query.lang) : unknownLabel(query.lang),
+        tierText: provenance ? tierPhrase(provenance, place.datasetStatus, query.lang, place.publicationContext) : unknownLabel(query.lang),
         recommendation: useLabelText(washroomUseLabel(place.datasetStatus, washroom), query.lang),
         phone,
         hiddenReasons: reasons(washroom, query),

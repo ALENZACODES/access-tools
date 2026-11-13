@@ -32,6 +32,14 @@ export const a11yCss = `
   min-height: 2.75rem;
   min-width: 2.75rem;
 }
+:where(.app-ui) input[type="checkbox"],
+:where(.app-ui) input[type="radio"] {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  min-height: 24px;
+  accent-color: #0b3a82;
+}
 :where(.app-ui) .prototype-notice {
   background: #fff4d6;
   border: 2px solid #8a5a00;

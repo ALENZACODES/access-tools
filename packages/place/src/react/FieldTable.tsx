@@ -1,3 +1,4 @@
+import { copy } from "../i18n.js";
 import type { FieldRowView } from "../project.js";
 import type { Lang } from "../types.js";
 
@@ -10,7 +11,7 @@ export function FieldTable({ rows, caption, lang }: { rows: FieldRowView[]; capt
   if (rows.length === 0) return null;
   const columns = COLUMNS[lang];
   return (
-    <div className="table-scroll" tabIndex={0} role="region" aria-label={`${caption} fields`}>
+    <div className="table-scroll" tabIndex={0} role="region" aria-label={`${caption} ${copy("region.fields", lang)}`}>
       <table>
         <caption className="visually-hidden">{caption}</caption>
         <thead>

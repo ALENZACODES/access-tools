@@ -2,6 +2,7 @@ import {
   distanceMetres,
   isGeoPoint,
   isOpenAt,
+  labelOf,
   REPAIR_DISCLAIMER,
   SUPPLY_STOCK_NOTE,
   tierPhrase,
@@ -49,8 +50,8 @@ export interface RepairResult {
   empty: boolean;
 }
 
-export function publishedServices(services: RepairService[]): string {
-  return services.join(", ");
+export function publishedServices(services: RepairService[], lang: Lang): string {
+  return services.map((service) => labelOf(`repair.${service}`, lang)).join(", ");
 }
 
 export function findRepairAndSupply(pack: PlacePack, query: RepairQuery): RepairResult {
@@ -93,12 +94,12 @@ export function findRepairAndSupply(pack: PlacePack, query: RepairQuery): Repair
             ? query.lang === "fr"
               ? "Aucune liste de services publiée dans cette fiche."
               : "No published service list is in this record."
-            : publishedServices(repairer.servicesPublished),
+            : publishedServices(repairer.servicesPublished, query.lang),
         hoursText: repairer.hoursText ?? unknownLabel(query.lang),
         phone: repairer.phone,
         website: repairer.website,
         verificationDate: repairer.provenance.sourceDate,
-        tierText: tierPhrase(repairer.provenance.tier, repairer.datasetStatus, query.lang),
+        tierText: tierPhrase(repairer.provenance, repairer.datasetStatus, query.lang, repairer.publicationContext),
         extraText:
           repairer.mobileRadiusKm === null
             ? query.lang === "fr"
@@ -148,12 +149,12 @@ export function findRepairAndSupply(pack: PlacePack, query: RepairQuery): Repair
             ? query.lang === "fr"
               ? "Aucune catégorie publiée dans cette fiche."
               : "No published category is in this record."
-            : store.categoriesPublished.join(", "),
+            : store.categoriesPublished.map((category) => labelOf(`supply.${category}`, query.lang)).join(", "),
         hoursText: store.hoursText ?? unknownLabel(query.lang),
         phone: store.phone,
         website: store.website,
         verificationDate: store.provenance.sourceDate,
-        tierText: tierPhrase(store.provenance.tier, store.datasetStatus, query.lang),
+        tierText: tierPhrase(store.provenance, store.datasetStatus, query.lang, store.publicationContext),
         extraText:
           query.lang === "fr"
             ? `Livraison : ${store.delivery ?? "Inconnu"}. ${SUPPLY_STOCK_NOTE.fr}`

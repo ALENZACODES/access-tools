@@ -25,8 +25,9 @@ import {
   formatYesNo,
   unknownLabel,
 } from "./format.js";
+import { labelOf } from "./i18n.js";
 import { freshness, tierPhrase, winterClearanceText, type FreshnessLayer } from "./staleness.js";
-import { privilegeText, vanLiftReading, vanLiftText } from "./recommend.js";
+import { privilegeText, PROTOTYPE_NOTICE, vanLiftReading, vanLiftText } from "./recommend.js";
 
 export interface PhotoView {
   id: string;
@@ -326,10 +327,25 @@ function photoViews(photos: PhotoSlot[], ids: string[], lang: Lang): PhotoView[]
   });
 }
 
+function authoredFr(text: string, lang: Lang): string {
+  if (lang !== "fr") return text;
+  const translated: Record<string, string> = {
+    "access-tools labelled fixture": "jeu d'essai étiqueté access-tools",
+    "access-tools skeleton seed": "graine squelette access-tools",
+    "Labelled fixture. Not a data licence. Not a real-world observation.":
+      "Jeu d'essai étiqueté. Pas une licence de données. Pas une observation du monde réel.",
+    "Skeleton seed. Not a data licence. No venue is identified.":
+      "Graine squelette. Pas une licence de données. Aucun lieu n'est identifié.",
+  };
+  return translated[text] ?? text;
+}
+
 function rowFrom(place: PlaceRecord, input: RowInput, lang: Lang, today: string): FieldRowView {
   const fresh = freshness(input.provenance, today, input.layer, lang);
   const tierText = input.provenance
-    ? tierPhrase(input.provenance.tier, place.datasetStatus, lang)
+    ? tierPhrase(input.provenance, place.datasetStatus, lang, place.publicationContext, {
+        requirePhoto: input.id.startsWith("washroom."),
+      })
     : lang === "fr"
       ? "Aucun niveau. Non vérifié."
       : "No tier. Unverified.";
@@ -339,10 +355,10 @@ function rowFrom(place: PlaceRecord, input: RowInput, lang: Lang, today: string)
     valueText: input.valueText,
     unknown: input.unknown,
     tierText,
-    sourceName: input.provenance?.sourceName ?? (lang === "fr" ? "Aucune source" : "No source"),
+    sourceName: input.provenance ? authoredFr(input.provenance.sourceName, lang) : lang === "fr" ? "Aucune source" : "No source",
     sourceDate: input.provenance?.sourceDate ?? unknownLabel(lang),
     recordDate: input.provenance?.recordDate ?? unknownLabel(lang),
-    licence: input.provenance?.licence ?? (lang === "fr" ? "Aucune licence" : "No licence"),
+    licence: input.provenance ? authoredFr(input.provenance.licence, lang) : lang === "fr" ? "Aucune licence" : "No licence",
     freshnessText: fresh.text,
     photos: photoViews(place.photos, input.photoSlotIds, lang),
   };
@@ -401,11 +417,11 @@ export function projectPlace(place: PlaceRecord, lang: Lang, today: string, pack
         };
   const identityRows: FieldRowView[] = [
     sourcedRow(place, "identity.name", place.identity.name, false, place.recordProvenance, [], "venue", lang, today),
-    sourcedRow(place, "identity.place-type", place.identity.placeType, false, place.recordProvenance, [], "venue", lang, today),
+    sourcedRow(place, "identity.place-type", labelOf(`placeType.${place.identity.placeType}`, lang), false, place.recordProvenance, [], "venue", lang, today),
     sourcedRow(place, "identity.address", textOrUnknown(place.identity.address, lang).text, place.identity.address === null, place.identity.address ? place.recordProvenance : null, [], "venue", lang, today),
     sourcedRow(place, "identity.municipality", `${place.identity.municipality}, ${place.identity.province}`, false, place.recordProvenance, [], "venue", lang, today),
     sourcedRow(place, "identity.coordinates", coords.text, coords.unknown, coords.unknown ? null : place.recordProvenance, [], "venue", lang, today),
-    sourcedRow(place, "identity.category", place.identity.category, false, place.recordProvenance, [], "venue", lang, today),
+    sourcedRow(place, "identity.category", labelOf(`category.${place.identity.category}`, lang), false, place.recordProvenance, [], "venue", lang, today),
     sourcedRow(place, "identity.hours", textOrUnknown(place.identity.hoursText, lang).text, place.identity.hoursText === null, place.identity.hoursText ? place.recordProvenance : null, [], "policy", lang, today),
     sourcedRow(place, "identity.phone", textOrUnknown(place.identity.phone, lang).text, place.identity.phone === null, place.identity.phone ? place.recordProvenance : null, [], "venue", lang, today),
     sourcedRow(
@@ -430,8 +446,8 @@ export function projectPlace(place: PlaceRecord, lang: Lang, today: string, pack
       lang,
       today,
     ),
-    sourcedRow(place, "identity.dataset", place.datasetStatus, false, place.recordProvenance, [], "venue", lang, today),
-    sourcedRow(place, "identity.depth", place.depth, false, place.recordProvenance, [], "venue", lang, today),
+    sourcedRow(place, "identity.dataset", labelOf(`dataset.${place.datasetStatus}`, lang), false, place.recordProvenance, [], "venue", lang, today),
+    sourcedRow(place, "identity.depth", labelOf(`depth.${place.depth}`, lang), false, place.recordProvenance, [], "venue", lang, today),
   ];
 
   const entrance = place.entrance;
@@ -475,7 +491,7 @@ export function projectPlace(place: PlaceRecord, lang: Lang, today: string, pack
     place.parking.bays.length === 0
       ? { text: u, unknown: true }
       : {
-          text: place.parking.bays.map((bay) => `${bay.name}: ${bay.kind}`).join("; "),
+          text: place.parking.bays.map((bay) => `${bay.name}: ${labelOf(`bay.${bay.kind}`, lang)}`).join("; "),
           unknown: false,
         };
   const vanSummary =
@@ -536,7 +552,7 @@ export function projectPlace(place: PlaceRecord, lang: Lang, today: string, pack
   const described = place.photos.filter((photo) => photo.status === "described" && photo.description).length;
   const empty = place.photos.filter((photo) => photo.status === "empty").length;
   const trustRows = [
-    sourcedRow(place, "trust.tier", tierPhrase(place.recordProvenance.tier, place.datasetStatus, lang), false, place.recordProvenance, [], "venue", lang, today),
+    sourcedRow(place, "trust.tier", tierPhrase(place.recordProvenance, place.datasetStatus, lang, place.publicationContext), false, place.recordProvenance, [], "venue", lang, today),
     sourcedRow(place, "trust.last-verified", place.recordProvenance.recordDate, false, place.recordProvenance, [], "venue", lang, today),
     sourcedRow(
       place,
@@ -656,7 +672,7 @@ export function projectPlace(place: PlaceRecord, lang: Lang, today: string, pack
       intro:
         lang === "fr"
           ? "Une politique est citée seulement si la fiche a un texte. L'application ne donne pas de conseil d'admissibilité."
-          : "A policy is quoted only when the record has text. The App does not give eligibility advice.",
+          : "A policy is quoted only when the record has text. The application does not give eligibility advice.",
       rows: [interiorRows[3], interiorRows[4], interiorRows[5], transportRows[2]].filter((row): row is FieldRowView => row !== undefined),
     },
     {
@@ -724,15 +740,12 @@ export function projectPlace(place: PlaceRecord, lang: Lang, today: string, pack
 
   return {
     title,
-    prototypeNotice:
-      lang === "fr"
-        ? "PROTOTYPE and UNVERIFIED. Cet écran est un prototype. Inconnu veut dire inconnu. Un jeu d'essai étiqueté n'est pas un lieu réel ni une visite vérifiée."
-        : "PROTOTYPE and UNVERIFIED. This screen is a prototype. Unknown means unknown. A labelled fixture is not a real place and not a verified visit.",
-    honestyNote: place.honestyNote,
-    tierBadge: tierPhrase(place.recordProvenance.tier, place.datasetStatus, lang),
+    prototypeNotice: PROTOTYPE_NOTICE[lang],
+    honestyNote: lang === "fr" ? place.honestyNoteFr : place.honestyNote,
+    tierBadge: tierPhrase(place.recordProvenance, place.datasetStatus, lang, place.publicationContext),
     sourceLine:
       lang === "fr"
-        ? `Source : ${place.recordProvenance.sourceName}. Date de source : ${place.recordProvenance.sourceDate}. Date de fiche : ${place.recordProvenance.recordDate}. ${place.recordProvenance.licence}`
+        ? `Source : ${authoredFr(place.recordProvenance.sourceName, lang)}. Date de source : ${place.recordProvenance.sourceDate}. Date de fiche : ${place.recordProvenance.recordDate}. ${authoredFr(place.recordProvenance.licence, lang)}`
         : `Source: ${place.recordProvenance.sourceName}. Source date: ${place.recordProvenance.sourceDate}. Record date: ${place.recordProvenance.recordDate}. ${place.recordProvenance.licence}`,
     depthStatement:
       place.depth === "skeleton"
@@ -787,20 +800,13 @@ export function projectWashroom(place: PlaceRecord, washroom: Washroom, lang: La
   const doorUnknown = washroom.door.value === null && washroom.doorClearWidthMm.value === null;
   const access = washroom.accessPolicy.value;
   const accessText = access
-    ? [
-        access.method,
-        access.howToObtain ?? u,
-        access.phone ?? u,
-      ].join(". ")
+    ? [labelOf(`access.${access.method}`, lang), access.howToObtain ?? u, access.phone ?? u].join(". ")
     : u;
   const hours = washroom.hoursReliability.value;
   const hoursText = hours
     ? [hours.hoursText ?? u, hours.outOfOrderNote ?? (lang === "fr" ? "Note de panne : inconnue" : "Out-of-order note: unknown"), hours.lastReportNote ?? (lang === "fr" ? "Dernier signalement : inconnu" : "Last report: unknown")].join(". ")
     : u;
-  const gender =
-    washroom.gender === null
-      ? u
-      : washroom.gender;
+  const gender = washroom.gender === null ? u : labelOf(`gender.${washroom.gender}`, lang);
   const rows = [
     sourcedRow(place, "washroom.location-and-route", textOrUnknown(washroom.locationAndRoute.value, lang).text, washroom.locationAndRoute.value === null, washroom.locationAndRoute.provenance, washroom.locationAndRoute.photoSlotIds, "washroom", lang, today),
     sourcedRow(place, "washroom.door", doorText, doorUnknown, washroom.door.provenance ?? washroom.doorClearWidthMm.provenance, [...washroom.door.photoSlotIds, ...washroom.doorClearWidthMm.photoSlotIds], "washroom", lang, today),
@@ -844,7 +850,7 @@ function projectBay(place: PlaceRecord, bay: ParkingBay, lang: Lang, today: stri
   return {
     id: bay.id,
     heading: bay.name,
-    kindText: bay.kind,
+    kindText: labelOf(`bay.${bay.kind}`, lang),
     vanLiftText: vanLiftText(vanLiftReading(bay), lang),
     privilegeText: privilegeText(bay, lang),
     rows,
@@ -856,10 +862,10 @@ function projectCharging(place: PlaceRecord, point: ChargingPoint, lang: Lang, t
     [lang === "fr" ? "Emplacement" : "Location", point.locationNote.value ?? unknownLabel(lang), point.locationNote.value === null, point.locationNote.provenance, point.locationNote.photoSlotIds],
     [lang === "fr" ? "Type de prise" : "Outlet type", point.outletType.value ?? unknownLabel(lang), point.outletType.value === null, point.outletType.provenance, point.outletType.photoSlotIds],
     [lang === "fr" ? "Nombre de prises" : "Outlet count", point.outletCount.value === null ? unknownLabel(lang) : String(point.outletCount.value), point.outletCount.value === null, point.outletCount.provenance, point.outletCount.photoSlotIds],
-    [lang === "fr" ? "Accès" : "Access method", point.accessMethod.value ?? unknownLabel(lang), point.accessMethod.value === null, point.accessMethod.provenance, point.accessMethod.photoSlotIds],
+    [lang === "fr" ? "Accès" : "Access method", point.accessMethod.value ? labelOf(`access.${point.accessMethod.value}`, lang) : unknownLabel(lang), point.accessMethod.value === null, point.accessMethod.provenance, point.accessMethod.photoSlotIds],
     [lang === "fr" ? "Contact pour permission" : "Permission contact", point.permissionContact.value ?? unknownLabel(lang), point.permissionContact.value === null, point.permissionContact.provenance, point.permissionContact.photoSlotIds],
     [lang === "fr" ? "Siège en attendant" : "Seating while charging", formatYesNo(point.seating.value, lang), point.seating.value === null, point.seating.provenance, point.seating.photoSlotIds],
-    [lang === "fr" ? "Intérieur ou extérieur" : "Indoor or outdoor", point.setting.value ?? unknownLabel(lang), point.setting.value === null, point.setting.provenance, point.setting.photoSlotIds],
+    [lang === "fr" ? "Intérieur ou extérieur" : "Indoor or outdoor", point.setting.value ? labelOf(`setting.${point.setting.value}`, lang) : unknownLabel(lang), point.setting.value === null, point.setting.provenance, point.setting.photoSlotIds],
     [lang === "fr" ? "Heures" : "Hours", point.hoursText.value ?? unknownLabel(lang), point.hoursText.value === null, point.hoursText.provenance, point.hoursText.photoSlotIds],
     [lang === "fr" ? "Coût" : "Cost", point.cost.value ?? unknownLabel(lang), point.cost.value === null, point.cost.provenance, point.cost.photoSlotIds],
     [lang === "fr" ? "Chemin sans marche" : "Step-free route", formatYesNo(point.stepFreeRoute.value, lang), point.stepFreeRoute.value === null, point.stepFreeRoute.provenance, point.stepFreeRoute.photoSlotIds],
@@ -878,12 +884,12 @@ function projectRepairer(repairer: Repairer, lang: Lang): DirectoryCardView {
       ? lang === "fr"
         ? "Aucune liste de services publiée dans cette fiche."
         : "No published service list is in this record."
-      : repairer.servicesPublished.join(", ");
+      : repairer.servicesPublished.map((service) => labelOf(`repair.${service}`, lang)).join(", ");
   return {
     id: repairer.id,
     heading: lang === "fr" && repairer.nameFr ? repairer.nameFr : repairer.name,
     lines: [
-      repairer.honestyNote,
+      lang === "fr" ? repairer.honestyNoteFr : repairer.honestyNote,
       lang === "fr" ? `Services publiés : ${services}` : `Published services: ${services}`,
       lang === "fr"
         ? `Couverture : ${repairer.coverageNote ?? "Inconnu"}`
@@ -894,7 +900,7 @@ function projectRepairer(repairer: Repairer, lang: Lang): DirectoryCardView {
       lang === "fr" ? `Heures : ${repairer.hoursText ?? "Inconnu"}` : `Hours: ${repairer.hoursText ?? "Unknown"}`,
       lang === "fr" ? `Téléphone : ${repairer.phone ?? "Inconnu"}` : `Phone: ${repairer.phone ?? "Unknown"}`,
       lang === "fr" ? `Site : ${repairer.website ?? "Inconnu"}` : `Website: ${repairer.website ?? "Unknown"}`,
-      `${repairer.provenance.sourceName}. ${repairer.provenance.sourceDate}. ${repairer.provenance.licence}`,
+      `${authoredFr(repairer.provenance.sourceName, lang)}. ${repairer.provenance.sourceDate}. ${authoredFr(repairer.provenance.licence, lang)}`,
     ],
   };
 }
@@ -905,20 +911,22 @@ function projectSupply(store: SupplyStore, lang: Lang): DirectoryCardView {
       ? lang === "fr"
         ? "Aucune catégorie publiée dans cette fiche."
         : "No published category is in this record."
-      : store.categoriesPublished.join(", ");
+      : store.categoriesPublished.map((category) => labelOf(`supply.${category}`, lang)).join(", ");
+  const delivery =
+    store.delivery === null ? (lang === "fr" ? "Inconnu" : "Unknown") : store.delivery === "yes" ? (lang === "fr" ? "Oui" : "Yes") : lang === "fr" ? "Non" : "No";
   return {
     id: store.id,
     heading: lang === "fr" && store.nameFr ? store.nameFr : store.name,
     lines: [
-      store.honestyNote,
+      lang === "fr" ? store.honestyNoteFr : store.honestyNote,
       lang === "fr" ? `Catégories publiées : ${categories}` : `Published categories: ${categories}`,
       lang === "fr"
         ? "Une catégorie n'est pas un stock d'un produit précis."
         : "A category is not stock of a specific product.",
       lang === "fr" ? `Heures : ${store.hoursText ?? "Inconnu"}` : `Hours: ${store.hoursText ?? "Unknown"}`,
-      lang === "fr" ? `Livraison : ${store.delivery ?? "Inconnu"}` : `Delivery: ${store.delivery ?? "Unknown"}`,
+      lang === "fr" ? `Livraison : ${delivery}` : `Delivery: ${delivery}`,
       lang === "fr" ? `Téléphone : ${store.phone ?? "Inconnu"}` : `Phone: ${store.phone ?? "Unknown"}`,
-      `${store.provenance.sourceName}. ${store.provenance.sourceDate}. ${store.provenance.licence}`,
+      `${authoredFr(store.provenance.sourceName, lang)}. ${store.provenance.sourceDate}. ${authoredFr(store.provenance.licence, lang)}`,
     ],
   };
 }

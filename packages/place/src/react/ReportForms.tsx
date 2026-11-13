@@ -1,23 +1,8 @@
 import { useState } from "react";
 import { MODERATION_NOTE } from "../corrections.js";
+import { labelOf } from "../i18n.js";
 import { correctableFields } from "../project.js";
 import { CHANGE_PROBLEMS, type ChangeProblem, type Lang, type PlaceRecord } from "../types.js";
-
-const PROBLEM_LABELS: Record<ChangeProblem, { en: string; fr: string }> = {
-  locked: { en: "Locked", fr: "Verrouillé" },
-  "out-of-order": { en: "Out of order", fr: "Hors service" },
-  "used-as-storage": { en: "Used as storage", fr: "Utilisé comme rangement" },
-  "entrance-blocked": { en: "Entrance blocked", fr: "Entrée bloquée" },
-  "bay-blocked": { en: "Bay blocked", fr: "Place bloquée" },
-  "snow-blocked": { en: "Snow blocked", fr: "Bloqué par la neige" },
-  "outlet-blocked": { en: "Outlet blocked", fr: "Prise bloquée" },
-  "permission-refused": { en: "Permission refused", fr: "Permission refusée" },
-  "point-removed": { en: "Point removed", fr: "Point retiré" },
-  "business-closed": { en: "Business closed", fr: "Commerce fermé" },
-  moved: { en: "Moved", fr: "Déménagé" },
-  "service-not-offered": { en: "Service not offered", fr: "Service non offert" },
-  other: { en: "Other", fr: "Autre" },
-};
 
 export function CorrectionForm({
   place,
@@ -118,7 +103,7 @@ export function ChangeReportForm({
       <select id="change-problem" value={problem} onChange={(event) => setProblem(event.target.value as ChangeProblem)}>
         {CHANGE_PROBLEMS.map((item) => (
           <option key={item} value={item}>
-            {lang === "fr" ? PROBLEM_LABELS[item].fr : PROBLEM_LABELS[item].en}
+            {labelOf(`problem.${item}`, lang)}
           </option>
         ))}
       </select>

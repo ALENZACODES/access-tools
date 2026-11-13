@@ -1,15 +1,39 @@
 import { describe, expect, it } from "vitest";
 import { appendChange, appendCorrection, emptyLog, readLog, writeLog } from "./corrections.js";
-import { fixturePack, FIXTURE_DAY, placeById } from "./fixtures.js";
+import { fixturePack, FIXTURE_DAY, FIXTURE_PROVENANCE, placeById } from "./fixtures.js";
 import { formatMm } from "./format.js";
 import { isOpenAt } from "./hours.js";
 import { lintPack, lintPlace } from "./lint.js";
 import { coreFieldIdList, FIELD_COUNTS, projectPlace } from "./project.js";
 import { rangeNote, useLabelText, washroomUseLabel } from "./recommend.js";
 import { schemaErrors, validatePlacePack } from "./schema.js";
+import { evidenceComplete } from "./evidence.js";
+import { COPY, assertFrenchCatalog } from "./i18n.js";
 import { freshness, tierPhrase } from "./staleness.js";
 import { unknown } from "./blank.js";
-import type { Provenance } from "./types.js";
+import type { Provenance, SurveyEvidence } from "./types.js";
+
+const SURVEY_EVIDENCE: SurveyEvidence = {
+  protocolVersion: "survey-protocol-1",
+  verifierRole: "trained_verifier",
+  method: "tape measure on site",
+  observedAt: "2026-11-01",
+  photoIds: ["photo-door"],
+};
+
+function surveyProvenance(evidence?: SurveyEvidence): Provenance {
+  return {
+    sourceName: "specimen survey",
+    sourceId: "specimen-survey",
+    licence: "specimen",
+    sourceDate: "2026-11-01",
+    recordDate: "2026-11-01",
+    retrievedAt: "2026-11-01",
+    tier: 3,
+    verifierType: "surveyor",
+    ...(evidence ? { evidence, prototypeLabel: "VERIFIED" as const } : {}),
+  };
+}
 
 describe("field catalogue", () => {
   it("matches the section 5.2 core arithmetic", () => {
@@ -67,18 +91,43 @@ describe("display rules", () => {
     if (!place) throw new Error("missing");
     const view = projectPlace(place, "en", FIXTURE_DAY, fixturePack);
     const text = JSON.stringify(view);
-    expect(text).toContain("PROTOTYPE and UNVERIFIED");
+    expect(text).toContain("PROTOTYPE-UNVERIFIED");
+    expect(text).not.toContain("PROTOTYPE and UNVERIFIED");
     expect(text).not.toContain("Verified by surveyor");
+    expect(text.toLowerCase()).not.toContain("open data");
+    expect(text.toLowerCase()).not.toContain("open-data");
     expect(view.tierBadge).toContain("Unverified by the App");
+    expect(view.tierBadge).not.toContain("Tier 0");
     const door = view.sections.find((section) => section.id === "entrance")?.rows.find((row) => row.id === "entrance.door-clear-width-mm");
     expect(door?.valueText).toBe("860 mm (33.9 in)");
     expect(door?.sourceName).toBe("access-tools labelled fixture");
     expect(door?.sourceDate).toBe(FIXTURE_DAY);
   });
 
-  it("keeps the surveyor phrase for an access-maps record only", () => {
-    expect(tierPhrase("tier-3-surveyor", "labelled-fixture", "en")).not.toContain("Verified by surveyor");
-    expect(tierPhrase("tier-3-surveyor", "access-maps", "en")).toBe("Verified by surveyor");
+  it("never shows verified wording without tier 3 evidence", () => {
+    const bare = surveyProvenance();
+    expect(evidenceComplete(bare.evidence)).toBe(false);
+    expect(tierPhrase(bare, "access-maps", "en", "canonical")).not.toContain("Verified by surveyor");
+    expect(tierPhrase(bare, "access-maps", "fr", "canonical")).not.toContain("Vérifié par un enquêteur");
+    expect(tierPhrase(bare, "labelled-fixture", "en", "prototype")).toContain("PROTOTYPE-UNVERIFIED");
+    const proven = surveyProvenance(SURVEY_EVIDENCE);
+    expect(tierPhrase(proven, "access-maps", "en", "canonical")).toBe("Verified by surveyor");
+    expect(tierPhrase(proven, "access-maps", "en", "prototype")).not.toContain("Verified by surveyor");
+    expect(tierPhrase(FIXTURE_PROVENANCE, "labelled-fixture", "en")).not.toContain("open data");
+    expect(tierPhrase(FIXTURE_PROVENANCE, "labelled-fixture", "fr")).not.toContain("données ouvertes");
+  });
+
+  it("rejects a tier 3 record that has no evidence", () => {
+    const broken = structuredClone(fixturePack);
+    const place = broken.places[0]!;
+    place.datasetStatus = "access-maps";
+    place.publicationContext = "canonical";
+    place.recordProvenance = surveyProvenance();
+    expect(validatePlacePack(broken)).toBe(false);
+    expect(schemaErrors().join(" ")).toMatch(/evidence|required/i);
+    expect(lintPlace(place).some((error) => error.includes("cannot be shown as verified"))).toBe(true);
+    place.recordProvenance = surveyProvenance(SURVEY_EVIDENCE);
+    expect(lintPlace(place).some((error) => error.includes("cannot be shown as verified"))).toBe(false);
   });
 
   it("shows Unknown on the café and does not render trail fields there", () => {
@@ -124,11 +173,14 @@ describe("freshness and hours", () => {
   it("marks a year-old surveyor field stale and still describable", () => {
     const provenance: Provenance = {
       sourceName: "specimen",
+      sourceId: "specimen",
       licence: "specimen",
       sourceDate: "2024-01-01",
       recordDate: "2024-01-01",
-      tier: "tier-3-surveyor",
+      retrievedAt: "2024-01-01",
+      tier: 3,
       verifierType: "surveyor",
+      evidence: { ...SURVEY_EVIDENCE, observedAt: "2024-01-01" },
     };
     const result = freshness(provenance, "2026-11-13", "venue", "en");
     expect(result.state).toBe("stale");
@@ -139,6 +191,23 @@ describe("freshness and hours", () => {
     expect(isOpenAt(null, { day: 1, minutes: 10 * 60 })).toBe("unknown");
     expect(isOpenAt([{ day: 1, open: "09:00", close: "17:00" }], { day: 1, minutes: 10 * 60 })).toBe("open");
     expect(isOpenAt([{ day: 1, open: "09:00", close: "17:00" }], { day: 1, minutes: 18 * 60 })).toBe("closed");
+  });
+
+  it("turns an old live feed into unknown", () => {
+    const provenance: Provenance = {
+      sourceName: "specimen feed",
+      sourceId: "specimen-feed",
+      licence: "specimen",
+      sourceDate: "2026-01-01",
+      recordDate: "2026-01-01",
+      retrievedAt: "2026-01-01",
+      tier: 4,
+      verifierType: "operator-feed",
+      observedAt: "2026-01-01T12:00:00Z",
+    };
+    const result = freshness(provenance, "2026-11-13", "charging", "en");
+    expect(result.state).toBe("live-age-unknown");
+    expect(result.text.toLowerCase()).toContain("unknown");
   });
 
   it("refuses a generic in-range claim", () => {
@@ -181,6 +250,16 @@ describe("corrections", () => {
     );
     writeLog(storage, log);
     expect(readLog(storage).changes[0]?.problem).toBe("entrance-blocked");
+  });
+});
+
+describe("French catalogue", () => {
+  it("has a French string for every copy key", () => {
+    expect(() => assertFrenchCatalog(COPY)).not.toThrow();
+  });
+
+  it("fails when a French key is blank", () => {
+    expect(() => assertFrenchCatalog({ "door.operator.manual": { en: "Manual", fr: " " } })).toThrow(/missing translation keys/);
   });
 });
 

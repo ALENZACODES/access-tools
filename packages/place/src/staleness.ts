@@ -1,4 +1,5 @@
-import type { DatasetStatus, Lang, Provenance, VerificationTier } from "./types.js";
+import { verifiedLabelAllowed } from "./evidence.js";
+import type { DatasetStatus, Lang, Provenance, PublicationContext, VerificationTier } from "./types.js";
 
 export type FreshnessLayer = "washroom" | "venue" | "policy" | "charging" | "repair" | "parking";
 
@@ -9,70 +10,80 @@ export interface Freshness {
   text: string;
 }
 
+/** Status observations leave the headline after this snapshot. Part 3 Tables T3-12 and T3-13. */
+export const STATUS_SNAPSHOT_DAYS = 30;
+
 export function daysBetween(sourceDate: string, today: string): number | null {
-  const start = Date.parse(`${sourceDate}T00:00:00Z`);
-  const end = Date.parse(`${today}T00:00:00Z`);
+  const start = Date.parse(`${sourceDate.slice(0, 10)}T00:00:00Z`);
+  const end = Date.parse(`${today.slice(0, 10)}T00:00:00Z`);
   if (Number.isNaN(start) || Number.isNaN(end)) return null;
   return Math.floor((end - start) / 86_400_000);
 }
 
 /**
  * Freshness windows follow Part 1 section 5.5.
- * The day counts are the plan's estimates. A stale field stays visible.
+ * The day counts marked as estimates in the plan stay estimates. A stale field stays visible.
  */
 export function limitDays(tier: VerificationTier, layer: FreshnessLayer): number | null {
-  if (tier === "tier-0-open-data" || tier === "tier-4-live-feed") return null;
-  if (tier === "tier-1-business-claimed") return 180;
-  if (tier === "tier-2-peer") return layer === "washroom" ? 90 : 180;
-  return 365;
+  if (tier === 0 || tier === 4 || tier === "E") return null;
+  if (tier === 1) return 180;
+  if (tier === 2) return layer === "washroom" || layer === "charging" ? 90 : 180;
+  if (tier === 3) return 365;
+  return null;
 }
 
-export function tierPhrase(tier: VerificationTier, dataset: DatasetStatus, lang: Lang): string {
-  const name = tierName(tier, lang);
-  if (dataset === "labelled-fixture") {
-    return lang === "fr"
-      ? `${name}. Jeu d'essai étiqueté. Non vérifié par l'application.`
-      : `${name}. Labelled fixture. Unverified by the App.`;
-  }
-  if (dataset === "prototype-seed") {
-    return lang === "fr"
-      ? `${name}. Graine de prototype. Non vérifié par l'application.`
-      : `${name}. Prototype seed. Unverified by the App.`;
-  }
-  switch (tier) {
-    case "tier-3-surveyor":
-      return lang === "fr" ? "Vérifié par un enquêteur" : "Verified by surveyor";
-    case "tier-2-peer":
-      return lang === "fr" ? "Signalé par un pair" : "Peer-reported";
-    case "tier-1-business-claimed":
-      return lang === "fr" ? "Déclaré par le lieu, non vérifié" : "Business-claimed, unverified";
-    case "tier-0-open-data":
+function publicationOf(dataset: DatasetStatus, explicit?: PublicationContext): PublicationContext {
+  return explicit ?? (dataset === "access-maps" ? "canonical" : "prototype");
+}
+
+/**
+ * Verified wording requires tier 3 evidence and a canonical publication context.
+ * A prototype record, including every labelled fixture, stays PROTOTYPE-UNVERIFIED.
+ */
+export function tierPhrase(
+  provenance: Provenance,
+  dataset: DatasetStatus,
+  lang: Lang,
+  publicationContext?: PublicationContext,
+  options?: { requirePhoto?: boolean },
+): string {
+  const context = publicationOf(dataset, publicationContext);
+  if (context === "prototype" || provenance.prototypeLabel === "PROTOTYPE-UNVERIFIED" || provenance.verifierType === "fixture-author") {
+    if (dataset === "prototype-seed") {
       return lang === "fr"
-        ? "Import de données ouvertes, non vérifié par l'application"
-        : "Open-data import, unverified by the App";
-    case "tier-4-live-feed":
-      return lang === "fr" ? "Statut en direct" : "Live status";
-    default:
-      return name;
+        ? "PROTOTYPE-UNVERIFIED. Graine de prototype. Non vérifié par l'application."
+        : "PROTOTYPE-UNVERIFIED. Prototype seed. Unverified by the App.";
+    }
+    return lang === "fr"
+      ? "PROTOTYPE-UNVERIFIED. Jeu d'essai étiqueté. Non vérifié par l'application."
+      : "PROTOTYPE-UNVERIFIED. Labelled fixture. Unverified by the App.";
   }
-}
-
-function tierName(tier: VerificationTier, lang: Lang): string {
-  const en: Record<VerificationTier, string> = {
-    "tier-0-open-data": "Tier 0 open-data",
-    "tier-1-business-claimed": "Tier 1 business-claimed",
-    "tier-2-peer": "Tier 2 peer",
-    "tier-3-surveyor": "Tier 3 surveyor",
-    "tier-4-live-feed": "Tier 4 live feed",
-  };
-  const fr: Record<VerificationTier, string> = {
-    "tier-0-open-data": "Niveau 0 données ouvertes",
-    "tier-1-business-claimed": "Niveau 1 déclaration du lieu",
-    "tier-2-peer": "Niveau 2 pair",
-    "tier-3-surveyor": "Niveau 3 enquêteur",
-    "tier-4-live-feed": "Niveau 4 flux en direct",
-  };
-  return lang === "fr" ? fr[tier] : en[tier];
+  if (verifiedLabelAllowed({ provenance, publicationContext: context, requirePhoto: options?.requirePhoto })) {
+    return lang === "fr" ? "Vérifié par un enquêteur" : "Verified by surveyor";
+  }
+  if (provenance.tier === 3 || provenance.prototypeLabel === "VERIFIED") {
+    return lang === "fr"
+      ? "Niveau 3 sans preuve suffisante. Pas affiché comme vérifié. Il faut la version du protocole, le rôle de l'enquêteur, la méthode et la date de visite."
+      : "Tier 3 without enough evidence. Not shown as verified. Protocol version, verifier role, method, and visit date are required.";
+  }
+  if (provenance.prototypeLabel === "SEEDED-OPEN-DATA" || provenance.tier === 0) {
+    return lang === "fr"
+      ? "SEEDED-OPEN-DATA. Import de données ouvertes, non vérifié par l'application."
+      : "SEEDED-OPEN-DATA. Open-data import, unverified by the App.";
+  }
+  if (provenance.tier === 2 || provenance.prototypeLabel === "COMMUNITY-REPORTED") {
+    return lang === "fr" ? "Signalé par un pair" : "Peer-reported";
+  }
+  if (provenance.tier === 1) {
+    return lang === "fr" ? "Déclaré par le lieu, non vérifié" : "Business-claimed, unverified";
+  }
+  if (provenance.tier === 4) {
+    return lang === "fr" ? "Statut en direct" : "Live status";
+  }
+  if (provenance.tier === "E") {
+    return lang === "fr" ? "Vérification documentaire, sans décision d'admissibilité" : "Desk check, with no eligibility decision";
+  }
+  return lang === "fr" ? "Niveau inconnu" : "Unknown tier";
 }
 
 export function freshness(provenance: Provenance | null, today: string, layer: FreshnessLayer, lang: Lang): Freshness {
@@ -85,7 +96,11 @@ export function freshness(provenance: Provenance | null, today: string, layer: F
     };
   }
   const ageDays = daysBetween(provenance.sourceDate, today);
-  if (provenance.tier === "tier-0-open-data" || provenance.verifierType === "fixture-author") {
+  if (
+    provenance.tier === 0 ||
+    provenance.verifierType === "fixture-author" ||
+    provenance.prototypeLabel === "PROTOTYPE-UNVERIFIED"
+  ) {
     return {
       state: "import",
       ageDays,
@@ -96,15 +111,8 @@ export function freshness(provenance: Provenance | null, today: string, layer: F
           : "Source date shown. This tier is not verification by the App.",
     };
   }
-  if (provenance.tier === "tier-4-live-feed") {
-    const observed = provenance.observedAt
-      ? lang === "fr"
-        ? `Horodatage du flux : ${provenance.observedAt}.`
-        : `Feed timestamp: ${provenance.observedAt}.`
-      : lang === "fr"
-        ? "L'âge en minutes est inconnu."
-        : "Age in minutes is unknown.";
-    return { state: "live-age-unknown", ageDays, limitDays: null, text: observed };
+  if (provenance.tier === 4) {
+    return liveFreshness(provenance, today, ageDays, lang);
   }
   const limit = limitDays(provenance.tier, layer);
   if (limit !== null && ageDays !== null && ageDays > limit) {
@@ -126,6 +134,34 @@ export function freshness(provenance: Provenance | null, today: string, layer: F
       lang === "fr"
         ? `Dans la fenêtre estimée du plan${limit === null ? "" : ` (${limit} jours)`}. Estimation, pas une garantie.`
         : `Within the plan's estimated window${limit === null ? "" : ` (${limit} days)`}. An estimate, not a guarantee.`,
+  };
+}
+
+function liveFreshness(provenance: Provenance, today: string, ageDays: number | null, lang: Lang): Freshness {
+  const observedDay = provenance.observedAt ? daysBetween(provenance.observedAt, today) : null;
+  const expiry = provenance.expiresAt ? Date.parse(provenance.expiresAt) : Number.NaN;
+  const todayStamp = Date.parse(`${today.slice(0, 10)}T00:00:00Z`);
+  const pastExpiry = !Number.isNaN(expiry) && !Number.isNaN(todayStamp) && expiry < todayStamp;
+  const tooOld = observedDay === null || observedDay > STATUS_SNAPSHOT_DAYS;
+  if (!provenance.observedAt || pastExpiry || tooOld) {
+    return {
+      state: "live-age-unknown",
+      ageDays: observedDay,
+      limitDays: STATUS_SNAPSHOT_DAYS,
+      text:
+        lang === "fr"
+          ? "Statut en direct inconnu. Le flux est absent, expiré, ou plus vieux que 30 jours."
+          : "Live status unknown. The feed is missing, expired, or older than 30 days.",
+    };
+  }
+  return {
+    state: "within-estimate",
+    ageDays: observedDay,
+    limitDays: STATUS_SNAPSHOT_DAYS,
+    text:
+      lang === "fr"
+        ? `Horodatage du flux : ${provenance.observedAt}. Dans la fenêtre de 30 jours.`
+        : `Feed timestamp: ${provenance.observedAt}. Within the 30-day snapshot.`,
   };
 }
 

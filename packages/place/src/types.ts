@@ -5,15 +5,28 @@
  * Real records are produced by access-maps. This package ships labelled fixtures only.
  */
 
-export const VERIFICATION_TIERS = [
-  "tier-0-open-data",
-  "tier-1-business-claimed",
-  "tier-2-peer",
-  "tier-3-surveyor",
-  "tier-4-live-feed",
-] as const;
+/** Canonical tiers from @access-main/schema. 0–4 and E. Not the old tier-N strings. */
+export const VERIFICATION_TIERS = [0, 1, 2, 3, 4, "E"] as const;
 
 export type VerificationTier = (typeof VERIFICATION_TIERS)[number];
+
+/** Day 1 prototype labels. A prototype record may carry only the first two. */
+export const PROTOTYPE_LABELS = [
+  "PROTOTYPE-UNVERIFIED",
+  "SEEDED-OPEN-DATA",
+  "COMMUNITY-REPORTED",
+  "VERIFIED",
+] as const;
+
+export type PrototypeLabel = (typeof PROTOTYPE_LABELS)[number];
+
+export const PUBLICATION_CONTEXTS = ["prototype", "canonical"] as const;
+
+export type PublicationContext = (typeof PUBLICATION_CONTEXTS)[number];
+
+export const VERIFIER_ROLES = ["trained_verifier", "peer", "operator", "importer", "desk_reviewer"] as const;
+
+export type VerifierRole = (typeof VERIFIER_ROLES)[number];
 
 export const DATASET_STATUSES = ["labelled-fixture", "prototype-seed", "access-maps"] as const;
 export type DatasetStatus = (typeof DATASET_STATUSES)[number];
@@ -34,19 +47,36 @@ export type Lang = "en" | "fr";
 
 export type YesNo = "yes" | "no";
 
+/** Tier 3 and the label VERIFIED are invalid without this block. */
+export interface SurveyEvidence {
+  protocolVersion: string;
+  verifierRole: VerifierRole;
+  method: string;
+  /** Visit or observation date (YYYY-MM-DD). */
+  observedAt: string;
+  photoIds: string[];
+}
+
 export interface Provenance {
   sourceName: string;
+  sourceId: string;
   sourceUrl?: string;
   licence: string;
   /** Calendar date the source was published or the fixture was authored (YYYY-MM-DD). */
   sourceDate: string;
   /** Calendar date this field was written into the record (YYYY-MM-DD). */
   recordDate: string;
+  /** Calendar date the source was retrieved (YYYY-MM-DD). */
+  retrievedAt: string;
   tier: VerificationTier;
-  verifierType: "open-data-import" | "business" | "peer" | "surveyor" | "operator-feed" | "fixture-author";
-  protocolVersion?: string;
-  /** Minute-level timestamp for a live feed. Absent means the age in minutes is unknown. */
+  prototypeLabel?: PrototypeLabel;
+  verifierType: "open-data-import" | "business" | "peer" | "surveyor" | "operator-feed" | "fixture-author" | "desk-reviewer";
+  /** Required when tier is 3 or prototypeLabel is VERIFIED. */
+  evidence?: SurveyEvidence;
+  /** Minute-level timestamp for a live feed. Absent means the age is unknown. */
   observedAt?: string;
+  /** After this instant a live status is unknown. */
+  expiresAt?: string;
 }
 
 export interface PhotoSlot {
@@ -313,7 +343,9 @@ export interface TrailFields {
 export interface PlaceRecord {
   id: string;
   datasetStatus: DatasetStatus;
+  publicationContext: PublicationContext;
   honestyNote: string;
+  honestyNoteFr: string;
   depth: "bounded-seed" | "skeleton";
   identity: Identity;
   nameFr: string | null;
@@ -350,7 +382,9 @@ export interface Repairer {
   name: string;
   nameFr: string | null;
   datasetStatus: DatasetStatus;
+  publicationContext: PublicationContext;
   honestyNote: string;
+  honestyNoteFr: string;
   /** Services the business record publishes. The App does not infer services from a name. */
   servicesPublished: RepairService[];
   coverageNote: string | null;
@@ -380,7 +414,9 @@ export interface SupplyStore {
   name: string;
   nameFr: string | null;
   datasetStatus: DatasetStatus;
+  publicationContext: PublicationContext;
   honestyNote: string;
+  honestyNoteFr: string;
   storeType: "pharmacy" | "supply-store";
   /** Published categories only. A category is not a claim that a specific product is in stock. */
   categoriesPublished: SupplyCategory[];

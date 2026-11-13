@@ -1,6 +1,7 @@
+import { labelOf } from "../i18n.js";
 import type { ChangeReport, Correction, Lang, PlacePack, PlaceRecord } from "../types.js";
 import type { ChangeProblem } from "../types.js";
-import { projectPlace } from "../project.js";
+import { correctableFields, projectPlace } from "../project.js";
 import { a11yCss } from "./a11yCss.js";
 import { FieldTable } from "./FieldTable.js";
 import { ChangeReportForm, CorrectionForm } from "./ReportForms.js";
@@ -128,12 +129,15 @@ export function PlacePage({
             <ul>
               {corrections.map((correction) => (
                 <li key={correction.id}>
-                  {lang === "fr" ? "Correction en attente" : "Pending correction"}: {correction.fieldId}. {correction.suggestedCorrection}
+                  {lang === "fr" ? "Correction en attente" : "Pending correction"}:{" "}
+                  {correctableFields(place, lang).find((field) => field.id === correction.fieldId)?.label ??
+                    (lang === "fr" ? "Champ" : "Field")}
+                  . {correction.suggestedCorrection}
                 </li>
               ))}
               {changes.map((change) => (
                 <li key={change.id}>
-                  {lang === "fr" ? "Signalement en attente" : "Pending change report"}: {change.problem}
+                  {lang === "fr" ? "Signalement en attente" : "Pending change report"}: {labelOf(`problem.${change.problem}`, lang)}
                 </li>
               ))}
             </ul>
