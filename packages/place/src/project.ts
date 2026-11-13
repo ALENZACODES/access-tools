@@ -972,6 +972,16 @@ function projectSupply(store: SupplyStore, lang: Lang): DirectoryCardView {
   };
 }
 
+/** A short page-language tag so two washroom options stay distinct when the group label is skipped. */
+function washroomOptionPrefix(name: string, index: number, lang: Lang, used: Set<string>): string {
+  const letter = name.match(/\b([A-Z])\b/)?.[1];
+  const noun = lang === "fr" ? "Toilettes" : "Washroom";
+  let prefix = letter ? `${noun} ${letter}` : `${noun} ${index + 1}`;
+  if (used.has(prefix)) prefix = `${noun} ${index + 1}`;
+  used.add(prefix);
+  return prefix;
+}
+
 export function correctableFields(
   place: PlaceRecord,
   lang: Lang,
@@ -984,11 +994,13 @@ export function correctableFields(
   for (const id of INTERIOR_IDS) add(id, lang === "fr" ? "Intérieur" : "Inside");
   for (const id of PARKING_IDS) add(id, lang === "fr" ? "Stationnement" : "Parking");
   for (const id of TRANSPORT_IDS) add(id, lang === "fr" ? "Transport" : "Transport");
-  for (const washroom of place.washrooms) {
+  const usedPrefixes = new Set<string>();
+  for (const [index, washroom] of place.washrooms.entries()) {
+    const prefix = washroomOptionPrefix(washroom.name, index, lang, usedPrefixes);
     for (const id of WASHROOM_IDS) {
       fields.push({
         id: `washroom:${washroom.id}:${id}`,
-        label: label(id, lang),
+        label: `${prefix} : ${label(id, lang)}`,
         group: washroom.name,
         groupEnglish: true,
       });

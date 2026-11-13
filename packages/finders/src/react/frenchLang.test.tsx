@@ -98,8 +98,12 @@ describe("French fixture language", () => {
     expect(washroomGroups).toHaveLength(2);
     expect(washroomGroups.every((group) => group.getAttribute("lang") === "en")).toBe(true);
     const washroomOptions = washroomGroups.flatMap((group) => [...group.querySelectorAll("option")]);
+    const washroomLabels = washroomOptions.map((option) => option.textContent ?? "");
     expect(washroomOptions).toHaveLength(28);
+    expect(new Set(washroomLabels).size).toBe(washroomLabels.length);
+    expect(washroomLabels.filter((text) => text.startsWith("Toilettes A : "))).toHaveLength(14);
+    expect(washroomLabels.filter((text) => text.startsWith("Toilettes B : "))).toHaveLength(14);
     expect(washroomOptions.every((option) => option.getAttribute("lang") === "fr")).toBe(true);
-    expect(washroomOptions.some((option) => (option.textContent ?? "").includes("Fixture"))).toBe(false);
+    expect(washroomLabels.some((text) => text.includes("Fixture"))).toBe(false);
   }, 20_000);
 });
