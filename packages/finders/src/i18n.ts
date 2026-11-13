@@ -107,7 +107,7 @@ export const FINDER_COPY = {
   },
   "finder.reason.no-table": {
     en: "No adult change table is recorded as present.",
-    fr: "Aucune table de change adulte n'est enregistrée comme présente.",
+    fr: "Aucune table à langer pour adultes n'est enregistrée comme présente.",
   },
   "finder.reason.no-hoist": {
     en: "No hoist is recorded as present.",
@@ -115,7 +115,7 @@ export const FINDER_COPY = {
   },
   "finder.reason.no-register": {
     en: "No adult change table or hoist is recorded as present.",
-    fr: "Aucune table de change adulte ni lève-personne n'est enregistré comme présent.",
+    fr: "Aucune table à langer pour adultes ni lève-personne n'est enregistré comme présent.",
   },
   "finder.reason.hours-unknown": {
     en: "Hours are unknown, so this record is not shown as open.",

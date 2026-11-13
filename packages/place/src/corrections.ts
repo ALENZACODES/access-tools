@@ -1,3 +1,4 @@
+import { copy } from "./i18n.js";
 import type { ChangeProblem, ChangeReport, Correction, ReportLog } from "./types.js";
 
 export interface CorrectionInput {
@@ -86,6 +87,6 @@ export function writeLog(storage: StorageLike, log: ReportLog, key = REPORT_STOR
 }
 
 export const MODERATION_NOTE = {
-  en: "Saved on this device as pending. This prototype does not moderate or publish reports. The displayed record does not change.",
-  fr: "Enregistré sur cet appareil comme en attente. Ce prototype ne modère ni ne publie les signalements. La fiche affichée ne change pas.",
+  en: copy("moderation.note", "en"),
+  fr: copy("moderation.note", "fr"),
 } as const;

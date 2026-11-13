@@ -74,7 +74,7 @@ export const SEARCH_COPY = {
   },
   "search.reason.change-table": {
     en: "No adult change table is recorded as present.",
-    fr: "Aucune table de change adulte n'est enregistrée comme présente.",
+    fr: "Aucune table à langer pour adultes n'est enregistrée comme présente.",
   },
   "search.reason.hoist": { en: "No hoist is recorded as present.", fr: "Aucun lève-personne n'est enregistré comme présent." },
   "search.reason.van": {

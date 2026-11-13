@@ -112,21 +112,26 @@ const TEXT_PROPS = new Set([
 ]);
 
 /** Units, language codes, URLs, and catalogue keys are not interface sentences. */
-export function isIgnorableUiText(text: string, inCatalogCall = false): boolean {
+export function isIgnorableUiText(text: string, inCatalogCall = false, model = false): boolean {
   const withoutSlots = text.replace(/\{slot\}/g, "").trim();
   if (!/[A-Za-z]/.test(withoutSlots)) return true;
   if (withoutSlots === "en" || withoutSlots === "fr") return true;
   if (/^(https?:|tel:|sms:|#|\/)/.test(text.trim())) return true;
-  if (/^(m|mm|cm|km|in|kg|h)\.?$/i.test(withoutSlots)) return true;
-  if (isMeasurement(withoutSlots)) return true;
-  if (/^[a-z][a-z0-9_-]*$/.test(withoutSlots)) return true;
+  if (/^(m|mm|cm|km)\.?$/i.test(withoutSlots)) return true;
   if (inCatalogCall && /^[A-Za-z][A-Za-z0-9]*(?:\.[A-Za-z0-9]+)*\.?$/.test(withoutSlots) && withoutSlots.includes(".")) {
     return true;
   }
   if (/^[a-z0-9]+(?:[.-][a-z0-9]+)+$/.test(withoutSlots)) return true;
+  if (!model) return false;
+  if (/^(in|kg|h)\.?$/i.test(withoutSlots)) return true;
+  if (isMeasurement(withoutSlots)) return true;
+  if (/^[a-z][a-z0-9_-]*$/.test(withoutSlots)) return true;
   if (/^[a-z0-9._:-]+$/.test(withoutSlots)) return true;
   if (/^[a-z][A-Za-z0-9]*$/.test(withoutSlots)) return true;
   if (/^T\d{2}:\d{2}/.test(withoutSlots)) return true;
+  if (/^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*$/.test(withoutSlots)) return true;
+  if (!/\s/.test(withoutSlots) && (/\[/.test(withoutSlots) || /\.[A-Za-z0-9_{]/.test(withoutSlots))) return true;
+  if (text.includes("font-family") || text.includes(":where(")) return true;
   return false;
 }
 
@@ -342,7 +347,7 @@ export function findHardcodedUiCopy(file: string, sourceText: string, model = fa
   const push = (node: ts.Node, text: string, forced: boolean) => {
     if (isComparisonOperand(node) || inTypePosition(node)) return;
     if (node.parent && (ts.isImportDeclaration(node.parent) || ts.isExportDeclaration(node.parent))) return;
-    if (isIgnorableUiText(text, inCatalogCall(node))) return;
+    if (isIgnorableUiText(text, inCatalogCall(node), model)) return;
     if (!forced && !model && !isRendered(node, text)) return;
     const position = node.getStart(source);
     if (seen.has(position)) return;

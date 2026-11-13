@@ -16,6 +16,31 @@ const COMPONENT_ROOTS = [
   "packages/finders/src/demo",
 ];
 
+const MODEL_ROOTS = ["packages/place/src", "packages/search/src", "packages/finders/src"];
+
+const MODEL_EXCLUDED = new Set([
+  "i18n.ts",
+  "modelCopy.ts",
+  "fixtures.ts",
+  // Not the UI catalogue: developer diagnostics, and the fixture-language auditor's own messages.
+  "lint.ts",
+  "frenchFixtureLang.ts",
+]);
+
+function modelFiles(dir: string): string[] {
+  const found: string[] = [];
+  for (const entry of readdirSync(dir)) {
+    const full = path.join(dir, entry);
+    if (statSync(full).isDirectory()) {
+      found.push(...modelFiles(full));
+      continue;
+    }
+    if (!entry.endsWith(".ts") || entry.endsWith(".test.ts") || MODEL_EXCLUDED.has(entry)) continue;
+    found.push(full);
+  }
+  return found;
+}
+
 function componentFiles(dir: string): string[] {
   const found: string[] = [];
   for (const entry of readdirSync(dir)) {
@@ -153,23 +178,30 @@ describe("French language coverage for component copy", () => {
     expect(hits).toContain("Hello there.");
     expect(hits).toContain("Bonjour.");
     expect(findHardcodedUiCopy("sample.ts", `export const id = "entrance.step-free";`, true)).toEqual([]);
+    expect(findHardcodedUiCopy("sample.ts", `export const label = "Unknown";`, true).map((hit) => hit.text)).toContain("Unknown");
+    expect(findHardcodedUiCopy("sample.ts", `export const label = "not recorded";`, true).map((hit) => hit.text)).toContain(
+      "not recorded",
+    );
   });
 
-  const MODEL_FILES = [
-    "packages/place/src/format.ts",
-    "packages/place/src/project.ts",
-    "packages/place/src/staleness.ts",
-    "packages/place/src/recommend.ts",
-    "packages/finders/src/coverage.ts",
-    "packages/finders/src/repair.ts",
-    "packages/finders/src/charging.ts",
-    "packages/finders/src/parking.ts",
-    "packages/finders/src/washrooms.ts",
-    "packages/search/src/search.ts",
-  ];
+  it.each([
+    ["<span>unknown</span>", "unknown"],
+    ['<button aria-label="close" />', "close"],
+    ['<abbr title="approximately">~</abbr>', "approximately"],
+    ['<input placeholder="search" />', "search"],
+    ["<p>note:</p>", "note:"],
+    ["<p>h</p>", "h"],
+  ])("still fails when a component renders %s", (jsx, hit) => {
+    const source = `export function Sample() { return ${jsx}; }`;
+    expect(textsOf(source)).toContain(hit);
+    expect(findHardcodedUiCopy("sample.ts", `export const sample = "${hit}";`, true)).toEqual([]);
+  });
 
   it("fails when English UI text is typed into a model file instead of the i18n catalogue", () => {
-    const hits = MODEL_FILES.flatMap((file) => findHardcodedUiCopy(file, readFileSync(path.join(repoRoot, file), "utf8"), true));
+    const files = MODEL_ROOTS.flatMap((root) => modelFiles(path.join(repoRoot, root)));
+    expect(files.some((file) => file.endsWith(`${path.sep}corrections.ts`))).toBe(true);
+    expect(files.some((file) => file.endsWith(`${path.sep}hours.ts`))).toBe(true);
+    const hits = files.flatMap((file) => findHardcodedUiCopy(path.relative(repoRoot, file), readFileSync(file, "utf8"), true));
     expect(hits.map((hit) => `${hit.file}:${hit.line} ${hit.text}`)).toEqual([]);
   });
 

@@ -51,9 +51,9 @@ export const MODEL_COPY = {
   "format.working": { en: "Working", fr: "Fonctionnement" },
   "format.table.present": {
     en: "Adult change table recorded as present",
-    fr: "Table de change adulte enregistrée comme présente",
+    fr: "Table à langer pour adultes enregistrée comme présente",
   },
-  "format.table.absent": { en: "No adult change table recorded", fr: "Aucune table de change adulte enregistrée" },
+  "format.table.absent": { en: "No adult change table recorded", fr: "Aucune table à langer pour adultes enregistrée" },
   "format.height-range": { en: "Height range", fr: "Plage de hauteur" },
   "format.load": { en: "Load", fr: "Charge" },
   "format.product-label": { en: "Product label", fr: "Étiquette produit" },
@@ -304,7 +304,7 @@ export const MODEL_COPY = {
   "directory.services": { en: "Published services: {services}", fr: "Services publiés\u00A0: {services}" },
   "directory.coverage": { en: "Coverage: {note}", fr: "Couverture\u00A0: {note}" },
   "directory.radius": { en: "Mobile radius: {radius}", fr: "Rayon mobile\u00A0: {radius}" },
-  "directory.hours": { en: "Hours: {hours}", fr: "Heures\u00A0: {hours}" },
+  "directory.hours": { en: "Hours: {hours}", fr: "Heures d'ouverture\u00A0: {hours}" },
   "directory.phone": { en: "Phone: {phone}", fr: "Téléphone\u00A0: {phone}" },
   "directory.website": { en: "Website: {website}", fr: "Site\u00A0: {website}" },
   "directory.no-categories": {
@@ -344,7 +344,7 @@ export const MODEL_COPY = {
   "washroom.shelf-hook-supplies": { en: "Shelf, hook, and supplies space", fr: "Tablette, crochet et espace pour les fournitures" },
   "washroom.privacy-lock": { en: "Privacy and lock", fr: "Intimité et verrou" },
   "washroom.emergency-cord": { en: "Emergency cord", fr: "Cordon d'alarme" },
-  "washroom.change-table": { en: "Adult change table", fr: "Table de change adulte" },
+  "washroom.change-table": { en: "Adult change table", fr: "Table à langer pour adultes" },
   "washroom.hoist": { en: "Hoist", fr: "Lève-personne" },
   "washroom.access-policy": { en: "Lock, key, and code policy", fr: "Politique de clé, code et accès" },
   "washroom.hours-reliability": { en: "Hours and reliability", fr: "Heures et fiabilité" },
@@ -394,4 +394,9 @@ export const MODEL_COPY = {
   "trail.width-mm": { en: "Trail width", fr: "Largeur du sentier" },
   "trail.obstacles": { en: "Trail obstacles", fr: "Obstacles du sentier" },
   "trail.rest": { en: "Trail rest", fr: "Repos sur le sentier" },
+  "geo.province": { en: "Ontario", fr: "Ontario" },
+  "moderation.note": {
+    en: "Saved on this device as pending. This prototype does not moderate or publish reports. The displayed record does not change.",
+    fr: "Enregistré sur cet appareil comme en attente. Ce prototype ne modère ni ne publie les signalements. La fiche affichée ne change pas.",
+  },
 } as const;
