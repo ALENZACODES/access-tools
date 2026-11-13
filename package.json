@@ -3,16 +3,21 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Directory, personal timing, and accessible games for the unbranded Ontario accessibility app. Place pages, search, and finders are a separate lane.",
+  "description": "Directory, timing, games, place pages, search, and finders for the unbranded Ontario accessibility app. Spinal-cord-injury first. Timing is emergency links only, with no health-aware timing.",
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "test": "vitest run",
-    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run && npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present && tsc --noEmit -p tsconfig.json",
     "lint": "eslint .",
+    "build": "npm run build --workspaces --if-present",
     "test:e2e": "playwright test -c e2e/playwright.config.ts"
   },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "UNLICENSED",
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
