@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://access-tools.local/schema/games-records-1.0.0.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["settings", "round"],
+  "properties": {
+    "settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "playerId",
+        "language",
+        "textScale",
+        "contrast",
+        "reduceMotion",
+        "pace",
+        "timerEnabled",
+        "favouriteGameIds",
+        "skippedGameIds",
+        "streakOptOut"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "games-settings-1.0.0" },
+        "playerId": { "type": "string", "minLength": 8 },
+        "language": { "enum": ["en", "fr"] },
+        "textScale": { "enum": ["default", "large", "extra_large"] },
+        "contrast": { "enum": ["default", "high"] },
+        "reduceMotion": { "type": "boolean" },
+        "pace": { "enum": ["relaxed", "standard", "brisk"] },
+        "timerEnabled": { "type": "boolean" },
+        "favouriteGameIds": { "type": "array", "items": { "type": "string" } },
+        "skippedGameIds": { "type": "array", "items": { "type": "string" } },
+        "streakOptOut": { "type": "boolean" }
+      }
+    },
+    "round": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "roundId",
+        "playerId",
+        "gameId",
+        "pace",
+        "timerEnabled",
+        "startedAt",
+        "endedAt",
+        "completed",
+        "points",
+        "correctCount",
+        "trialCount"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "games-round-1.0.0" },
+        "roundId": { "type": "string", "minLength": 8 },
+        "playerId": { "type": "string", "minLength": 8 },
+        "gameId": { "type": "string" },
+        "pace": { "enum": ["relaxed", "standard", "brisk"] },
+        "timerEnabled": { "type": "boolean" },
+        "startedAt": { "type": "string", "format": "date-time" },
+        "endedAt": { "type": "string", "format": "date-time" },
+        "completed": { "type": "boolean" },
+        "points": { "type": "integer", "minimum": 0 },
+        "correctCount": { "type": "integer", "minimum": 0 },
+        "trialCount": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

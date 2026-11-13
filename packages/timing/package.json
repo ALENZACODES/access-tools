@@ -1,0 +1,14 @@
+{
+  "name": "@access-tools/timing",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Emergency pathway links: 911, 9-8-8, and ConnexOntario. No medical advice and no health-aware timing.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}
