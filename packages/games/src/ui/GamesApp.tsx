@@ -1,20 +1,16 @@
-import { useId, useState, type CSSProperties } from "react";
-import { GAMES_BOUNDARY } from "../boundaries.js";
-import { choose, createSession, pauseSession, viewSession } from "../engine.js";
-import { buildDailySet, daysPlayed, filterGames, searchGames, surpriseGame } from "../hub.js";
+import { useEffect, useId, useRef, useState, type CSSProperties } from "react";
+import { DAILY_NOTE, GAMES_BOUNDARY, GRACE_RULE, PRACTICE_BANNER } from "../boundaries.js";
+import { TASK_FAMILY_LABEL, choose, createSession, pauseSession, viewSession } from "../engine.js";
+import { buildDailySet, filterGames, searchGames, streakFromRounds, surpriseGame } from "../hub.js";
 import { stepScan } from "../scan.js";
 import type { GameSession, GamesRound, GamesSettings, HubFilter, Language } from "../types.js";
 
-const FILTERS: HubFilter[] = ["all", "favourites", "short", "calm", "words", "numbers", "puzzles"];
+const FILTERS: HubFilter[] = ["all", "favourites", "short"];
 
 const FILTER_LABEL: Record<HubFilter, Record<Language, string>> = {
   all: { en: "All games", fr: "Tous les jeux" },
   favourites: { en: "My favourites", fr: "Mes favoris" },
   short: { en: "Short games", fr: "Jeux courts" },
-  calm: { en: "Calm games", fr: "Jeux calmes" },
-  words: { en: "Word games", fr: "Jeux de mots" },
-  numbers: { en: "Number games", fr: "Jeux de nombres" },
-  puzzles: { en: "Puzzles", fr: "Casse-tête" },
 };
 
 export interface GamesAppProps {
@@ -22,6 +18,7 @@ export interface GamesAppProps {
   rounds: GamesRound[];
   onSettings: (settings: GamesSettings) => void;
   onRound: (round: GamesRound) => void;
+  onResetStreak: () => void;
   now?: Date;
   seed?: number;
 }
@@ -31,59 +28,81 @@ export function GamesApp(props: GamesAppProps) {
   const [filter, setFilter] = useState<HubFilter>("all");
   const [active, setActive] = useState<GameSession | null>(null);
   const [startedAt, setStartedAt] = useState<string | null>(null);
+  const [replayNote, setReplayNote] = useState(false);
+  const returnFocusId = useRef<string | null>(null);
   const language = props.settings.language;
   const copy = language === "fr" ? fr : en;
-  const scale = props.settings.textScale === "extra_large" ? "2.5rem" : props.settings.textScale === "large" ? "2rem" : "1.125rem";
+  const scale = props.settings.textScale === "extra_large" ? "1.5rem" : props.settings.textScale === "large" ? "1.25rem" : "1.125rem";
   const colors =
     props.settings.contrast === "high"
       ? { background: "#000", color: "#fff", accent: "#ffe14a", border: "#fff" }
       : { background: "#fff", color: "#1a1a1a", accent: "#102a43", border: "#1a1a1a" };
+  const today = (props.now ?? new Date()).toISOString().slice(0, 10);
+  const streak = streakFromRounds(props.rounds, today);
 
-  function openGame(id: string): void {
+  useEffect(() => {
+    document.documentElement.lang = language;
+  }, [language]);
+
+  useEffect(() => {
+    if (active) return;
+    const id = returnFocusId.current;
+    if (!id) return;
+    document.getElementById(id)?.focus();
+  }, [active]);
+
+  function openGame(id: string, practice: boolean): void {
+    returnFocusId.current = `play-${id}`;
     setStartedAt(new Date().toISOString());
     setActive(
       createSession(id, {
         seed: props.seed ?? 1,
-        pace: props.settings.pace,
+        pace: "relaxed",
         language,
-        timerEnabled: props.settings.timerEnabled,
+        timerEnabled: false,
+        practice,
       }),
     );
   }
 
   function finishIfNeeded(session: GameSession): void {
     const view = viewSession(session);
-    if (view.status === "complete" && startedAt && props.rounds.every((round) => round.startedAt !== startedAt)) {
-      props.onRound({
-        schemaVersion: "games-round-1.0.0",
-        roundId: crypto.randomUUID(),
-        playerId: props.settings.playerId,
-        gameId: session.metaId,
-        pace: session.pace,
-        timerEnabled: session.timerEnabled,
-        startedAt,
-        endedAt: new Date().toISOString(),
-        completed: true,
-        points: view.points,
-        correctCount: view.correctCount,
-        trialCount: view.trialCount,
-      });
-    }
+    if (session.practice || view.status !== "complete" || !startedAt) return;
+    if (props.rounds.some((round) => round.startedAt === startedAt)) return;
+    props.onRound({
+      schemaVersion: "games-round-1.0.0",
+      roundId: crypto.randomUUID(),
+      playerId: props.settings.playerId,
+      gameId: session.metaId,
+      pace: "relaxed",
+      timerEnabled: false,
+      startedAt,
+      endedAt: new Date().toISOString(),
+      completed: true,
+      points: view.points,
+      correctCount: view.correctCount,
+      trialCount: view.trialCount,
+    });
   }
 
   const frame: CSSProperties = {
+    boxSizing: "border-box",
+    width: "100%",
+    maxWidth: "46rem",
+    overflowWrap: "anywhere",
     fontFamily: "system-ui, sans-serif",
     fontSize: scale,
     background: colors.background,
     color: colors.color,
     display: "grid",
     gap: "1rem",
-    maxWidth: "46rem",
   };
   const button: CSSProperties = {
+    boxSizing: "border-box",
     minHeight: "48px",
+    maxWidth: "100%",
     padding: "0.6rem 0.9rem",
-    fontSize: "1em",
+    fontSize: "1rem",
     fontWeight: 700,
     background: colors.background,
     color: colors.color,
@@ -110,23 +129,13 @@ export function GamesApp(props: GamesAppProps) {
 
   const searched = searchGames(query);
   const filtered = filterGames(filter, props.settings.favouriteGameIds).filter((game) => searched.some((item) => item.id === game.id));
-  const daily = buildDailySet({
-    minutes: 10,
-    skipIds: props.settings.skippedGameIds,
-    seed: props.seed ?? 2,
-    calmOnly: props.settings.pace === "relaxed",
-  });
-  const played = daysPlayed(props.rounds, props.now ?? new Date());
+  const daily = buildDailySet(today);
 
   return (
-    <main style={frame}>
+    <main lang={language} style={frame}>
       <header style={{ display: "flex", justifyContent: "space-between", gap: "0.75rem", flexWrap: "wrap" }}>
         <h1 style={{ margin: 0 }}>{copy.games}</h1>
-        <button
-          type="button"
-          style={button}
-          onClick={() => props.onSettings({ ...props.settings, language: language === "en" ? "fr" : "en" })}
-        >
+        <button type="button" style={button} onClick={() => props.onSettings({ ...props.settings, language: language === "en" ? "fr" : "en" })}>
           {language === "en" ? "Français" : "English"}
         </button>
       </header>
@@ -134,77 +143,79 @@ export function GamesApp(props: GamesAppProps) {
         {GAMES_BOUNDARY[language]}
       </p>
       <p>{copy.switchHelp}</p>
-      {!props.settings.streakOptOut ? <p>{played.message[language]}</p> : null}
+      {language === "fr" ? <p>{copy.namesStayEnglish}</p> : null}
       <section aria-labelledby="daily-title">
         <h2 id="daily-title">{copy.daily}</h2>
+        <p>{DAILY_NOTE[language]}</p>
         <ul>
           {daily.map((game) => (
-            <li key={game.id}>
-              {game.title[language]} ({game.estimatedMinutes} {copy.minutes})
-            </li>
+            <li key={game.id}>{game.name}</li>
           ))}
         </ul>
+        <button type="button" style={button} onClick={() => setReplayNote(true)}>
+          {copy.replay}
+        </button>
+        {replayNote ? <p role="status">{copy.replayNote}</p> : null}
       </section>
+      {!props.settings.streakOptOut ? (
+        <section aria-labelledby="streak-title">
+          <h2 id="streak-title">{copy.streak}</h2>
+          <p>{GRACE_RULE[language]}</p>
+          <p>
+            {copy.streakCount} {streak.streak}. {copy.graceLeft} {streak.graceRemaining}.
+          </p>
+          <button type="button" style={button} onClick={props.onResetStreak}>
+            {copy.resetStreak}
+          </button>
+        </section>
+      ) : null}
       <label htmlFor="game-search">
         {copy.search}
-        <input id="game-search" value={query} onChange={(event) => setQuery(event.target.value)} style={{ ...button, width: "100%" }} />
+        <input id="game-search" value={query} onChange={(event) => setQuery(event.target.value)} style={{ ...button, width: "100%", fontWeight: 400 }} />
       </label>
-      <div role="group" aria-label={copy.filters}>
+      <div role="group" aria-label={copy.filters} style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
         {FILTERS.map((item) => (
           <button key={item} type="button" aria-pressed={filter === item} style={button} onClick={() => setFilter(item)}>
             {FILTER_LABEL[item][language]}
           </button>
         ))}
       </div>
-      <button
-        type="button"
-        style={button}
-        onClick={() => openGame(surpriseGame(props.settings.favouriteGameIds, props.seed ?? 3).id)}
-      >
+      <button type="button" style={button} onClick={() => openGame(surpriseGame(props.settings.favouriteGameIds, props.seed ?? 3).id, false)}>
         {copy.surprise}
       </button>
       <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: "0.75rem" }}>
         {filtered.map((game) => (
-          <li key={game.id} style={{ border: `3px solid ${colors.border}`, padding: "0.75rem", display: "grid", gap: "0.4rem" }}>
-            <h2 style={{ margin: 0 }}>{game.title[language]}</h2>
+          <li key={game.id} style={{ border: `3px solid ${colors.border}`, padding: "0.75rem", display: "grid", gap: "0.4rem", minWidth: 0 }}>
+            <h2 style={{ margin: 0 }}>{game.name}</h2>
             <p style={{ margin: 0 }}>{game.summary[language]}</p>
-            <p style={{ margin: 0 }}>
-              {game.area}. {game.estimatedMinutes} {copy.minutes}. {copy.relaxedAvailable}
-            </p>
-            <button type="button" style={button} onClick={() => openGame(game.id)}>
-              {copy.play} {game.title[language]}
+            <p style={{ margin: 0 }}>{TASK_FAMILY_LABEL[game.taskFamily][language]}</p>
+            <p style={{ margin: 0 }}>{game.timingNote[language]}</p>
+            <p style={{ margin: 0 }}>{game.inputNote[language]}</p>
+            <button id={`play-${game.id}`} type="button" style={button} onClick={() => openGame(game.id, false)}>
+              {copy.play} {game.name}
+            </button>
+            <button type="button" style={button} onClick={() => openGame(game.id, true)}>
+              {copy.practice} {game.name}
             </button>
           </li>
         ))}
       </ul>
-      <fieldset style={{ border: `3px solid ${colors.border}` }}>
+      <fieldset style={{ border: `3px solid ${colors.border}`, minWidth: 0 }}>
         <legend>{copy.settings}</legend>
-        <label>
+        <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", minHeight: "48px" }}>
           <input
             type="checkbox"
-            checked={props.settings.timerEnabled}
-            onChange={(event) => props.onSettings({ ...props.settings, timerEnabled: event.target.checked })}
-          />{" "}
-          {copy.timer}
+            checked={props.settings.streakOptOut}
+            onChange={(event) => props.onSettings({ ...props.settings, streakOptOut: event.target.checked })}
+          />
+          {copy.hideStreak}
         </label>
-        <label>
-          {copy.pace}{" "}
-          <select
-            value={props.settings.pace}
-            onChange={(event) => props.onSettings({ ...props.settings, pace: event.target.value as GamesSettings["pace"] })}
-          >
-            <option value="relaxed">{copy.relaxed}</option>
-            <option value="standard">{copy.standard}</option>
-            <option value="brisk">{copy.brisk}</option>
-          </select>
-        </label>
-        <label>
-          {copy.text}{" "}
+        <label style={{ display: "grid", gap: "0.35rem" }}>
+          {copy.text}
           <select
             value={props.settings.textScale}
-            onChange={(event) =>
-              props.onSettings({ ...props.settings, textScale: event.target.value as GamesSettings["textScale"] })
-            }
+            style={{ ...button, fontWeight: 400 }}
+            onChange={(event) => props.onSettings({ ...props.settings, textScale: event.target.value as GamesSettings["textScale"] })}
           >
             <option value="default">{copy.textDefault}</option>
             <option value="large">{copy.textLarge}</option>
@@ -227,10 +238,15 @@ function GamePlay(props: {
 }) {
   const view = viewSession(props.session);
   const titleId = useId();
+  const headingRef = useRef<HTMLHeadingElement>(null);
   const [scan, setScan] = useState(0);
   const choices = view.choices;
   const safeScan = choices.length === 0 ? 0 : scan % choices.length;
   const focused = choices[safeScan];
+
+  useEffect(() => {
+    headingRef.current?.focus();
+  }, [props.session.metaId]);
 
   function pickChoice(id: string): void {
     if (props.session.paused && id !== "resume") return;
@@ -238,9 +254,12 @@ function GamePlay(props: {
   }
 
   return (
-    <main style={props.frame}>
-      <h1 id={titleId}>{view.title}</h1>
+    <main lang={props.session.language} style={props.frame}>
+      <h1 id={titleId} ref={headingRef} tabIndex={-1}>
+        {view.title}
+      </h1>
       <p role="note">{GAMES_BOUNDARY[props.session.language]}</p>
+      {props.session.practice ? <p role="status">{PRACTICE_BANNER[props.session.language]}</p> : null}
       <p aria-live="polite">{view.announcement}</p>
       <p>{view.prompt}</p>
       <p>{view.detail}</p>
@@ -249,11 +268,18 @@ function GamePlay(props: {
           <button
             key={choice.id}
             type="button"
-            style={{
-              ...props.button,
-              outline: index === safeScan ? `4px solid ${props.colors.accent}` : undefined,
-            }}
+            style={{ ...props.button, outline: index === safeScan ? `4px solid ${props.colors.accent}` : undefined }}
             onClick={() => pickChoice(choice.id)}
+            onKeyDown={(event) => {
+              if (event.key === "ArrowLeft" && choices.some((item) => item.id === "left")) {
+                event.preventDefault();
+                pickChoice("left");
+              }
+              if (event.key === "ArrowRight" && choices.some((item) => item.id === "right")) {
+                event.preventDefault();
+                pickChoice("right");
+              }
+            }}
           >
             {choice.label}
           </button>
@@ -263,25 +289,19 @@ function GamePlay(props: {
         <button type="button" style={props.button} onClick={() => setScan(stepScan(safeScan, choices.length, 1))}>
           {props.copy.next}
         </button>
-        <button
-          type="button"
-          style={props.button}
-          onClick={() => {
-            if (focused) pickChoice(focused.id);
-          }}
-        >
+        <button type="button" style={props.button} onClick={() => focused && pickChoice(focused.id)}>
           {props.copy.choose}
         </button>
         <button type="button" style={props.button} onClick={() => props.onSession(pauseSession(props.session))}>
-          {props.copy.pause}
+          {props.session.paused ? props.copy.resume : props.copy.pause}
         </button>
         <button type="button" style={props.button} onClick={props.onExit}>
           {props.copy.back}
         </button>
       </div>
-      {view.status === "complete" ? (
+      {view.scoreVisible ? (
         <p>
-          {props.copy.points}: {view.points}. {props.copy.matched}: {view.correctCount}/{view.trialCount}. {props.copy.notHealth}
+          {props.copy.points}: {view.points}. {props.copy.insideOnly}
         </p>
       ) : null}
     </main>
@@ -294,58 +314,62 @@ function note(colors: { border: string }): CSSProperties {
 
 const en = {
   games: "Games",
-  daily: "A short set for today",
-  minutes: "minutes",
+  daily: "Three games for today",
+  replay: "Replay today's three",
+  replayNote: "Same three games for this date. Play any of them again.",
+  streak: "Streak",
+  streakCount: "Days in a row",
+  graceLeft: "Grace days remaining",
+  resetStreak: "Reset the streak on this device",
   search: "Search games",
   filters: "Filters",
   surprise: "Surprise me",
   play: "Play",
-  relaxedAvailable: "Relaxed mode is available, with no time limit.",
-  switchHelp: "Switch: Next, then Choose. Single tap and the keyboard work on every button. There is no running scan timer.",
+  practice: "Practice",
+  namesStayEnglish: "Game names stay in English in this prototype.",
+  switchHelp: "Switch: Next, then Choose. Single tap and the keyboard work on every button. There is no running scan.",
   settings: "Settings",
-  timer: "Show a brisk timer. It never ends the round, and Relaxed ignores it.",
-  pace: "Pace",
-  relaxed: "Relaxed",
-  standard: "Standard",
-  brisk: "Brisk",
+  hideStreak: "Hide the streak",
   text: "Text size",
   textDefault: "Default",
-  textLarge: "Large, 200 percent",
+  textLarge: "Large",
   textExtra: "Extra large",
   next: "Next",
   choose: "Choose",
   pause: "Pause",
+  resume: "Resume",
   back: "Back to games",
-  points: "Points for finishing",
-  matched: "Choices that matched",
-  notHealth: "These numbers stay in Games and do not describe health or travel.",
+  points: "Points inside this exercise",
+  insideOnly: "These numbers measure this exercise only.",
 };
 
 const fr: typeof en = {
   games: "Jeux",
-  daily: "Une courte série pour aujourd'hui",
-  minutes: "minutes",
+  daily: "Trois jeux pour aujourd'hui",
+  replay: "Rejouer les trois d'aujourd'hui",
+  replayNote: "Les trois mêmes jeux pour cette date. Vous pouvez les rejouer.",
+  streak: "Série",
+  streakCount: "Jours de suite",
+  graceLeft: "Jours de grâce restants",
+  resetStreak: "Remettre la série à zéro sur cet appareil",
   search: "Chercher un jeu",
   filters: "Filtres",
   surprise: "Surprenez-moi",
   play: "Jouer",
-  relaxedAvailable: "Le mode détendu est offert, sans limite de temps.",
+  practice: "Pratiquer",
+  namesStayEnglish: "Les noms des jeux restent en anglais dans cette version.",
   switchHelp: "Contacteur : Suivant, puis Choisir. Un seul toucher et le clavier fonctionnent sur chaque bouton. Aucun balayage automatique.",
   settings: "Réglages",
-  timer: "Afficher un minuteur vif. Il ne termine jamais la manche, et le mode détendu l'ignore.",
-  pace: "Rythme",
-  relaxed: "Détendu",
-  standard: "Standard",
-  brisk: "Vif",
+  hideStreak: "Masquer la série",
   text: "Taille du texte",
   textDefault: "Par défaut",
-  textLarge: "Grand, 200 pour cent",
+  textLarge: "Grand",
   textExtra: "Très grand",
   next: "Suivant",
   choose: "Choisir",
   pause: "Pause",
+  resume: "Reprendre",
   back: "Retour aux jeux",
-  points: "Points pour avoir terminé",
-  matched: "Choix correspondants",
-  notHealth: "Ces nombres restent dans Jeux et ne décrivent ni la santé ni le déplacement.",
+  points: "Points dans cet exercice",
+  insideOnly: "Ces nombres mesurent seulement cet exercice.",
 };

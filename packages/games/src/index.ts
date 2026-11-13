@@ -1,6 +1,7 @@
-export { GAMES_BOUNDARY, ROUND_DONE } from "./boundaries.js";
+export { DAILY_NOTE, GAMES_BOUNDARY, GRACE_RULE, PRACTICE_BANNER, PRACTICE_DONE, ROUND_DONE } from "./boundaries.js";
 export {
   CATALOG,
+  TASK_FAMILY_LABEL,
   choose,
   createSession,
   expireTrial,
@@ -10,7 +11,7 @@ export {
   solutionIds,
   viewSession,
 } from "./engine.js";
-export { buildDailySet, daysPlayed, filterGames, searchGames, surpriseGame } from "./hub.js";
+export { buildDailySet, filterGames, searchGames, streakFromDates, streakFromRounds, surpriseGame } from "./hub.js";
 export { stepScan } from "./scan.js";
 export {
   GAMES_DATABASE_NAME,
@@ -26,9 +27,9 @@ export {
 } from "./store.js";
 export { GamesApp } from "./ui/GamesApp.js";
 export type {
-  Area,
   Choice,
   CreateOptions,
+  GameData,
   GameMeta,
   GameSession,
   GameView,
@@ -37,4 +38,5 @@ export type {
   HubFilter,
   Language,
   Pace,
+  TaskFamily,
 } from "./types.js";

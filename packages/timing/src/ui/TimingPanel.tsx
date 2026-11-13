@@ -1,7 +1,9 @@
-import { useId, useState, type CSSProperties } from "react";
+import { useEffect, useId, useState, type CSSProperties } from "react";
 import { TIMING_BOUNDARY } from "../boundaries.js";
 import { blankTimingDocument, parseTimingDocument } from "../document.js";
+import { EMERGENCY_PATHWAYS } from "../emergency.js";
 import { planTiming } from "../plan.js";
+import { HEALTH_AWARE_TIMING_ENABLED } from "../scope.js";
 import type { Language, SuppliedLeg, SuppliedWaypoint, TimingDocument } from "../types.js";
 
 export interface TimingPanelProps {
@@ -73,11 +75,17 @@ export function TimingPanel(props: TimingPanelProps): JSX.Element {
   const [error, setError] = useState<string | null>(null);
   let planError: string | null = null;
   let plan = null as ReturnType<typeof planTiming> | null;
-  try {
-    plan = planTiming(props.document, props.legs, props.waypoints);
-  } catch (caught) {
-    planError = caught instanceof Error ? caught.message : "Plan failed";
+  if (HEALTH_AWARE_TIMING_ENABLED) {
+    try {
+      plan = planTiming(props.document, props.legs, props.waypoints);
+    } catch (caught) {
+      planError = caught instanceof Error ? caught.message : "Plan failed";
+    }
   }
+
+  useEffect(() => {
+    document.documentElement.lang = language;
+  }, [language]);
 
   function update(patch: Partial<TimingDocument>): void {
     try {
@@ -89,12 +97,14 @@ export function TimingPanel(props: TimingPanelProps): JSX.Element {
     }
   }
 
+  const pathways = plan?.emergencyPathways ?? EMERGENCY_PATHWAYS;
+
   return (
-    <section aria-labelledby={`${baseId}-title`} style={{ fontFamily: "system-ui, sans-serif", color: "#1a1a1a", background: "#fff", display: "grid", gap: "1rem", maxWidth: "44rem" }}>
+    <main lang={language} style={{ boxSizing: "border-box", width: "100%", maxWidth: "44rem", overflowWrap: "anywhere", fontFamily: "system-ui, sans-serif", color: "#1a1a1a", background: "#fff", display: "grid", gap: "1rem" }}>
       <div style={{ display: "flex", justifyContent: "space-between", gap: "0.75rem", flexWrap: "wrap" }}>
-        <h2 id={`${baseId}-title`} style={{ margin: 0 }}>
+        <h1 id={`${baseId}-title`} style={{ margin: 0 }}>
           {copy.title}
-        </h2>
+        </h1>
         <button type="button" onClick={() => props.onLanguage(language === "en" ? "fr" : "en")} style={buttonStyle}>
           {language === "en" ? "Français" : "English"}
         </button>
@@ -103,9 +113,9 @@ export function TimingPanel(props: TimingPanelProps): JSX.Element {
         {TIMING_BOUNDARY[language]}
       </p>
       <div aria-label={copy.emergencyLabel} style={{ display: "grid", gap: "0.75rem" }}>
-        {(plan?.emergencyPathways ?? []).map((pathway) => (
+        {pathways.map((pathway) => (
           <article key={pathway.id} style={{ border: "3px solid #102a43", padding: "0.75rem", display: "grid", gap: "0.4rem" }}>
-            <h3 style={{ margin: 0 }}>{pathway.name[language]}</h3>
+            <h2 style={{ margin: 0 }}>{pathway.name[language]}</h2>
             <p style={{ margin: 0 }}>{pathway.detail[language]}</p>
             <a href={pathway.href} style={linkStyle}>
               {pathway.action[language]}
@@ -117,8 +127,11 @@ export function TimingPanel(props: TimingPanelProps): JSX.Element {
             ) : null}
           </article>
         ))}
-        <p>{plan?.healthLine.message[language]}</p>
+        {plan ? <p>{plan.healthLine.message[language]}</p> : null}
       </div>
+      {HEALTH_AWARE_TIMING_ENABLED ? null : <p>{copy.gated}</p>}
+      {HEALTH_AWARE_TIMING_ENABLED ? (
+      <>
       <form
         onSubmit={(event) => {
           event.preventDefault();
@@ -158,7 +171,9 @@ export function TimingPanel(props: TimingPanelProps): JSX.Element {
           ))}
         </ol>
       ) : null}
-    </section>
+      </>
+      ) : null}
+    </main>
   );
 }
 
@@ -181,7 +196,8 @@ const noteStyle: CSSProperties = {
 };
 
 const en = {
-  title: "Timing notes",
+  title: "Emergency pathways",
+  gated: "Personal washroom intervals and continuous-travel limits are not in the prototype. They stay off until a clinical review. This screen does not collect them.",
   emergencyLabel: "Emergency pathways",
   source: "Official page",
   washroom: "Minutes between washroom stops",
@@ -198,7 +214,8 @@ const en = {
 };
 
 const fr = {
-  title: "Notes de temps",
+  title: "Voies d'urgence",
+  gated: "Les intervalles entre toilettes et les limites de déplacement continu ne font pas partie du prototype. Ils restent désactivés jusqu'à une revue clinique. Cet écran ne les recueille pas.",
   emergencyLabel: "Voies d'urgence",
   source: "Page officielle",
   washroom: "Minutes entre les arrêts toilettes",

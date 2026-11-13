@@ -18,7 +18,9 @@
     "sourceName",
     "retrievedOn",
     "nextReviewOn",
-    "verificationTier",
+    "prototypeLabel",
+    "pageBodyRead",
+    "deskVerifiedDate",
     "verificationPlain",
     "neverMeans",
     "licenceNote",
@@ -26,7 +28,7 @@
     "framing"
   ],
   "properties": {
-    "schemaVersion": { "const": "directory-record-1.0.0" },
+    "schemaVersion": { "const": "directory-record-1.1.0" },
     "id": { "type": "string", "minLength": 3 },
     "category": {
       "enum": ["benefits", "funding", "equipment", "employment", "housing", "services"]
@@ -67,7 +69,12 @@
     "sourceName": { "type": "string", "minLength": 3 },
     "retrievedOn": { "type": "string", "format": "date" },
     "nextReviewOn": { "type": "string", "format": "date" },
-    "verificationTier": { "const": "administrator_page" },
+    "tier": { "enum": ["0", "1", "2", "3", "4", "E"] },
+    "prototypeLabel": { "const": "PROTOTYPE-UNVERIFIED" },
+    "pageBodyRead": { "type": "boolean" },
+    "deskVerifiedDate": {
+      "anyOf": [{ "type": "string", "format": "date" }, { "type": "null" }]
+    },
     "verificationPlain": { "$ref": "#/$defs/bilingual" },
     "neverMeans": { "$ref": "#/$defs/bilingual" },
     "licenceNote": { "$ref": "#/$defs/bilingual" },

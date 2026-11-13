@@ -8,9 +8,26 @@ export const DIRECTORY_FRAMING: Bilingual = {
   fr: "Répertoire et liens seulement. Ce n'est pas un avis d'admissibilité, ni un calcul de prestations, ni une décision sur un paiement.",
 };
 
-export const VERIFICATION_PLAIN: Bilingual = {
-  en: "Checked against the administrator's own page on 13 November 2026. The page is not copied here.",
-  fr: "Vérifié sur la page de l'administrateur le 13 novembre 2026. Le texte de la page n'est pas reproduit ici.",
+/**
+ * access-main `packages/schema/TIERS.md` is the tier list.
+ * The old id `administrator_page` is not in that list.
+ * A desk check of an official page, stored with its link and date, maps to canonical tier `E`.
+ * A page whose body was not read is unchecked and stores no tier id.
+ * `PROTOTYPE-UNVERIFIED` is a prototype display label, not a tier id.
+ */
+export const TIER_MAPPING_NOTE: Bilingual = {
+  en: "Prototype label: PROTOTYPE-UNVERIFIED. A record whose official page was read on 13 November 2026 uses tier E (desk check). An unchecked page has no tier.",
+  fr: "Étiquette de prototype : PROTOTYPE-UNVERIFIED. Une fiche dont la page officielle a été lue le 13 novembre 2026 utilise le niveau E (vérification au bureau). Une page non lue n'a pas de niveau.",
+};
+
+export const VERIFICATION_DESK: Bilingual = {
+  en: "Desk-checked against the administrator's own page on 13 November 2026. Tier E. The page text is not copied here.",
+  fr: "Vérification au bureau sur la page de l'administrateur le 13 novembre 2026. Niveau E. Le texte de la page n'est pas reproduit ici.",
+};
+
+export const VERIFICATION_UNCHECKED: Bilingual = {
+  en: "Unchecked. The page body was not read on 13 November 2026, so no fact from that page is stated and no tier is stored.",
+  fr: "Non vérifié. Le corps de la page n'a pas été lu le 13 novembre 2026, donc aucun fait de cette page n'est indiqué et aucun niveau n'est enregistré.",
 };
 
 export const NEVER_MEANS: Bilingual = {

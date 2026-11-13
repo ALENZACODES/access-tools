@@ -2,6 +2,11 @@ export type Language = "en" | "fr";
 
 export interface TimingDocument {
   schemaVersion: "timing-constraints-1.0.0";
+  /**
+   * Health-aware timing fields. HEALTH_AWARE_TIMING_ENABLED is false, so the
+   * prototype UI does not read or write them. Master plan Part 5 keeps this
+   * out until a clinical review.
+   */
   maxTimeBetweenWashroomsMin: number | null;
   maxContinuousTravelMin: number | null;
   restBreakEveryMin: number | null;

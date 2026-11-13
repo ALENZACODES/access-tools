@@ -5,7 +5,8 @@ import {
   NEXT_REVIEW_ON,
   NO_PLACE_FACTS,
   RETRIEVED_ON,
-  VERIFICATION_PLAIN,
+  VERIFICATION_DESK,
+  VERIFICATION_UNCHECKED,
 } from "./boundaries.js";
 import type { DirectoryRecord } from "./types.js";
 
@@ -13,22 +14,27 @@ type Entry = Pick<
   DirectoryRecord,
   "id" | "category" | "topics" | "readingContexts" | "name" | "administrator" | "geography" | "summary" | "officialUrl" | "sourceName"
 > &
-  Partial<Pick<DirectoryRecord, "doesNot" | "frenchOfficialUrl" | "phone" | "phoneNote" | "figure" | "placeFacts">>;
+  Partial<Pick<DirectoryRecord, "doesNot" | "frenchOfficialUrl" | "phone" | "phoneNote" | "figure" | "placeFacts" | "pageBodyRead">>;
 
 function entry(partial: Entry): DirectoryRecord {
-  return {
-    schemaVersion: "directory-record-1.0.0",
+  const pageBodyRead = partial.pageBodyRead !== false;
+  const record: DirectoryRecord = {
+    schemaVersion: "directory-record-1.1.0",
     notEligibilityAdvice: true,
     framing: DIRECTORY_FRAMING,
     retrievedOn: RETRIEVED_ON,
     nextReviewOn: NEXT_REVIEW_ON,
-    verificationTier: "administrator_page",
-    verificationPlain: VERIFICATION_PLAIN,
+    prototypeLabel: "PROTOTYPE-UNVERIFIED",
+    deskVerifiedDate: pageBodyRead ? RETRIEVED_ON : null,
+    verificationPlain: pageBodyRead ? VERIFICATION_DESK : VERIFICATION_UNCHECKED,
     neverMeans: NEVER_MEANS,
     licenceNote: LICENCE_NOTE,
     placeFacts: "none",
     ...partial,
+    pageBodyRead,
   };
+  if (pageBodyRead) record.tier = "E";
+  return record;
 }
 
 const ontario = { en: "Government of Ontario", fr: "Gouvernement de l'Ontario" };
@@ -64,8 +70,8 @@ export const DIRECTORY: readonly DirectoryRecord[] = [
         "https://www.ontario.ca/document/ontario-disability-support-program-policy-directives-income-support/61-basic-needs",
       ],
       statement: {
-        en: "The program page says a single person could receive up to $1,436 for basic needs and shelter. Directive 6.1, marked July 2026, shows $825 as a single-recipient basic-needs amount and uses $611 in a shelter example.",
-        fr: "La page du programme indique qu'une personne seule pourrait recevoir jusqu'à 1 436 $ pour les besoins essentiels et le logement. La directive 6.1, datée de juillet 2026, indique 825 $ comme montant de besoins essentiels pour une personne seule et utilise 611 $ dans un exemple de logement.",
+        en: "The program page says a single person could receive up to $1,436 for basic needs and shelter. Directive 6.1, marked July 2026, shows $825 as a single-recipient basic-needs amount. In the sponsored-immigrant-living-with-sponsor example, the directive calculates $611, adds that amount as shelter, and then deducts it under Reg. s. 40, so that example's income support is $825. The $611 figure is not a general shelter amount.",
+        fr: "La page du programme indique qu'une personne seule pourrait recevoir jusqu'à 1 436 $ pour les besoins essentiels et le logement. La directive 6.1, datée de juillet 2026, indique 825 $ comme montant de besoins essentiels pour une personne seule. Dans l'exemple de la personne immigrante parrainée qui vit avec son répondant, la directive calcule 611 $, ajoute ce montant comme logement, puis le déduit en vertu du règl. art. 40, de sorte que le soutien du revenu de cet exemple est de 825 $. Le montant de 611 $ n'est pas un montant général de logement.",
       },
       qualifier: {
         en: "Household size, shelter costs, and other published rules change the amount. This is not your payment.",
@@ -101,7 +107,7 @@ export const DIRECTORY: readonly DirectoryRecord[] = [
       retrievedOn: RETRIEVED_ON,
       sourceUrls: ["https://www.ontario.ca/page/ontario-works"],
       statement: {
-        en: "The Ontario Works page says you could receive up to $733 a month for basic needs and shelter if you are single.",
+        en: "The Ontario Works page says a single person could receive up to $733 a month for basic needs and shelter.",
         fr: "La page d'Ontario au travail indique qu'une personne seule pourrait recevoir jusqu'à 733 $ par mois pour les besoins essentiels et le logement.",
       },
       qualifier: {
@@ -392,8 +398,8 @@ export const DIRECTORY: readonly DirectoryRecord[] = [
     frenchOfficialUrl: "https://www.ontario.ca/fr/page/programme-dadaptation-des-habitations-et-des-vehicules",
     sourceName: "Ontario.ca Home and Vehicle Modification Program page",
     summary: {
-      en: "A provincial program for home and vehicle modifications. The Ontario page says the service coordinator decides applications and tells people to apply on the March of Dimes website. Listed home-modification examples include ramps, platform and stair lifts, door widening, and bathroom changes. Dollar limits were not restated because they were not on the Ontario page read for this build.",
-      fr: "Un programme provincial pour les modifications au domicile et au véhicule. La page de l'Ontario indique que le coordonnateur de services décide des demandes et invite à présenter une demande sur le site de la Marche des dix sous. Les exemples de modifications au domicile comprennent les rampes, les plateformes et monte-escaliers, l'élargissement de portes et des changements à la salle de bain. Les plafonds en dollars ne sont pas répétés parce qu'ils n'étaient pas sur la page de l'Ontario lue pour cette version.",
+      en: "A provincial program for home and vehicle modifications. The Ontario page, updated 1 September 2026, says the service coordinator decides applications and tells people to apply on the March of Dimes website. Listed home-modification examples include ramps, platform and stair lifts, door widening, and bathroom changes. The same page says applicants with a household income of over $38,000 may be required to contribute towards the cost. No per-person funding maximum is restated here.",
+      fr: "Un programme provincial pour les modifications au domicile et au véhicule. La page de l'Ontario, mise à jour le 1er septembre 2026, indique que le coordonnateur de services décide des demandes et invite à présenter une demande sur le site de la Marche des dix sous. Les exemples de modifications au domicile comprennent les rampes, les plateformes et monte-escaliers, l'élargissement de portes et des changements à la salle de bain. La même page indique que les demandeurs dont le revenu du ménage dépasse 38 000 $ peuvent avoir à contribuer au coût. Aucun plafond par personne n'est répété ici.",
     },
     doesNot: {
       en: "The App does not approve work, choose a contractor, or describe the accessibility of a home.",
@@ -409,6 +415,7 @@ export const DIRECTORY: readonly DirectoryRecord[] = [
     administrator: { en: "March of Dimes Canada", fr: "Marche des dix sous du Canada" },
     geography: "ontario",
     officialUrl: "https://www.marchofdimes.ca/en-ca/programs/hvmp",
+    pageBodyRead: false,
     sourceName: "March of Dimes HVMP page linked from Ontario.ca",
     summary: {
       en: "The application site named by the Ontario Home and Vehicle Modification Program page. Read that site for the steps the coordinator uses.",
@@ -758,10 +765,11 @@ export const DIRECTORY: readonly DirectoryRecord[] = [
     administrator: { en: "Providence Care", fr: "Providence Care" },
     geography: "ontario",
     officialUrl: "https://providencecare.ca/",
+    pageBodyRead: false,
     sourceName: "Providence Care homepage",
     summary: {
-      en: "A header request to this address returned HTTP 200 on 13 November 2026. A later read of the page body did not complete, so no city, program, referral rule, or building fact is stated.",
-      fr: "Une requête d'en-tête à cette adresse a répondu HTTP 200 le 13 novembre 2026. Une lecture ultérieure du corps de la page n'a pas abouti, donc aucune ville, aucun programme, aucune règle d'aiguillage et aucun fait sur le bâtiment n'est indiqué.",
+      en: "Unchecked link. The page body was not read on 13 November 2026, so no city, program, referral rule, or building fact is stated.",
+      fr: "Lien non vérifié. Le corps de la page n'a pas été lu le 13 novembre 2026, donc aucune ville, aucun programme, aucune règle d'aiguillage et aucun fait sur le bâtiment n'est indiqué.",
     },
     doesNot: NO_PLACE_FACTS,
   }),

@@ -1,800 +1,664 @@
-import { ROUND_DONE } from "./boundaries.js";
-import { mulberry32, pick, shuffle } from "./rng.js";
-import type { Choice, CreateOptions, GameMeta, GameSession, GameView, Language } from "./types.js";
+import { PRACTICE_DONE, ROUND_DONE } from "./boundaries.js";
+import { mulberry32, shuffle } from "./rng.js";
+import type { Choice, CreateOptions, GameData, GameMeta, GameSession, GameView, Language, TaskFamily } from "./types.js";
 
-const SHAPES: Record<Language, string[]> = {
-  en: ["circle", "square", "triangle", "star"],
-  fr: ["cercle", "carré", "triangle", "étoile"],
+const UNTIMED: Record<Language, string> = { en: "Untimed. No clock runs.", fr: "Sans minuterie. Aucune horloge ne tourne." };
+const INPUT: Record<Language, string> = {
+  en: "Single tap, keyboard, or switch: Next, then Choose. No drag and no typing.",
+  fr: "Un toucher, le clavier, ou un contacteur : Suivant, puis Choisir. Aucun glisser et aucune saisie.",
+};
+const COLOUR: Record<Language, string> = {
+  en: "Shape and text labels carry the meaning. Colour is not the only signal.",
+  fr: "La forme et le texte portent le sens. La couleur n'est pas le seul signal.",
 };
 
-const WORDS: Record<Language, string[]> = {
-  en: ["maple", "lake", "train", "market", "cedar", "bridge", "island", "lantern"],
-  fr: ["érable", "lac", "train", "marché", "cèdre", "pont", "île", "lanterne"],
+export const TASK_FAMILY_LABEL: Record<TaskFamily, Record<Language, string>> = {
+  spatial_recall: { en: "Spatial recall", fr: "Rappel spatial" },
+  working_memory_sequence: { en: "Working memory, sequence matching", fr: "Mémoire de travail, suite" },
+  planning: { en: "Planning", fr: "Planification" },
+  rule_discovery: { en: "Rule discovery", fr: "Découverte de règle" },
+  word_roots: { en: "Word roots", fr: "Racines de mots" },
+  quantity: { en: "Quantity", fr: "Quantité" },
+  selective_attention: { en: "Selective attention", fr: "Attention sélective" },
+  task_switching: { en: "Task switching", fr: "Changement de règle" },
+  spatial_assembly: { en: "Spatial assembly", fr: "Assemblage spatial" },
+  running_inventory: { en: "Running inventory", fr: "Inventaire courant" },
 };
-
-interface Pair {
-  left: string;
-  right: string;
-}
-
-interface LargerProblem {
-  left: string;
-  right: string;
-  answer: "left" | "right";
-}
-
-interface Sentence {
-  words: { id: string; label: string }[];
-  wrongId: string;
-}
-
-interface OddSet {
-  items: { id: string; label: string }[];
-  oddId: string;
-}
-
-const LARGER: LargerProblem[] = [
-  { left: "3 + 4", right: "8", answer: "right" },
-  { left: "1/2", right: "0.25", answer: "left" },
-  { left: "12", right: "9 + 2", answer: "left" },
-  { left: "6 × 2", right: "10", answer: "left" },
-  { left: "15 − 5", right: "11", answer: "right" },
-  { left: "0.5", right: "1/4", answer: "left" },
-];
-
-const SENTENCES: Record<Language, Sentence[]> = {
-  en: [
-    sentence(["The", "bus", "waited", "at", "the", "stop", "and", "the", "ramp", "was", "a", "violin"], "violin"),
-    sentence(["She", "packed", "a", "coat", "a", "key", "and", "a", "thunderstorm"], "thunderstorm"),
-    sentence(["The", "library", "opens", "at", "nine", "and", "closes", "a", "bicycle"], "bicycle"),
-  ],
-  fr: [
-    sentence(["Le", "train", "est", "arrivé", "à", "la", "gare", "et", "l'ascenseur", "était", "une", "soupe"], "soupe"),
-    sentence(["Il", "apporte", "un", "manteau", "une", "clé", "et", "un", "orage"], "orage"),
-    sentence(["La", "bibliothèque", "ouvre", "à", "neuf", "heures", "et", "ferme", "un", "violon"], "violon"),
-  ],
-};
-
-const ODDS: Record<Language, OddSet[]> = {
-  en: [
-    odd(["oak", "pine", "maple", "kettle"], "kettle"),
-    odd(["bus", "train", "streetcar", "pillow"], "pillow"),
-    odd(["Monday", "Tuesday", "Friday", "spoon"], "spoon"),
-  ],
-  fr: [
-    odd(["chêne", "pin", "érable", "bouilloire"], "bouilloire"),
-    odd(["bus", "train", "tramway", "oreiller"], "oreiller"),
-    odd(["lundi", "mardi", "vendredi", "cuillère"], "cuillère"),
-  ],
-};
-
-const OUTING: Record<Language, { id: string; label: string }[]> = {
-  en: [
-    { id: "route", label: "Check the route" },
-    { id: "charge", label: "Charge the phone" },
-    { id: "snack", label: "Pack a snack" },
-    { id: "lock", label: "Lock the door" },
-  ],
-  fr: [
-    { id: "route", label: "Vérifier le trajet" },
-    { id: "charge", label: "Charger le téléphone" },
-    { id: "snack", label: "Apporter une collation" },
-    { id: "lock", label: "Verrouiller la porte" },
-  ],
-};
-
-const STOPS: Record<Language, { id: string; label: string }[]> = {
-  en: [
-    { id: "home", label: "Home" },
-    { id: "library", label: "Library" },
-    { id: "park", label: "Park" },
-    { id: "cafe", label: "Cafe" },
-  ],
-  fr: [
-    { id: "home", label: "Maison" },
-    { id: "library", label: "Bibliothèque" },
-    { id: "park", label: "Parc" },
-    { id: "cafe", label: "Café" },
-  ],
-};
-
-const LINKS: Record<string, string[]> = {
-  home: ["library", "park"],
-  library: ["home", "cafe"],
-  park: ["home", "cafe"],
-  cafe: ["library", "park"],
-};
-
-function sentence(words: string[], wrong: string): Sentence {
-  return {
-    words: words.map((label, index) => ({ id: `${label}-${index}`, label })),
-    wrongId: `${wrong}-${words.indexOf(wrong)}`,
-  };
-}
-
-function odd(labels: string[], oddLabel: string): OddSet {
-  return {
-    items: labels.map((label) => ({ id: label, label })),
-    oddId: oddLabel,
-  };
-}
-
-function trialCount(pace: CreateOptions["pace"], relaxed: number, standard: number, brisk: number): number {
-  if (pace === "relaxed") return relaxed;
-  if (pace === "brisk") return brisk;
-  return standard;
-}
-
-function base(metaId: string, options: CreateOptions, data: Record<string, unknown>): GameSession {
-  return {
-    metaId,
-    language: options.language,
-    pace: options.pace,
-    timerEnabled: options.timerEnabled,
-    paused: false,
-    correct: 0,
-    answered: 0,
-    done: false,
-    data,
-  };
-}
-
-function text(language: Language, en: string, fr: string): string {
-  return language === "fr" ? fr : en;
-}
-
-function finish(session: GameSession, trials: number): GameView {
-  const title = metaById(session.metaId).title[session.language];
-  return {
-    gameId: session.metaId,
-    title,
-    prompt: ROUND_DONE[session.language],
-    detail: text(
-      session.language,
-      `Choices that matched the puzzle: ${session.correct} of ${trials}. Points for finishing: ${trials}.`,
-      `Choix qui correspondaient au jeu : ${session.correct} sur ${trials}. Points pour avoir terminé : ${trials}.`,
-    ),
-    choices: [],
-    status: "complete",
-    paused: false,
-    announcement: ROUND_DONE[session.language],
-    correctCount: session.correct,
-    trialCount: trials,
-    points: trials,
-    timerVisible: false,
-  };
-}
-
-function pausedView(session: GameSession, title: string): GameView {
-  return {
-    gameId: session.metaId,
-    title,
-    prompt: text(session.language, "Paused. Nothing is lost.", "Pause. Rien n'est perdu."),
-    detail: text(session.language, "Resume when you want. There is no penalty.", "Reprenez quand vous voulez. Il n'y a pas de pénalité."),
-    choices: [{ id: "resume", label: text(session.language, "Resume", "Reprendre") }],
-    status: "playing",
-    paused: true,
-    announcement: text(session.language, "Paused.", "En pause."),
-    correctCount: session.correct,
-    trialCount: session.answered,
-    points: 0,
-    timerVisible: false,
-  };
-}
-
-function shell(session: GameSession, prompt: string, detail: string, choices: Choice[], trials: number): GameView {
-  if (session.paused) return pausedView(session, metaById(session.metaId).title[session.language]);
-  if (session.done) return finish(session, trials);
-  const timerVisible = session.timerEnabled && session.pace === "brisk" && session.metaId !== "quiet-count";
-  return {
-    gameId: session.metaId,
-    title: metaById(session.metaId).title[session.language],
-    prompt,
-    detail: timerVisible
-      ? `${detail} ${text(session.language, "A brisk timer is on. You can turn it off. It does not end the round.", "Un minuteur vif est activé. Vous pouvez le fermer. Il ne termine pas la manche.")}`
-      : detail,
-    choices,
-    status: "playing",
-    paused: false,
-    announcement: prompt,
-    correctCount: session.correct,
-    trialCount: trials,
-    points: 0,
-    timerVisible,
-  };
-}
-
-export const CATALOG: readonly GameMeta[] = [
-  meta("same-or-different", "speed", "Same or Different Symbols", "Symboles pareils ou différents", "Two named symbols. Say whether they match. Words carry the meaning, not colour.", "Deux symboles nommés. Dites s'ils sont pareils. Les mots portent le sens, pas la couleur.", 3, false, true, false, false, false),
-  meta("card-two-back", "memory", "Card Two Back", "Carte deux avant", "A word appears. Say whether it matches the word from two cards ago.", "Un mot apparaît. Dites s'il est le même que le mot d'il y a deux cartes.", 4, false, false, true, false, false),
-  meta("lit-tiles", "memory", "Remember the Lit Tiles", "Retenir les cases allumées", "Study named cells, then select them. The list is text, row and column.", "Étudiez les cases nommées, puis sélectionnez-les. La liste est du texte, rangée et colonne.", 3, false, true, false, false, true),
-  meta("odd-symbol", "attention", "Find the Odd Symbol Out", "Trouver l'intrus", "Most words belong together. Pick the one that does not.", "La plupart des mots vont ensemble. Choisissez celui qui ne va pas.", 3, true, true, true, false, false),
-  meta("word-or-frame", "flexibility", "Word or Frame", "Mot ou cadre", "A word names a shape, and a frame is another shape. Follow the rule that is written out.", "Un mot nomme une forme, et un cadre est une autre forme. Suivez la règle écrite.", 4, false, false, true, false, false),
-  meta("which-is-larger", "math", "Which Side Is Larger", "Quel côté est plus grand", "Compare two amounts. There is no clock in Relaxed.", "Comparez deux quantités. Il n'y a pas d'horloge en mode Détendu.", 3, false, true, false, true, false),
-  meta("outing-order", "problem_solving", "Pack for an Outing", "Préparer une sortie", "Put four ordinary steps into one workable order. You can reveal that order.", "Mettez quatre étapes ordinaires dans un ordre qui fonctionne. Vous pouvez afficher cet ordre.", 3, true, true, true, false, true),
-  meta("visit-each-stop", "attention", "Visit Each Stop Once", "Visiter chaque arrêt une fois", "A tiny made-up route. Visit each stop once, using only the links that are written down.", "Un petit trajet inventé. Visitez chaque arrêt une fois, seulement par les liens écrits.", 4, true, false, false, false, true),
-  meta("extra-word", "language", "Spot the Wrong Word", "Repérer le mot qui cloche", "A short original sentence has one word that does not belong.", "Une courte phrase originale contient un mot qui ne va pas.", 3, true, true, true, false, false),
-  meta("quiet-count", "wellbeing", "Quiet Count", "Compte tranquille", "Count at your own pace. This is a pause, not a breathing treatment.", "Comptez à votre rythme. C'est une pause, pas un exercice respiratoire.", 2, true, true, false, true, false),
-];
 
 function meta(
   id: string,
-  area: GameMeta["area"],
-  enTitle: string,
-  frTitle: string,
-  enSummary: string,
-  frSummary: string,
-  minutes: number,
-  calm: boolean,
-  short: boolean,
-  words: boolean,
-  numbers: boolean,
-  puzzle: boolean,
+  name: string,
+  taskFamily: TaskFamily,
+  summary: Record<Language, string>,
 ): GameMeta {
-  return {
-    id,
-    area,
-    title: { en: enTitle, fr: frTitle },
-    summary: { en: enSummary, fr: frSummary },
-    estimatedMinutes: minutes,
-    calm,
-    short,
-    words,
-    numbers,
-    puzzle,
-  };
+  return { id, name, taskFamily, summary, timingNote: UNTIMED, inputNote: INPUT, estimatedMinutes: 3 };
 }
 
+export const CATALOG: readonly GameMeta[] = [
+  meta("grid-recall", "Grid Recall", "spatial_recall", {
+    en: "Remember which cells were marked, then select them after they hide.",
+    fr: "Retenir les cases marquées, puis les choisir après qu'elles disparaissent.",
+  }),
+  meta("pair-sequence", "Pair Sequence", "working_memory_sequence", {
+    en: "Decide whether the current symbol matches the one from two steps earlier.",
+    fr: "Décider si le symbole actuel correspond à celui d'il y a deux étapes.",
+  }),
+  meta("route-planner", "Route Planner", "planning", {
+    en: "Move across a made-up grid to the far corner within a move budget. Not a real place.",
+    fr: "Traverser une grille inventée jusqu'au coin opposé, dans un budget de déplacements. Pas un lieu réel.",
+  }),
+  meta("pattern-rules", "Pattern Rules", "rule_discovery", {
+    en: "Read the examples, choose the rule, then apply it to a new item.",
+    fr: "Lire les exemples, choisir la règle, puis l'appliquer à un nouvel élément.",
+  }),
+  meta("word-roots-builder", "Word Roots Builder", "word_roots", {
+    en: "Build a word by choosing a root and an affix from the options.",
+    fr: "Construire un mot en choisissant une racine et un affixe parmi les options.",
+  }),
+  meta("number-compare", "Number Compare", "quantity", {
+    en: "Choose the larger quantity. Each one is shown as a number and a bar.",
+    fr: "Choisir la plus grande quantité. Chacune est montrée comme un nombre et une barre.",
+  }),
+  meta("focus-flankers", "Focus Flankers", "selective_attention", {
+    en: "Name the direction of the centre arrow. The side arrows are labelled and can be ignored.",
+    fr: "Nommer la direction de la flèche du centre. Les flèches des côtés sont étiquetées et peuvent être ignorées.",
+  }),
+  meta("switch-rules", "Switch Rules", "task_switching", {
+    en: "Sort an item by the rule written on the screen. The rule changes and stays visible.",
+    fr: "Classer un élément selon la règle écrite à l'écran. La règle change et reste visible.",
+  }),
+  meta("shape-assembly", "Shape Assembly", "spatial_assembly", {
+    en: "Tap a piece, tap Rotate if it needs a turn, then tap the slot where it belongs.",
+    fr: "Toucher une pièce, toucher Tourner si elle doit pivoter, puis toucher la case où elle va.",
+  }),
+  meta("order-keeper", "Order Keeper", "running_inventory", {
+    en: "The list stays on screen. After one item arrives or leaves, choose the list that matches.",
+    fr: "La liste reste à l'écran. Après l'arrivée ou le départ d'un élément, choisir la liste qui correspond.",
+  }),
+];
+
+const SHAPE: Record<Language, Record<string, string>> = {
+  en: { circle: "circle", square: "square", triangle: "triangle", star: "star" },
+  fr: { circle: "cercle", square: "carré", triangle: "triangle", star: "étoile" },
+};
+
+const ROOT_TRIALS: Array<{ meaning: Record<Language, string>; answer: string; options: Array<{ id: string; label: string }> }> = [
+  {
+    meaning: { en: "not happy", fr: "pas content" },
+    answer: "un-happy",
+    options: [
+      { id: "un-happy", label: "un + happy" },
+      { id: "re-view", label: "re + view" },
+      { id: "pre-pay", label: "pre + pay" },
+    ],
+  },
+  {
+    meaning: { en: "view again", fr: "voir de nouveau" },
+    answer: "re-view",
+    options: [
+      { id: "un-happy", label: "un + happy" },
+      { id: "re-view", label: "re + view" },
+      { id: "pre-view", label: "pre + view" },
+    ],
+  },
+  {
+    meaning: { en: "pay before", fr: "payer avant" },
+    answer: "pre-pay",
+    options: [
+      { id: "pre-pay", label: "pre + pay" },
+      { id: "re-pay", label: "re + pay" },
+      { id: "un-view", label: "un + view" },
+    ],
+  },
+];
+
+const QUANTITIES: Array<{ left: string; right: string; leftBar: number; rightBar: number; answer: "left" | "right" }> = [
+  { left: "2", right: "5", leftBar: 2, rightBar: 5, answer: "right" },
+  { left: "1/2", right: "1/4", leftBar: 2, rightBar: 1, answer: "left" },
+  { left: "3", right: "3", leftBar: 3, rightBar: 3, answer: "left" },
+];
+
+const FLANKERS: Array<{ center: "left" | "right"; flank: "left" | "right" }> = [
+  { center: "left", flank: "right" },
+  { center: "right", flank: "right" },
+  { center: "right", flank: "left" },
+  { center: "left", flank: "left" },
+];
+
+const SWITCH_ITEMS: Array<{ shape: "circle" | "square"; size: "large" | "small"; rule: "circle" | "large" }> = [
+  { shape: "circle", size: "small", rule: "circle" },
+  { shape: "square", size: "large", rule: "circle" },
+  { shape: "square", size: "large", rule: "large" },
+  { shape: "circle", size: "small", rule: "large" },
+];
+
+const ORDER_STEPS: Array<{ add: string | null; remove: string | null; event: Record<Language, string> }> = [
+  { add: "tea", remove: null, event: { en: "Add tea.", fr: "Ajouter thé." } },
+  { add: null, remove: "bread", event: { en: "Remove bread.", fr: "Retirer pain." } },
+  { add: "apple", remove: null, event: { en: "Add apple.", fr: "Ajouter pomme." } },
+];
+
+const BLOCKED = 4;
+const GOAL = 8;
+const BUDGET = 6;
+
 export function metaById(id: string): GameMeta {
-  const found = CATALOG.find((item) => item.id === id);
+  const found = CATALOG.find((game) => game.id === id);
   if (!found) throw new Error(`Unknown game ${id}`);
   return found;
 }
 
 export function createSession(id: string, options: CreateOptions): GameSession {
-  const rng = mulberry32(options.seed);
+  metaById(id);
+  return {
+    metaId: id,
+    language: options.language,
+    pace: options.pace,
+    timerEnabled: false,
+    practice: options.practice === true,
+    paused: false,
+    correct: 0,
+    answered: 0,
+    done: false,
+    data: initialData(id, options.seed),
+  };
+}
+
+function initialData(id: string, seed: number): GameData {
+  const rng = mulberry32(seed);
   switch (id) {
-    case "same-or-different": {
-      const names = SHAPES[options.language];
-      const count = trialCount(options.pace, 4, 6, 8);
-      const pairs: Pair[] = [];
-      for (let index = 0; index < count; index += 1) {
-        const left = pick(rng, names);
-        const right = index % 2 === 0 ? left : pick(rng, names.filter((name) => name !== left));
-        pairs.push({ left, right });
-      }
-      return base(id, options, { pairs, index: 0 });
-    }
-    case "card-two-back": {
-      const count = trialCount(options.pace, 6, 8, 10);
-      const sequence = Array.from({ length: count }, () => pick(rng, WORDS[options.language]));
-      const remembered = sequence[1];
-      if (remembered !== undefined) sequence[3] = remembered;
-      return base(id, options, { sequence, index: 0 });
-    }
-    case "lit-tiles": {
-      const size = options.pace === "relaxed" ? 3 : 4;
-      const cells = size * size;
-      const litCount = options.pace === "brisk" ? 5 : 3;
-      const lit: number[] = [];
-      while (lit.length < litCount) {
-        const cell = Math.floor(rng() * cells);
-        if (!lit.includes(cell)) lit.push(cell);
-      }
-      return base(id, options, { size, lit, phase: "study", selected: [] as number[] });
-    }
-    case "odd-symbol": {
-      const sets = shuffle(rng, ODDS[options.language]).slice(0, trialCount(options.pace, 2, 3, 3));
-      return base(id, options, { sets, index: 0 });
-    }
-    case "word-or-frame": {
-      const names = SHAPES[options.language];
-      const count = trialCount(options.pace, 4, 6, 8);
-      const trials = Array.from({ length: count }, (_, index) => ({
-        word: pick(rng, names),
-        frame: pick(rng, names),
-        rule: index % 2 === 0 ? "word" : "frame",
-      }));
-      return base(id, options, { trials, index: 0 });
-    }
-    case "which-is-larger": {
-      const count = trialCount(options.pace, 3, 4, 6);
-      return base(id, options, { problems: shuffle(rng, LARGER).slice(0, count), index: 0 });
-    }
-    case "outing-order": {
-      return base(id, options, { built: [] as string[], revealed: false });
-    }
-    case "visit-each-stop": {
-      return base(id, options, { current: "home", visited: ["home"] as string[] });
-    }
-    case "extra-word": {
-      const sentences = shuffle(rng, SENTENCES[options.language]).slice(0, trialCount(options.pace, 2, 3, 3));
-      return base(id, options, { sentences, index: 0 });
-    }
-    case "quiet-count": {
-      return base(id, options, { target: options.pace === "brisk" ? 8 : 4, count: 0, started: false });
-    }
+    case "grid-recall":
+      return { kind: "grid-recall", lit: shuffle(rng, [0, 1, 2, 3, 4, 5, 6, 7, 8]).slice(0, 3).sort((a, b) => a - b), phase: "study", selected: [], replayed: false };
+    case "pair-sequence":
+      return { kind: "pair-sequence", symbols: Array.from({ length: 6 }, (_, index) => (index === 3 ? "circle" : shuffle(rng, ["circle", "square", "triangle", "star"])[0] ?? "circle")), index: 0 };
+    case "route-planner":
+      return { kind: "route-planner", position: 0, path: [0], budget: BUDGET };
+    case "pattern-rules":
+      return { kind: "pattern-rules", step: 0 };
+    case "word-roots-builder":
+      return { kind: "word-roots", index: 0 };
+    case "number-compare":
+      return { kind: "number-compare", index: 0 };
+    case "focus-flankers":
+      return { kind: "focus-flankers", index: 0 };
+    case "switch-rules":
+      return { kind: "switch-rules", index: 0 };
+    case "shape-assembly":
+      return { kind: "shape-assembly", selected: null, rotation: 270, placed: [null, null, null] };
+    case "order-keeper":
+      return { kind: "order-keeper", index: 0, list: ["bread", "milk"] };
     default:
       throw new Error(`Unknown game ${id}`);
   }
 }
 
+export function pauseSession(session: GameSession): GameSession {
+  if (session.done) return session;
+  return { ...session, paused: !session.paused };
+}
+
+export function choose(session: GameSession, choiceId: string): GameSession {
+  if (session.done) return session;
+  if (session.paused) return choiceId === "resume" ? { ...session, paused: false } : session;
+  return apply(session, choiceId);
+}
+
+/** No clock is wired. Calling this does not change the round. */
+export function expireTrial(session: GameSession): GameSession {
+  return session;
+}
+
+export function viewSession(session: GameSession): GameView {
+  const game = metaById(session.metaId);
+  const body = describe(session);
+  const doneText = session.practice ? PRACTICE_DONE[session.language] : ROUND_DONE[session.language];
+  const announcement = session.paused ? (session.language === "fr" ? "Pause." : "Paused.") : session.done ? doneText : body.prompt;
+  return {
+    gameId: session.metaId,
+    title: game.name,
+    prompt: body.prompt,
+    detail: `${body.detail} ${COLOUR[session.language]}`,
+    choices: session.done ? [] : body.choices,
+    status: session.done ? "complete" : "playing",
+    paused: session.paused,
+    announcement,
+    correctCount: session.correct,
+    trialCount: session.answered,
+    points: session.practice ? 0 : session.correct,
+    practice: session.practice,
+    scoreVisible: session.done && !session.practice,
+    timerVisible: false,
+  };
+}
+
 export function solutionIds(session: GameSession): string[] {
+  if (session.done || session.paused) return [];
   const data = session.data;
-  switch (session.metaId) {
-    case "same-or-different": {
-      const pairs = data.pairs as Pair[];
-      const index = data.index as number;
-      const pair = pairs[index];
-      if (!pair) return [];
-      return [pair.left === pair.right ? "same" : "different"];
+  switch (data.kind) {
+    case "grid-recall":
+      if (data.phase === "study") return ["ready"];
+      return [...data.lit.filter((cell) => !data.selected.includes(cell)).map(cellId), "check"];
+    case "pair-sequence":
+      if (data.index < 2) return ["next"];
+      return [data.symbols[data.index] === data.symbols[data.index - 2] ? "yes" : "no"];
+    case "route-planner":
+      return routeSolution(data.position);
+    case "pattern-rules":
+      return data.step === 0 ? ["rule-filled"] : ["apply-yes"];
+    case "word-roots":
+      return [ROOT_TRIALS[data.index]?.answer ?? ""];
+    case "number-compare":
+      return [QUANTITIES[data.index]?.answer ?? "left"];
+    case "focus-flankers":
+      return [FLANKERS[data.index]?.center ?? "left"];
+    case "switch-rules": {
+      const item = SWITCH_ITEMS[data.index];
+      if (!item) return [];
+      const matches = item.rule === "circle" ? item.shape === "circle" : item.size === "large";
+      return [matches ? "matches" : "other"];
     }
-    case "card-two-back": {
-      const sequence = data.sequence as string[];
-      const index = data.index as number;
-      if (index < 2) return ["next"];
-      return [sequence[index] === sequence[index - 2] ? "yes" : "no"];
+    case "shape-assembly": {
+      const needed = ["triangle", "square", "circle"].find((piece, slot) => data.placed[slot] !== piece);
+      if (!needed) return [];
+      if (data.selected !== needed) return [`piece-${needed}`];
+      if (needed === "triangle" && data.rotation % 360 !== 0) return ["rotate"];
+      return [`slot-${["triangle", "square", "circle"].indexOf(needed)}`];
     }
-    case "lit-tiles": {
-      const lit = data.lit as number[];
-      return lit.map(String);
-    }
-    case "odd-symbol": {
-      const sets = data.sets as OddSet[];
-      const current = sets[data.index as number];
-      return current ? [current.oddId] : [];
-    }
-    case "word-or-frame": {
-      const trials = data.trials as { word: string; frame: string; rule: "word" | "frame" }[];
-      const trial = trials[data.index as number];
-      return trial ? [trial.rule === "word" ? trial.word : trial.frame] : [];
-    }
-    case "which-is-larger": {
-      const problems = data.problems as LargerProblem[];
-      const problem = problems[data.index as number];
-      return problem ? [problem.answer] : [];
-    }
-    case "outing-order":
-      return OUTING[session.language].map((step) => step.id);
-    case "visit-each-stop":
-      return ["home", "library", "cafe", "park"];
-    case "extra-word": {
-      const sentences = data.sentences as Sentence[];
-      const current = sentences[data.index as number];
-      return current ? [current.wrongId] : [];
-    }
-    case "quiet-count":
-      return ["next"];
+    case "order-keeper":
+      return ["correct"];
     default:
       return [];
   }
 }
 
-function advanceBinary(session: GameSession, choiceId: string, expected: string, lengthKey: string): GameSession {
-  if (session.paused || session.done) return session;
-  const list = session.data[lengthKey] as unknown[];
-  const index = session.data.index as number;
-  const matched = choiceId === expected;
-  const nextIndex = index + 1;
-  const done = nextIndex >= list.length;
-  return {
-    ...session,
-    correct: session.correct + (matched ? 1 : 0),
-    answered: session.answered + 1,
-    done,
-    data: { ...session.data, index: nextIndex },
-  };
+export function playPerfect(session: GameSession): GameSession {
+  let current = session;
+  for (let guard = 0; guard < 80 && !current.done; guard += 1) {
+    const steps = solutionIds(current);
+    if (steps.length === 0) break;
+    for (const id of steps) {
+      if (current.done) break;
+      current = choose(current, id);
+    }
+  }
+  return current;
 }
 
-export function choose(session: GameSession, choiceId: string): GameSession {
-  if (session.paused) {
-    return choiceId === "resume" ? { ...session, paused: false } : session;
-  }
-  if (session.done) return session;
-  switch (session.metaId) {
-    case "same-or-different":
-    case "odd-symbol":
-    case "word-or-frame":
-    case "which-is-larger":
-    case "extra-word": {
-      const key =
-        session.metaId === "same-or-different"
-          ? "pairs"
-          : session.metaId === "odd-symbol"
-            ? "sets"
-            : session.metaId === "word-or-frame"
-              ? "trials"
-              : session.metaId === "which-is-larger"
-                ? "problems"
-                : "sentences";
-      const expected = solutionIds(session)[0];
-      if (!expected) return session;
-      return advanceBinary(session, choiceId, expected, key);
+function routeSolution(position: number): string[] {
+  const path = ["right", "right", "down", "down"];
+  const cells = [0, 1, 2, 5, 8];
+  const index = cells.indexOf(position);
+  const move = path[index];
+  return move ? [move] : [];
+}
+
+function apply(session: GameSession, choiceId: string): GameSession {
+  const data = session.data;
+  switch (data.kind) {
+    case "grid-recall":
+      return applyGrid(session, data, choiceId);
+    case "pair-sequence":
+      return applyPair(session, data, choiceId);
+    case "route-planner":
+      return applyRoute(session, data, choiceId);
+    case "pattern-rules":
+      return applyPattern(session, data, choiceId);
+    case "word-roots":
+      return applyChoiceList(session, data.index, ROOT_TRIALS.length, choiceId, ROOT_TRIALS[data.index]?.answer ?? "", (index) => ({ kind: "word-roots", index }));
+    case "number-compare":
+      return applyChoiceList(session, data.index, QUANTITIES.length, choiceId, QUANTITIES[data.index]?.answer ?? "", (index) => ({ kind: "number-compare", index }));
+    case "focus-flankers":
+      return applyChoiceList(session, data.index, FLANKERS.length, choiceId, FLANKERS[data.index]?.center ?? "", (index) => ({ kind: "focus-flankers", index }));
+    case "switch-rules": {
+      const item = SWITCH_ITEMS[data.index];
+      const expected = item && (item.rule === "circle" ? item.shape === "circle" : item.size === "large") ? "matches" : "other";
+      return applyChoiceList(session, data.index, SWITCH_ITEMS.length, choiceId, expected, (index) => ({ kind: "switch-rules", index }));
     }
-    case "card-two-back": {
-      const expected = solutionIds(session)[0];
-      if (!expected) return session;
-      if ((session.data.index as number) < 2 && choiceId !== "next") return session;
-      return advanceBinary(session, choiceId, expected, "sequence");
-    }
-    case "lit-tiles":
-      return chooseTiles(session, choiceId);
-    case "outing-order":
-      return chooseOrder(session, choiceId);
-    case "visit-each-stop":
-      return chooseStops(session, choiceId);
-    case "quiet-count":
-      return chooseQuiet(session, choiceId);
+    case "shape-assembly":
+      return applyShape(session, data, choiceId);
+    case "order-keeper":
+      return applyOrder(session, data, choiceId);
     default:
       return session;
   }
 }
 
-function chooseTiles(session: GameSession, choiceId: string): GameSession {
-  const phase = session.data.phase as string;
-  const lit = session.data.lit as number[];
-  if (phase === "study" && choiceId === "ready") {
-    return { ...session, data: { ...session.data, phase: "recall" } };
+function applyGrid(session: GameSession, data: Extract<GameData, { kind: "grid-recall" }>, choiceId: string): GameSession {
+  if (choiceId === "ready" && data.phase === "study") return { ...session, data: { ...data, phase: "recall" } };
+  if (choiceId === "replay" && data.phase === "recall" && !data.replayed) {
+    return { ...session, data: { ...data, phase: "study", replayed: true, selected: [] } };
   }
-  if (phase !== "recall") return session;
-  if (choiceId === "reveal") {
-    return { ...session, done: true, answered: 1, correct: 0, data: { ...session.data, phase: "done" } };
+  if (choiceId.startsWith("cell-") && data.phase === "recall") {
+    const cell = Number(choiceId.slice(5));
+    const selected = data.selected.includes(cell) ? data.selected.filter((item) => item !== cell) : [...data.selected, cell];
+    return { ...session, data: { ...data, selected } };
   }
-  if (choiceId === "submit") {
-    const selected = [...(session.data.selected as number[])].sort((a, b) => a - b);
-    const target = [...lit].sort((a, b) => a - b);
-    const matched = selected.join(",") === target.join(",");
-    if (matched) {
-      return { ...session, done: true, answered: 1, correct: 1, data: { ...session.data, phase: "done" } };
-    }
-    return { ...session, data: { ...session.data, selected: [], mismatch: true } };
+  if (choiceId === "check" && data.phase === "recall") {
+    const hits = data.lit.filter((cell) => data.selected.includes(cell)).length;
+    return finish(session, hits, data.lit.length);
   }
-  const cell = Number(choiceId);
-  if (!Number.isInteger(cell)) return session;
-  const selected = new Set(session.data.selected as number[]);
-  if (selected.has(cell)) selected.delete(cell);
-  else selected.add(cell);
-  return { ...session, data: { ...session.data, selected: [...selected], mismatch: false } };
+  return session;
 }
 
-function chooseOrder(session: GameSession, choiceId: string): GameSession {
-  if (choiceId === "reveal") {
-    return { ...session, done: true, answered: 1, correct: 0, data: { ...session.data, revealed: true } };
+function applyPair(session: GameSession, data: Extract<GameData, { kind: "pair-sequence" }>, choiceId: string): GameSession {
+  if (data.index < 2) {
+    if (choiceId !== "next") return session;
+    return { ...session, data: { ...data, index: data.index + 1 } };
   }
-  if (choiceId === "reset") {
-    return { ...session, data: { ...session.data, built: [] } };
+  if (choiceId !== "yes" && choiceId !== "no") return session;
+  const expected = data.symbols[data.index] === data.symbols[data.index - 2] ? "yes" : "no";
+  const correct = session.correct + (choiceId === expected ? 1 : 0);
+  const index = data.index + 1;
+  const next = { ...session, correct, answered: session.answered + 1, data: { ...data, index } };
+  return index >= data.symbols.length ? { ...next, done: true } : next;
+}
+
+function applyRoute(session: GameSession, data: Extract<GameData, { kind: "route-planner" }>, choiceId: string): GameSession {
+  if (choiceId === "undo" && data.path.length > 1) {
+    const path = data.path.slice(0, -1);
+    return { ...session, data: { ...data, path, position: path[path.length - 1] ?? 0 } };
   }
-  const built = [...(session.data.built as string[]), choiceId];
-  const target = OUTING[session.language].map((step) => step.id);
-  if (built.length === target.length) {
-    const matched = built.join(",") === target.join(",");
+  const moved = neighbor(data.position, choiceId);
+  if (moved === null || moved === BLOCKED || data.path.length - 1 >= data.budget) return session;
+  const path = [...data.path, moved];
+  if (moved === GOAL) return finish({ ...session, data: { ...data, position: moved, path } }, 1, 1);
+  return { ...session, data: { ...data, position: moved, path } };
+}
+
+function applyPattern(session: GameSession, data: Extract<GameData, { kind: "pattern-rules" }>, choiceId: string): GameSession {
+  if (choiceId === "hint") return session;
+  if (data.step === 0 && choiceId.startsWith("rule-")) {
+    const correct = session.correct + (choiceId === "rule-filled" ? 1 : 0);
+    return { ...session, correct, answered: session.answered + 1, data: { kind: "pattern-rules", step: 1 } };
+  }
+  if (data.step === 1 && (choiceId === "apply-yes" || choiceId === "apply-no")) {
+    const correct = session.correct + (choiceId === "apply-yes" ? 1 : 0);
+    return finish({ ...session, correct, answered: session.answered + 1 }, correct, session.answered + 1);
+  }
+  return session;
+}
+
+function applyChoiceList(
+  session: GameSession,
+  index: number,
+  length: number,
+  choiceId: string,
+  expected: string,
+  nextData: (index: number) => GameData,
+): GameSession {
+  if (!expected || choiceId === "hint") return session;
+  const correct = session.correct + (choiceId === expected ? 1 : 0);
+  const answered = session.answered + 1;
+  const following = index + 1;
+  if (following >= length) return finish({ ...session, correct, answered }, correct, answered);
+  return { ...session, correct, answered, data: nextData(following) };
+}
+
+function applyShape(session: GameSession, data: Extract<GameData, { kind: "shape-assembly" }>, choiceId: string): GameSession {
+  if (choiceId.startsWith("piece-")) return { ...session, data: { ...data, selected: choiceId.slice(6) } };
+  if (choiceId === "rotate" && data.selected === "triangle") {
+    return { ...session, data: { ...data, rotation: (data.rotation + 90) % 360 } };
+  }
+  if (!choiceId.startsWith("slot-") || !data.selected) return session;
+  const slot = Number(choiceId.slice(5));
+  const targets = ["triangle", "square", "circle"];
+  const rotationOk = data.selected !== "triangle" || data.rotation % 360 === 0;
+  if (targets[slot] !== data.selected || !rotationOk || data.placed[slot]) return session;
+  const placed = [...data.placed];
+  placed[slot] = data.selected;
+  const filled = placed.every((piece) => piece !== null);
+  const next = { ...session, data: { ...data, selected: null, placed } };
+  return filled ? finish(next, 3, 3) : next;
+}
+
+function applyOrder(session: GameSession, data: Extract<GameData, { kind: "order-keeper" }>, choiceId: string): GameSession {
+  const step = ORDER_STEPS[data.index];
+  if (!step || (choiceId !== "correct" && choiceId !== "wrong")) return session;
+  const correct = session.correct + (choiceId === "correct" ? 1 : 0);
+  const answered = session.answered + 1;
+  const list = choiceId === "correct" ? nextList(data.list, step) : data.list;
+  const index = data.index + 1;
+  const next = { ...session, correct, answered, data: { kind: "order-keeper" as const, index, list } };
+  return index >= ORDER_STEPS.length ? { ...next, done: true } : next;
+}
+
+function nextList(list: string[], step: (typeof ORDER_STEPS)[number]): string[] {
+  if (step.remove) return list.filter((item) => item !== step.remove);
+  if (step.add) return [...list, step.add];
+  return list;
+}
+
+function finish(session: GameSession, correct: number, answered: number): GameSession {
+  return { ...session, done: true, correct, answered };
+}
+
+function neighbor(position: number, direction: string): number | null {
+  const row = Math.floor(position / 3);
+  const column = position % 3;
+  if (direction === "left") return column === 0 ? null : position - 1;
+  if (direction === "right") return column === 2 ? null : position + 1;
+  if (direction === "up") return row === 0 ? null : position - 3;
+  if (direction === "down") return row === 2 ? null : position + 3;
+  return null;
+}
+
+function cellLabel(language: Language, cell: number, selected: boolean): string {
+  const row = Math.floor(cell / 3) + 1;
+  const column = (cell % 3) + 1;
+  const mark = selected ? (language === "fr" ? ", choisie" : ", selected") : "";
+  return language === "fr" ? `Rangée ${row}, colonne ${column}${mark}` : `Row ${row}, column ${column}${mark}`;
+}
+
+function describe(session: GameSession): { prompt: string; detail: string; choices: Choice[] } {
+  const language = session.language;
+  const data = session.data;
+  switch (data.kind) {
+    case "grid-recall":
+      return describeGrid(language, data);
+    case "pair-sequence":
+      return describePair(language, data);
+    case "route-planner":
+      return describeRoute(language, data);
+    case "pattern-rules":
+      return describePattern(language, data);
+    case "word-roots":
+      return describeRoots(language, data);
+    case "number-compare":
+      return describeNumbers(language, data);
+    case "focus-flankers":
+      return describeFlankers(language, data);
+    case "switch-rules":
+      return describeSwitch(language, data);
+    case "shape-assembly":
+      return describeShape(language, data);
+    case "order-keeper":
+      return describeOrder(language, data);
+    default:
+      return { prompt: "", detail: "", choices: [] };
+  }
+}
+
+function describeGrid(language: Language, data: Extract<GameData, { kind: "grid-recall" }>): { prompt: string; detail: string; choices: Choice[] } {
+  if (data.phase === "study") {
+    const marks = data.lit.map((cell) => cellLabel(language, cell, false)).join("; ");
     return {
-      ...session,
-      done: true,
-      answered: 1,
-      correct: matched ? 1 : 0,
-      data: { ...session.data, built },
+      prompt: language === "fr" ? `Cases avec une étoile : ${marks}.` : `Cells with a star: ${marks}.`,
+      detail: language === "fr" ? "Chaque étoile a aussi le mot étoile." : "Each star also has the word star.",
+      choices: [{ id: "ready", label: language === "fr" ? "Cacher le motif" : "Hide the pattern" }],
     };
   }
-  return { ...session, data: { ...session.data, built } };
-}
-
-function chooseStops(session: GameSession, choiceId: string): GameSession {
-  if (choiceId === "reveal") {
-    return { ...session, done: true, answered: 1, correct: 0 };
-  }
-  const current = session.data.current as string;
-  const visited = session.data.visited as string[];
-  if (!(LINKS[current] ?? []).includes(choiceId) || visited.includes(choiceId)) {
-    return { ...session, data: { ...session.data, rejected: choiceId } };
-  }
-  const nextVisited = [...visited, choiceId];
-  const done = nextVisited.length === STOPS[session.language].length;
+  const choices = [0, 1, 2, 3, 4, 5, 6, 7, 8].map((cell) => ({ id: cellId(cell), label: cellLabel(language, cell, data.selected.includes(cell)) }));
+  choices.push({ id: "check", label: language === "fr" ? "Vérifier" : "Check" });
+  if (!data.replayed) choices.push({ id: "replay", label: language === "fr" ? "Revoir le motif une fois" : "Replay the pattern once" });
   return {
-    ...session,
-    done,
-    answered: done ? 1 : session.answered,
-    correct: done ? 1 : session.correct,
-    data: { current: choiceId, visited: nextVisited, rejected: null },
+    prompt: language === "fr" ? "Le motif est caché. Choisissez les cases qui avaient une étoile, puis vérifiez." : "The pattern is hidden. Select the cells that had a star, then check.",
+    detail: language === "fr" ? "Vous pouvez revoir le motif une fois." : "You can replay the pattern once.",
+    choices,
   };
 }
 
-function chooseQuiet(session: GameSession, choiceId: string): GameSession {
-  if (choiceId === "start") return { ...session, data: { ...session.data, started: true, count: 0 } };
-  if (choiceId === "stop") return { ...session, done: true, answered: 1, correct: 1 };
-  if (choiceId !== "next") return session;
-  const count = (session.data.count as number) + 1;
-  const target = session.data.target as number;
-  const done = count >= target;
+function describePair(language: Language, data: Extract<GameData, { kind: "pair-sequence" }>): { prompt: string; detail: string; choices: Choice[] } {
+  const names = SHAPE[language];
+  const current = names[data.symbols[data.index] ?? "circle"] ?? "";
+  if (data.index < 2) {
+    return {
+      prompt: language === "fr" ? `Maintenant : ${current}. La question de correspondance commence dans deux étapes.` : `Now: ${current}. The match question starts two steps in.`,
+      detail: language === "fr" ? "Le rythme est le vôtre." : "The pace is yours.",
+      choices: [{ id: "next", label: language === "fr" ? "Étape suivante" : "Next step" }],
+    };
+  }
+  const earlier = names[data.symbols[data.index - 2] ?? "circle"] ?? "";
   return {
-    ...session,
-    done,
-    answered: done ? 1 : 0,
-    correct: done ? 1 : 0,
-    data: { ...session.data, started: true, count },
+    prompt: language === "fr" ? `Maintenant : ${current}. Deux étapes plus tôt : ${earlier}. Est-ce le même symbole?` : `Now: ${current}. Two steps earlier: ${earlier}. Is it the same symbol?`,
+    detail: language === "fr" ? "Oui et Non sont de grandes cibles. Aucune pénalité de temps." : "Yes and No are large targets. There is no time penalty.",
+    choices: [
+      { id: "yes", label: language === "fr" ? "Oui" : "Yes" },
+      { id: "no", label: language === "fr" ? "Non" : "No" },
+    ],
   };
 }
 
-export function pauseSession(session: GameSession): GameSession {
-  if (session.done) return session;
-  return { ...session, paused: true };
+function describeRoute(language: Language, data: Extract<GameData, { kind: "route-planner" }>): { prompt: string; detail: string; choices: Choice[] } {
+  const moves = data.path.length - 1;
+  const choices: Choice[] = [];
+  for (const direction of ["left", "right", "up", "down"] as const) {
+    const next = neighbor(data.position, direction);
+    if (next === null || next === BLOCKED || moves >= data.budget) continue;
+    const label = { left: language === "fr" ? "Gauche" : "Left", right: language === "fr" ? "Droite" : "Right", up: language === "fr" ? "Haut" : "Up", down: language === "fr" ? "Bas" : "Down" }[direction];
+    choices.push({ id: direction, label });
+  }
+  if (data.path.length > 1) choices.push({ id: "undo", label: language === "fr" ? "Annuler" : "Undo" });
+  return {
+    prompt: language === "fr"
+      ? `Grille inventée, pas un lieu réel. Départ en haut à gauche, but en bas à droite. Centre bloqué. Déplacements : ${moves} sur ${data.budget}.`
+      : `Made-up grid, not a real place. Start at the top left, goal at the bottom right. Centre cell blocked. Moves: ${moves} of ${data.budget}.`,
+    detail: language === "fr" ? "Touchez une direction. Annuler est toujours offert après un pas." : "Tap a direction. Undo is available after a step.",
+    choices,
+  };
 }
 
-export function expireTrial(session: GameSession): GameSession {
-  if (!session.timerEnabled || session.pace !== "brisk" || session.paused || session.done) return session;
-  if (
-    session.metaId === "quiet-count" ||
-    session.metaId === "outing-order" ||
-    session.metaId === "visit-each-stop" ||
-    session.metaId === "lit-tiles"
-  ) {
-    return session;
+function describePattern(language: Language, data: Extract<GameData, { kind: "pattern-rules" }>): { prompt: string; detail: string; choices: Choice[] } {
+  if (data.step === 0) {
+    return {
+      prompt: language === "fr"
+        ? "Exemples qui vont ensemble : étoile pleine, carré plein. Exemple à part : cercle vide."
+        : "Examples that belong together: filled star, filled square. Example set apart: open circle.",
+      detail: language === "fr" ? "L'indice répète la règle et n'enlève pas de points." : "The hint repeats the rule and does not remove points.",
+      choices: [
+        { id: "rule-filled", label: language === "fr" ? "Les formes pleines vont ensemble" : "Filled shapes belong together" },
+        { id: "rule-star", label: language === "fr" ? "Seules les étoiles vont ensemble" : "Only stars belong together" },
+        { id: "rule-circle", label: language === "fr" ? "Seuls les cercles vont ensemble" : "Only circles belong together" },
+        { id: "hint", label: language === "fr" ? "Indice : formes pleines" : "Hint: filled shapes" },
+      ],
+    };
   }
-  if (session.metaId === "card-two-back" && (session.data.index as number) < 2) {
-    return choose(session, "next");
-  }
-  return choose(session, "__miss__");
-}
-
-export function viewSession(session: GameSession): GameView {
-  const language = session.language;
-  switch (session.metaId) {
-    case "same-or-different": {
-      const pairs = session.data.pairs as Pair[];
-      const pair = pairs[session.data.index as number];
-      const prompt = pair
-        ? text(language, `Left: ${pair.left}. Right: ${pair.right}. Same or different?`, `Gauche : ${pair.left}. Droite : ${pair.right}. Pareils ou différents?`)
-        : ROUND_DONE[language];
-      return shell(session, prompt, text(language, "Colour is not used.", "La couleur n'est pas utilisée."), [
-        { id: "same", label: text(language, "Same", "Pareils") },
-        { id: "different", label: text(language, "Different", "Différents") },
-      ], pairs.length);
-    }
-    case "card-two-back": {
-      const sequence = session.data.sequence as string[];
-      const index = session.data.index as number;
-      const word = sequence[index];
-      const early = index < 2;
-      const prompt = word
-        ? text(
-            language,
-            `Card ${index + 1} of ${sequence.length}. The word is ${word}. ${early ? "Remember it. The comparison starts on card 3." : "Does it match the word from two cards ago?"}`,
-            `Carte ${index + 1} sur ${sequence.length}. Le mot est ${word}. ${early ? "Retenez-le. La comparaison commence à la carte 3." : "Est-ce le mot d'il y a deux cartes?"}`,
-          )
-        : ROUND_DONE[language];
-      const choices = early
-        ? [{ id: "next", label: text(language, "Next card", "Carte suivante") }]
-        : [
-            { id: "yes", label: text(language, "Yes, it matches", "Oui, c'est le même") },
-            { id: "no", label: text(language, "No, it is different", "Non, c'est différent") },
-          ];
-      return shell(session, prompt, text(language, "Only the current word is shown.", "Seul le mot actuel est affiché."), choices, sequence.length);
-    }
-    case "lit-tiles":
-      return tilesView(session);
-    case "odd-symbol": {
-      const sets = session.data.sets as OddSet[];
-      const current = sets[session.data.index as number];
-      const prompt = current
-        ? text(language, "Which word does not belong with the others?", "Quel mot ne va pas avec les autres?")
-        : ROUND_DONE[language];
-      return shell(session, prompt, current ? current.items.map((item) => item.label).join(", ") : "", current?.items ?? [], sets.length);
-    }
-    case "word-or-frame": {
-      const trials = session.data.trials as { word: string; frame: string; rule: "word" | "frame" }[];
-      const trial = trials[session.data.index as number];
-      const rule = trial
-        ? trial.rule === "word"
-          ? text(language, "Follow the word.", "Suivez le mot.")
-          : text(language, "Follow the frame.", "Suivez le cadre.")
-        : "";
-      const prompt = trial
-        ? text(
-            language,
-            `${rule} The word says ${trial.word}. The frame is ${trial.frame}.`,
-            `${rule} Le mot dit ${trial.word}. Le cadre est ${trial.frame}.`,
-          )
-        : ROUND_DONE[language];
-      return shell(
-        session,
-        prompt,
-        text(language, "The rule is written in words.", "La règle est écrite en mots."),
-        SHAPES[language].map((shape) => ({ id: shape, label: shape })),
-        trials.length,
-      );
-    }
-    case "which-is-larger": {
-      const problems = session.data.problems as LargerProblem[];
-      const problem = problems[session.data.index as number];
-      const prompt = problem
-        ? text(language, `Which is larger? ${problem.left} or ${problem.right}?`, `Quel est le plus grand? ${problem.left} ou ${problem.right}?`)
-        : ROUND_DONE[language];
-      return shell(
-        session,
-        prompt,
-        text(language, "Pick a side. A mismatch does not take points away.", "Choisissez un côté. Une différence n'enlève pas de points."),
-        problem
-          ? [
-              { id: "left", label: problem.left },
-              { id: "right", label: problem.right },
-            ]
-          : [],
-        problems.length,
-      );
-    }
-    case "outing-order":
-      return orderView(session);
-    case "visit-each-stop":
-      return stopsView(session);
-    case "extra-word": {
-      const sentences = session.data.sentences as Sentence[];
-      const current = sentences[session.data.index as number];
-      const prompt = current
-        ? text(language, "Which word does not belong in this sentence?", "Quel mot ne va pas dans cette phrase?")
-        : ROUND_DONE[language];
-      return shell(
-        session,
-        prompt,
-        current ? current.words.map((word) => word.label).join(" ") : "",
-        current?.words.map((word) => ({ id: word.id, label: word.label })) ?? [],
-        sentences.length,
-      );
-    }
-    case "quiet-count":
-      return quietView(session);
-    default:
-      throw new Error(`Unknown game ${session.metaId}`);
-  }
-}
-
-function cellLabel(language: Language, size: number, cell: number): string {
-  const row = Math.floor(cell / size) + 1;
-  const column = (cell % size) + 1;
-  return text(language, `Row ${row}, column ${column}`, `Rangée ${row}, colonne ${column}`);
-}
-
-function tilesView(session: GameSession): GameView {
-  const language = session.language;
-  const size = session.data.size as number;
-  const lit = session.data.lit as number[];
-  const phase = session.data.phase as string;
-  const cells = Array.from({ length: size * size }, (_, cell) => cell);
-  if (phase === "study") {
-    const names = lit.map((cell) => cellLabel(language, size, cell)).join("; ");
-    return shell(
-      session,
-      text(language, `Study these cells: ${names}.`, `Étudiez ces cases : ${names}.`),
-      text(language, "They stay on screen until you continue. Nothing flashes.", "Elles restent à l'écran jusqu'à ce que vous continuiez. Rien ne clignote."),
-      [{ id: "ready", label: text(language, "I am ready", "Je suis prêt") }],
-      1,
-    );
-  }
-  const selected = (session.data.selected as number[]) ?? [];
-  const mismatch = Boolean(session.data.mismatch);
-  return shell(
-    session,
-    text(
-      language,
-      mismatch ? "Those cells do not match. Nothing is lost. Try again or show the cells." : "Select the cells you studied.",
-      mismatch ? "Ces cases ne correspondent pas. Rien n'est perdu. Réessayez ou affichez les cases." : "Sélectionnez les cases étudiées.",
-    ),
-    text(language, "Selected cells are named. The answer is not listed.", "Les cases choisies sont nommées. La réponse n'est pas affichée."),
-    [
-      ...cells.map((cell) => ({
-        id: String(cell),
-        label: `${cellLabel(language, size, cell)}${selected.includes(cell) ? text(language, " selected", " choisie") : ""}`,
-      })),
-      { id: "submit", label: text(language, "Check selection", "Vérifier la sélection") },
-      { id: "reveal", label: text(language, "Show the cells and finish", "Afficher les cases et terminer") },
+  return {
+    prompt: language === "fr" ? "Nouvel élément : carré plein. La règle des formes pleines l'inclut-elle?" : "New item: filled square. Does the filled-shape rule include it?",
+    detail: language === "fr" ? "Le mot plein est écrit, pas seulement une couleur." : "The word filled is written, not colour alone.",
+    choices: [
+      { id: "apply-yes", label: language === "fr" ? "Oui" : "Yes" },
+      { id: "apply-no", label: language === "fr" ? "Non" : "No" },
     ],
-    1,
-  );
+  };
 }
 
-function orderView(session: GameSession): GameView {
-  const language = session.language;
-  const steps = OUTING[language];
-  const built = session.data.built as string[];
-  const remaining = steps.filter((step) => !built.includes(step.id));
-  const builtLabels = built.map((id) => steps.find((step) => step.id === id)?.label).join(", ");
-  return shell(
-    session,
-    text(language, "Choose the next step in one workable order.", "Choisissez la prochaine étape dans un ordre qui fonctionne."),
-    text(language, `So far: ${builtLabels || "nothing yet"}.`, `Jusqu'ici : ${builtLabels || "rien encore"}.`),
-    [
-      ...remaining.map((step) => ({ id: step.id, label: step.label })),
-      { id: "reset", label: text(language, "Start the order again", "Recommencer l'ordre") },
-      { id: "reveal", label: text(language, "Show one workable order and finish", "Afficher un ordre possible et terminer") },
+function describeRoots(language: Language, data: Extract<GameData, { kind: "word-roots" }>): { prompt: string; detail: string; choices: Choice[] } {
+  const trial = ROOT_TRIALS[data.index];
+  return {
+    prompt: language === "fr" ? `Construire le sens : ${trial?.meaning.fr ?? ""}.` : `Build the meaning: ${trial?.meaning.en ?? ""}.`,
+    detail: language === "fr" ? "Choisissez les parties. Aucune saisie." : "Choose the parts. No typing.",
+    choices: (trial?.options ?? []).map((option) => ({ id: option.id, label: option.label })),
+  };
+}
+
+function describeNumbers(language: Language, data: Extract<GameData, { kind: "number-compare" }>): { prompt: string; detail: string; choices: Choice[] } {
+  const item = QUANTITIES[data.index];
+  const left = item ? `${item.left}, ${language === "fr" ? "barre" : "bar"} ${item.leftBar}` : "";
+  const right = item ? `${item.right}, ${language === "fr" ? "barre" : "bar"} ${item.rightBar}` : "";
+  const same = item?.left === item?.right;
+  return {
+    prompt: same
+      ? language === "fr" ? `Les deux quantités sont ${left} et ${right}. Choisissez la gauche quand elles sont égales.` : `Both quantities are ${left} and ${right}. Choose the left one when they are equal.`
+      : language === "fr" ? `Quelle quantité est plus grande? Gauche : ${left}. Droite : ${right}.` : `Which quantity is larger? Left: ${left}. Right: ${right}.`,
+    detail: language === "fr" ? "Le nombre et la barre sont ensemble." : "The number and the bar are shown together.",
+    choices: [
+      { id: "left", label: language === "fr" ? `Gauche, ${left}` : `Left, ${left}` },
+      { id: "right", label: language === "fr" ? `Droite, ${right}` : `Right, ${right}` },
     ],
-    1,
-  );
+  };
 }
 
-function stopsView(session: GameSession): GameView {
-  const language = session.language;
-  const stops = STOPS[language];
-  const current = session.data.current as string;
-  const visited = session.data.visited as string[];
-  const rejected = session.data.rejected as string | null;
-  const name = (id: string) => stops.find((stop) => stop.id === id)?.label ?? id;
-  const links = (LINKS[current] ?? []).map(name).join(", ");
-  const prompt = rejected
-    ? text(language, "That stop is not connected from here. Nothing is lost.", "Cet arrêt n'est pas relié d'ici. Rien n'est perdu.")
-    : text(language, `You are at ${name(current)}. Links: ${links}.`, `Vous êtes à ${name(current)}. Liens : ${links}.`);
-  const choices = (LINKS[current] ?? [])
-    .filter((id) => !visited.includes(id))
-    .map((id) => ({ id, label: name(id) }));
-  return shell(
-    session,
-    prompt,
-    text(
-      language,
-      `Visited: ${visited.map(name).join(", ")}. These stops are not real places.`,
-      `Visités : ${visited.map(name).join(", ")}. Ces arrêts ne sont pas de vrais lieux.`,
-    ),
-    [...choices, { id: "reveal", label: text(language, "Show one route and finish", "Afficher un trajet et terminer") }],
-    1,
-  );
-}
-
-function quietView(session: GameSession): GameView {
-  const language = session.language;
-  const started = Boolean(session.data.started);
-  const count = session.data.count as number;
-  const target = session.data.target as number;
-  if (!started) {
-    return shell(
-      session,
-      text(
-        language,
-        "Quiet count. This is not a breathing treatment, not therapy, and not medical advice.",
-        "Compte tranquille. Ce n'est pas un exercice respiratoire, ni une thérapie, ni un avis médical.",
-      ),
-      text(language, `You chose ${target} counts. Go at your own pace.`, `Vous avez ${target} comptes. Allez à votre rythme.`),
-      [{ id: "start", label: text(language, "Start counting", "Commencer à compter") }],
-      1,
-    );
-  }
-  return shell(
-    session,
-    text(language, `Count ${count} of ${target}. Tap when you want the next count.`, `Compte ${count} sur ${target}. Touchez quand vous voulez le compte suivant.`),
-    text(language, "No clock is running.", "Aucune horloge ne tourne."),
-    [
-      { id: "next", label: text(language, "Next count", "Compte suivant") },
-      { id: "stop", label: text(language, "Stop here", "Arrêter ici") },
+function describeFlankers(language: Language, data: Extract<GameData, { kind: "focus-flankers" }>): { prompt: string; detail: string; choices: Choice[] } {
+  const item = FLANKERS[data.index];
+  const center = item?.center ?? "left";
+  const flank = item?.flank ?? "left";
+  const word = (value: string) => (language === "fr" ? (value === "left" ? "gauche" : "droite") : value);
+  return {
+    prompt: language === "fr"
+      ? `La flèche du centre pointe ${word(center)} et elle est aussi un triangle ${word(center)}. Les flèches des côtés pointent ${word(flank)} et portent le mot ${word(flank)}.`
+      : `The centre arrow points ${word(center)} and is also a ${word(center)} triangle. The side arrows point ${word(flank)} and are labelled ${word(flank)}.`,
+    detail: language === "fr" ? "Nommez seulement le centre. Aucune horloge." : "Name only the centre. No clock.",
+    choices: [
+      { id: "left", label: language === "fr" ? "Le centre pointe à gauche" : "Centre points left" },
+      { id: "right", label: language === "fr" ? "Le centre pointe à droite" : "Centre points right" },
     ],
-    1,
-  );
+  };
 }
 
-/** Play until complete by following the puzzle, or reveal when that is the accessible finish. */
-export function playPerfect(session: GameSession): GameSession {
-  let current = session;
-  let guard = 0;
-  while (!current.done && guard < 80) {
-    guard += 1;
-    const visible = viewSession(current);
-    if (current.metaId === "lit-tiles" && current.data.phase === "recall") {
-      for (const id of solutionIds(current)) current = choose(current, id);
-      current = choose(current, "submit");
-      continue;
-    }
-    if (current.metaId === "outing-order") {
-      for (const id of solutionIds(current)) current = choose(current, id);
-      continue;
-    }
-    if (current.metaId === "visit-each-stop") {
-      const route = ["library", "cafe", "park"];
-      for (const id of route) current = choose(current, id);
-      continue;
-    }
-    if (current.metaId === "quiet-count" && !current.data.started) {
-      current = choose(current, "start");
-      continue;
-    }
-    const choice = visible.choices.find((item) => solutionIds(current).includes(item.id)) ?? visible.choices[0];
-    if (!choice) break;
-    current = choose(current, choice.id);
-  }
-  return current;
+function describeSwitch(language: Language, data: Extract<GameData, { kind: "switch-rules" }>): { prompt: string; detail: string; choices: Choice[] } {
+  const item = SWITCH_ITEMS[data.index];
+  const rule = item?.rule === "large"
+    ? language === "fr" ? "Règle actuelle, en texte : garder les grands éléments." : "Current rule, as text: keep large items."
+    : language === "fr" ? "Règle actuelle, en texte : garder les cercles." : "Current rule, as text: keep circles.";
+  const shape = item ? SHAPE[language][item.shape] : "";
+  const size = item?.size === "large" ? (language === "fr" ? "grand" : "large") : language === "fr" ? "petit" : "small";
+  return {
+    prompt: `${rule} ${language === "fr" ? "Élément" : "Item"}: ${size} ${shape}.`,
+    detail: language === "fr" ? "La règle reste écrite pendant le choix." : "The rule stays written while you choose.",
+    choices: [
+      { id: "matches", label: language === "fr" ? "Correspond à la règle" : "Matches the rule" },
+      { id: "other", label: language === "fr" ? "Ne correspond pas à la règle" : "Does not match the rule" },
+    ],
+  };
+}
+
+function describeShape(language: Language, data: Extract<GameData, { kind: "shape-assembly" }>): { prompt: string; detail: string; choices: Choice[] } {
+  const slots = data.placed.map((piece, index) => piece ?? (language === "fr" ? `case ${index + 1} vide` : `slot ${index + 1} empty`)).join(", ");
+  const turn = language === "fr" ? `Triangle tourné de ${data.rotation} degrés.` : `Triangle turned ${data.rotation} degrees.`;
+  return {
+    prompt: language === "fr"
+      ? `But : triangle, carré, cercle. Cases : ${slots}. ${turn}`
+      : `Target: triangle, square, circle. Slots: ${slots}. ${turn}`,
+    detail: language === "fr" ? "Touchez une pièce, puis une case. Tourner est un bouton, pas un glisser." : "Tap a piece, then a slot. Rotate is a button, not a drag.",
+    choices: [
+      { id: "piece-triangle", label: language === "fr" ? "Pièce triangle" : "Triangle piece" },
+      { id: "piece-square", label: language === "fr" ? "Pièce carré" : "Square piece" },
+      { id: "piece-circle", label: language === "fr" ? "Pièce cercle" : "Circle piece" },
+      { id: "rotate", label: language === "fr" ? "Tourner le triangle" : "Rotate the triangle" },
+      { id: "slot-0", label: language === "fr" ? "Case 1" : "Slot 1" },
+      { id: "slot-1", label: language === "fr" ? "Case 2" : "Slot 2" },
+      { id: "slot-2", label: language === "fr" ? "Case 3" : "Slot 3" },
+    ],
+  };
+}
+
+function describeOrder(language: Language, data: Extract<GameData, { kind: "order-keeper" }>): { prompt: string; detail: string; choices: Choice[] } {
+  const step = ORDER_STEPS[data.index];
+  const current = data.list.join(", ");
+  const correct = step ? nextList(data.list, step).join(", ") : current;
+  const wrong = data.list.slice(0, 1).join(", ") || "empty";
+  return {
+    prompt: language === "fr"
+      ? `Liste visible : ${current}. ${step?.event.fr ?? ""} Quelle liste correspond?`
+      : `Visible list: ${current}. ${step?.event.en ?? ""} Which list matches?`,
+    detail: language === "fr" ? "La liste reste affichée. Un seul changement." : "The list stays on screen. One change.",
+    choices: [
+      { id: "correct", label: correct },
+      { id: "wrong", label: wrong },
+    ],
+  };
+}
+
+function cellId(cell: number): string {
+  return `cell-${cell}`;
 }

@@ -12,17 +12,25 @@ test("directory, timing, and a game are usable without advice or a timer", async
   await page.getByRole("button", { name: "Timing" }).click();
   const call = page.getByRole("link", { name: "Call 911 now" });
   await expect(call).toBeVisible();
-  const washroom = page.getByLabel("Minutes between washroom stops");
-  await expect(washroom).toHaveValue("");
-  expect(await washroom.getAttribute("placeholder")).toBe("");
-  await washroom.fill("90");
-  await expect(page.getByText(/no stop was supplied/i)).toBeVisible();
+  await expect(page.getByLabel("Minutes between washroom stops")).toHaveCount(0);
+  await expect(page.getByText(/not in the prototype/i)).toBeVisible();
 
   await page.getByRole("button", { name: "Games" }).click();
-  await expect(page.getByRole("note").first()).toContainText("not therapy");
-  await page.getByRole("button", { name: "Play Quiet Count" }).click();
-  await page.getByRole("button", { name: "Start counting" }).click();
-  await expect(page.getByText(/No clock is running/i)).toBeVisible();
+  await expect(page.getByRole("note").first()).toContainText("does not provide medical advice");
+  await expect(page.getByRole("heading", { name: "Grid Recall" })).toBeVisible();
+  await expect(page.getByText(/No clock runs/i).first()).toBeVisible();
+  await page.getByRole("button", { name: "Play Grid Recall" }).click();
+  await expect(page.getByRole("heading", { name: "Grid Recall" })).toBeFocused();
+  await page.getByRole("button", { name: "Back to games" }).click();
+  await page.getByRole("button", { name: "Français" }).click();
+  await expect.poll(() => page.evaluate(() => document.documentElement.lang)).toBe("fr");
+
+  await page.setViewportSize({ width: 320, height: 700 });
+  const gamesOverflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  expect(gamesOverflow).toBeLessThanOrEqual(0);
+  await page.getByRole("button", { name: "Directory" }).click();
+  const directoryOverflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  expect(directoryOverflow).toBeLessThanOrEqual(0);
 
   await page.addScriptTag({ content: axe.source });
   const violations = await page.evaluate(async () => {

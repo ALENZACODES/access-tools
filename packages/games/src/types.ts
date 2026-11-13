@@ -1,14 +1,18 @@
 export type Language = "en" | "fr";
 export type Pace = "relaxed" | "standard" | "brisk";
-export type Area =
-  | "speed"
-  | "memory"
-  | "attention"
-  | "flexibility"
-  | "language"
-  | "math"
-  | "problem_solving"
-  | "wellbeing";
+
+/** Task families from the prototype scope lock. These are not commercial training categories. */
+export type TaskFamily =
+  | "spatial_recall"
+  | "working_memory_sequence"
+  | "planning"
+  | "rule_discovery"
+  | "word_roots"
+  | "quantity"
+  | "selective_attention"
+  | "task_switching"
+  | "spatial_assembly"
+  | "running_inventory";
 
 export interface Choice {
   id: string;
@@ -27,20 +31,20 @@ export interface GameView {
   correctCount: number;
   trialCount: number;
   points: number;
+  practice: boolean;
+  scoreVisible: boolean;
   timerVisible: boolean;
 }
 
 export interface GameMeta {
   id: string;
-  area: Area;
-  title: Record<Language, string>;
+  /** Exact scope-lock name. It stays in English in both languages. */
+  name: string;
+  taskFamily: TaskFamily;
   summary: Record<Language, string>;
+  timingNote: Record<Language, string>;
+  inputNote: Record<Language, string>;
   estimatedMinutes: number;
-  calm: boolean;
-  short: boolean;
-  words: boolean;
-  numbers: boolean;
-  puzzle: boolean;
 }
 
 export interface CreateOptions {
@@ -48,18 +52,32 @@ export interface CreateOptions {
   pace: Pace;
   language: Language;
   timerEnabled: boolean;
+  practice?: boolean;
 }
+
+export type GameData =
+  | { kind: "grid-recall"; lit: number[]; phase: "study" | "recall"; selected: number[]; replayed: boolean }
+  | { kind: "pair-sequence"; symbols: string[]; index: number }
+  | { kind: "route-planner"; position: number; path: number[]; budget: number }
+  | { kind: "pattern-rules"; step: 0 | 1 }
+  | { kind: "word-roots"; index: number }
+  | { kind: "number-compare"; index: number }
+  | { kind: "focus-flankers"; index: number }
+  | { kind: "switch-rules"; index: number }
+  | { kind: "shape-assembly"; selected: string | null; rotation: number; placed: Array<string | null> }
+  | { kind: "order-keeper"; index: number; list: string[] };
 
 export interface GameSession {
   metaId: string;
   language: Language;
   pace: Pace;
   timerEnabled: boolean;
+  practice: boolean;
   paused: boolean;
   correct: number;
   answered: number;
   done: boolean;
-  data: Record<string, unknown>;
+  data: GameData;
 }
 
 export interface GamesSettings {
@@ -91,4 +109,4 @@ export interface GamesRound {
   trialCount: number;
 }
 
-export type HubFilter = "all" | "favourites" | "short" | "calm" | "words" | "numbers" | "puzzles";
+export type HubFilter = "all" | "favourites" | "short";

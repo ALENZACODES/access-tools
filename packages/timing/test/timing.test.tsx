@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 import {
   EMERGENCY_PATHWAYS,
   TIMING_BOUNDARY,
+  HEALTH_AWARE_TIMING_ENABLED,
   TimingPanel,
   blankTimingDocument,
   deleteTimingDocument,
@@ -146,19 +147,18 @@ function Harness() {
 }
 
 describe("timing panel", () => {
-  it("shows 911 before any timing field and keeps inputs empty", async () => {
+  it("shows 911 and keeps health-aware timing out of the prototype", async () => {
+    expect(HEALTH_AWARE_TIMING_ENABLED).toBe(false);
     const { container } = render(<Harness />);
-    const call = screen.getByRole("link", { name: "Call 911 now" });
-    const input = screen.getByLabelText("Minutes between washroom stops");
-    expect(call.compareDocumentPosition(input) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(input).toHaveValue("");
+    expect(screen.getByRole("link", { name: "Call 911 now" })).toBeInTheDocument();
+    expect(screen.queryByLabelText(/washroom|toilettes|continuous travel/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/not in the prototype/i)).toBeInTheDocument();
     expect(screen.getByRole("note").textContent).toBe(TIMING_BOUNDARY.en);
     expect(EMERGENCY_PATHWAYS).toHaveLength(3);
     const user = userEvent.setup();
     await user.click(screen.getByRole("button", { name: "Français" }));
+    expect(document.documentElement.lang).toBe("fr");
     expect(screen.getByRole("link", { name: "Composer le 911 maintenant" })).toBeInTheDocument();
-    await user.type(screen.getByLabelText("Minutes entre les arrêts toilettes"), "90");
-    expect(screen.getByText(/aucun arrêt n'a été fourni/i)).toBeInTheDocument();
     const results = await axe.run(container, {
       rules: { "color-contrast": { enabled: false }, region: { enabled: false } },
     });

@@ -18,8 +18,11 @@ export interface DirectoryFigure {
   retrievedOn: string;
 }
 
+/** Canonical tier ids from access-main packages/schema/TIERS.md. */
+export type CanonicalTier = "0" | "1" | "2" | "3" | "4" | "E";
+
 export interface DirectoryRecord {
-  schemaVersion: "directory-record-1.0.0";
+  schemaVersion: "directory-record-1.1.0";
   id: string;
   category: Category;
   topics: string[];
@@ -37,7 +40,11 @@ export interface DirectoryRecord {
   sourceName: string;
   retrievedOn: string;
   nextReviewOn: string;
-  verificationTier: "administrator_page";
+  /** Present only for a desk check. Unchecked records omit it. */
+  tier?: CanonicalTier;
+  prototypeLabel: "PROTOTYPE-UNVERIFIED";
+  pageBodyRead: boolean;
+  deskVerifiedDate: string | null;
   verificationPlain: Bilingual;
   neverMeans: Bilingual;
   licenceNote: Bilingual;

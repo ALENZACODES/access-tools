@@ -9,6 +9,7 @@ export {
   writeTimingDocument,
   deleteTimingDocument,
 } from "./store.js";
+export { HEALTH_AWARE_TIMING_ENABLED } from "./scope.js";
 export { TimingPanel } from "./ui/TimingPanel.js";
 export type {
   EmergencyPathway,

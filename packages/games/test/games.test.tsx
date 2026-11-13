@@ -9,120 +9,94 @@ import {
   GAMES_DATABASE_NAME,
   GamesApp,
   buildDailySet,
-  choose,
   createSession,
-  daysPlayed,
   defaultSettings,
   deleteGamesData,
   expireTrial,
-  filterGames,
   openGamesDatabase,
   parseRound,
   pauseSession,
   playPerfect,
-  searchGames,
-  stepScan,
+  streakFromDates,
   viewSession,
   writeSettings,
   type GamesRound,
   type GamesSettings,
 } from "../src/index.js";
 
+const NAMES = [
+  "Grid Recall",
+  "Pair Sequence",
+  "Route Planner",
+  "Pattern Rules",
+  "Word Roots Builder",
+  "Number Compare",
+  "Focus Flankers",
+  "Switch Rules",
+  "Shape Assembly",
+  "Order Keeper",
+];
+
 describe("games catalog", () => {
-  it("ships original activities and no proprietary game name", () => {
+  it("uses the ten scope-lock names and no proprietary game name", () => {
     const blob = JSON.stringify(CATALOG).toLowerCase();
     expect(blob).not.toContain("lumosity");
-    expect(CATALOG.map((game) => game.id)).toEqual([
-      "same-or-different",
-      "card-two-back",
-      "lit-tiles",
-      "odd-symbol",
-      "word-or-frame",
-      "which-is-larger",
-      "outing-order",
-      "visit-each-stop",
-      "extra-word",
-      "quiet-count",
-    ]);
+    expect(blob).not.toContain("brisk");
+    expect(CATALOG.map((game) => game.name)).toEqual(NAMES);
+    for (const game of CATALOG) {
+      expect(game.timingNote.en).toMatch(/Untimed/);
+      expect(game.inputNote.en).toMatch(/switch/i);
+    }
   });
 
-  it("can finish every game in relaxed mode without a timer", () => {
+  it("can finish every game untimed, including practice with no score", () => {
     for (const game of CATALOG) {
       const started = createSession(game.id, { seed: 7, pace: "relaxed", language: "en", timerEnabled: false });
       expect(viewSession(started).timerVisible).toBe(false);
       const finished = playPerfect(started);
       const view = viewSession(finished);
       expect(view.status, game.id).toBe("complete");
-      expect(view.points).toBeGreaterThan(0);
-      expect(view.announcement).toMatch(/stop here|Round finished/i);
+      expect(view.points, game.id).toBeGreaterThan(0);
+      expect(view.scoreVisible, game.id).toBe(true);
+      expect(view.announcement).toMatch(/Round finished/i);
+      const practice = viewSession(playPerfect(createSession(game.id, { seed: 7, pace: "relaxed", language: "en", timerEnabled: true, practice: true })));
+      expect(practice.scoreVisible, game.id).toBe(false);
+      expect(practice.points, game.id).toBe(0);
+      expect(practice.announcement).toMatch(/No score is kept/i);
     }
   });
 
-  it("plays in French and does not use colour as the only cue", () => {
-    const session = createSession("same-or-different", { seed: 3, pace: "relaxed", language: "fr", timerEnabled: false });
-    const view = viewSession(session);
-    expect(view.prompt).toMatch(/Gauche/);
-    expect(view.detail).toMatch(/couleur/i);
-    const finished = playPerfect(createSession("extra-word", { seed: 2, pace: "relaxed", language: "fr", timerEnabled: false }));
+  it("plays Pair Sequence in French with a text label, and ignores a timer call", () => {
+    const session = createSession("pair-sequence", { seed: 3, pace: "relaxed", language: "fr", timerEnabled: true });
+    expect(viewSession(session).prompt).toMatch(/Maintenant/);
+    expect(viewSession(session).detail).toMatch(/couleur/i);
+    expect(expireTrial(session)).toBe(session);
+    const finished = playPerfect(createSession("focus-flankers", { seed: 2, pace: "brisk", language: "en", timerEnabled: true }));
     expect(viewSession(finished).status).toBe("complete");
+    expect(viewSession(finished).timerVisible).toBe(false);
   });
 
-  it("does not let a brisk timer end a relaxed round or a quiet count", () => {
-    const relaxed = createSession("same-or-different", { seed: 1, pace: "relaxed", language: "en", timerEnabled: true });
-    expect(expireTrial(relaxed)).toBe(relaxed);
-    const quiet = createSession("quiet-count", { seed: 1, pace: "brisk", language: "en", timerEnabled: true });
-    expect(expireTrial(quiet)).toBe(quiet);
-    const brisk = createSession("same-or-different", { seed: 4, pace: "brisk", language: "en", timerEnabled: true });
-    const skipped = expireTrial(brisk);
-    expect(viewSession(skipped).prompt).not.toBe(viewSession(brisk).prompt);
-    expect(skipped.done || (skipped.data.index as number) > 0).toBe(true);
-  });
-
-  it("rejects a wrong stop without ending the puzzle", () => {
-    const session = createSession("visit-each-stop", { seed: 1, pace: "relaxed", language: "en", timerEnabled: false });
-    const rejected = choose(session, "cafe");
-    expect(rejected.done).toBe(false);
-    expect(viewSession(rejected).prompt).toMatch(/Nothing is lost/);
-  });
-
-  it("hides studied cells after the player continues", () => {
-    let session = createSession("lit-tiles", { seed: 5, pace: "relaxed", language: "en", timerEnabled: false });
-    const study = viewSession(session).prompt;
-    expect(study).toMatch(/Row/);
-    session = choose(session, "ready");
-    expect(viewSession(session).prompt).not.toMatch(/Study these cells/);
-  });
-
-  it("pause does not discard the round", () => {
-    const session = createSession("which-is-larger", { seed: 1, pace: "standard", language: "en", timerEnabled: false });
+  it("keeps Route Planner going after a wrong direction and can undo", () => {
+    const session = createSession("route-planner", { seed: 1, pace: "relaxed", language: "en", timerEnabled: false });
+    const moved = playPerfect(session);
+    expect(viewSession(moved).status).toBe("complete");
     const paused = pauseSession(session);
     expect(viewSession(paused).paused).toBe(true);
-    const resumed = choose(paused, "resume");
-    expect(viewSession(resumed).prompt).toMatch(/Which is larger/);
   });
 });
 
 describe("games hub rules", () => {
-  it("filters, builds a short daily set, and treats a missed day as ordinary", () => {
-    expect(filterGames("calm", []).every((game) => game.calm)).toBe(true);
-    expect(searchGames("compte").map((game) => game.id)).toContain("quiet-count");
-    const daily = buildDailySet({ minutes: 5, skipIds: ["quiet-count"], seed: 9 });
-    expect(daily.every((game) => game.short && game.id !== "quiet-count")).toBe(true);
-    expect(daily.reduce((sum, game) => sum + game.estimatedMinutes, 0)).toBeGreaterThan(0);
-    const message = daysPlayed(
-      [
-        round("2026-11-12T12:00:00.000Z"),
-        round("2026-11-12T18:00:00.000Z"),
-      ],
-      new Date("2026-11-13T12:00:00.000Z"),
-    );
-    expect(message.count).toBe(1);
-    expect(message.message.en).toMatch(/not a failure/);
-  });
-
-  it("moves switch focus without a timer", () => {
-    expect(stepScan(0, 4, 1)).toBe(1);
-    expect(stepScan(0, 4, -1)).toBe(3);
+  it("builds three games for a date, rotates, and applies two grace days", () => {
+    const first = buildDailySet("2026-11-01").map((game) => game.name);
+    const same = buildDailySet("2026-11-01").map((game) => game.name);
+    const later = buildDailySet("2026-11-02").map((game) => game.name);
+    expect(first).toHaveLength(3);
+    expect(same).toEqual(first);
+    expect(later).not.toEqual(first);
+    expect(streakFromDates(["2026-11-01", "2026-11-04"], "2026-11-04")).toEqual({ streak: 2, graceRemaining: 0 });
+    expect(streakFromDates(["2026-11-01", "2026-11-05"], "2026-11-05")).toEqual({ streak: 1, graceRemaining: 2 });
+    expect(streakFromDates(["2026-11-01"], "2026-11-04").streak).toBe(1);
+    expect(streakFromDates(["2026-11-01"], "2026-11-05").streak).toBe(0);
   });
 });
 
@@ -132,7 +106,6 @@ describe("games store", () => {
     const db = await openGamesDatabase();
     const settings = defaultSettings("player-12345678");
     expect(settings.timerEnabled).toBe(false);
-    expect(settings.pace).toBe("relaxed");
     await writeSettings(db, settings);
     await expect(writeSettings(db, { ...settings, diagnosis: "x" })).rejects.toThrow(/health/i);
     expect(() => parseRound({ ...round("2026-11-13T12:00:00.000Z"), catheter: "x" })).toThrow(/health|catheter/i);
@@ -146,7 +119,7 @@ function round(endedAt: string): GamesRound {
     schemaVersion: "games-round-1.0.0",
     roundId: `round-${endedAt}`,
     playerId: "player-12345678",
-    gameId: "quiet-count",
+    gameId: "grid-recall",
     pace: "relaxed",
     timerEnabled: false,
     startedAt: endedAt,
@@ -169,24 +142,35 @@ function Harness() {
       now={new Date("2026-11-13T15:00:00.000Z")}
       onSettings={setSettings}
       onRound={(item) => setRounds((current) => [...current, item])}
+      onResetStreak={() => setRounds([])}
     />
   );
 }
 
 describe("games screen", () => {
-  it("supports keyboard, switch, and a screen-reader prompt", async () => {
+  it("supports keyboard, switch, practice, and a screen-reader prompt", async () => {
     const { container } = render(<Harness />);
     expect(screen.getByRole("note").textContent).toBe(GAMES_BOUNDARY.en);
+    expect(screen.getByText(/Two missed days do not break the streak/i)).toBeInTheDocument();
+    expect(screen.getByText(/not a prescription/i)).toBeInTheDocument();
+    expect(screen.queryByText(/brisk/i)).not.toBeInTheDocument();
+    for (const name of NAMES) expect(screen.getByRole("heading", { name })).toBeInTheDocument();
     const user = userEvent.setup();
-    await user.click(screen.getByRole("button", { name: "Play Quiet Count" }));
-    expect(screen.getAllByText(/not a breathing treatment/i).length).toBeGreaterThan(0);
-    await user.keyboard("{Enter}");
-    await user.click(screen.getByRole("button", { name: "Next" }));
-    await user.click(screen.getByRole("button", { name: "Choose" }));
-    expect(container.querySelector("[aria-live='polite']")?.textContent).toMatch(/Count 0 of/i);
+    await user.click(screen.getByRole("button", { name: "Practice Grid Recall" }));
+    expect(screen.getByRole("status").textContent).toMatch(/No score is shown/i);
+    const live = container.querySelector("[aria-live='polite']");
+    expect(live?.textContent).toMatch(/star/i);
+    headingFocus(container);
+    await user.click(screen.getByRole("button", { name: "Back to games" }));
+    expect(screen.getByRole("button", { name: "Play Grid Recall" })).toHaveFocus();
     const results = await axe.run(container, {
       rules: { "color-contrast": { enabled: false }, region: { enabled: false } },
     });
     expect(results.violations).toEqual([]);
   });
 });
+
+function headingFocus(container: HTMLElement): void {
+  const heading = container.querySelector("h1");
+  expect(heading).toHaveFocus();
+}
