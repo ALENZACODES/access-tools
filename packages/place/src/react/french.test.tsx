@@ -87,13 +87,27 @@ describe("French place page", () => {
     for (const key of RAW_KEYS) {
       expect(text).not.toContain(key);
     }
-    const regions = screen.getAllByRole("region").map((region) => {
-      const labelledBy = region.getAttribute("aria-labelledby");
-      const caption = labelledBy ? document.getElementById(labelledBy)?.textContent ?? "" : region.getAttribute("aria-label") ?? "";
-      return caption;
-    });
-    expect(regions.some((label) => label.endsWith("fields"))).toBe(false);
-    expect(regions.some((label) => label.endsWith("champs"))).toBe(true);
+    const captions = [...document.querySelectorAll("caption")].map((node) => node.textContent?.replace(/\s+/g, " ").trim() ?? "");
+    expect(captions).toEqual(expect.arrayContaining([
+      "Champs d'identité",
+      "Champs d'entrée",
+      "Champs pour s'y rendre",
+      "Champs de l'intérieur",
+      "Champs de stationnement",
+      "Champs de sièges et comptoirs",
+      "Champs de politiques",
+      "Champs de recharge",
+      "Champs de réparation et fournitures",
+      "Champs de photographies",
+      "Champs de signalements",
+      "Champs de source et fraîcheur",
+    ]));
+    expect(captions.some((label) => label.startsWith("Champs : "))).toBe(true);
+    expect(captions.some((label) => label.includes("Identité champs") || label.endsWith(" champs"))).toBe(false);
+    expect(document.querySelectorAll(".table-scroll[role='region']")).toHaveLength(0);
+    const regions = screen.getAllByRole("region");
+    expect(regions.length).toBeGreaterThan(0);
+    expect(regions.every((region) => !region.classList.contains("table-scroll"))).toBe(true);
     cleanup();
     const hoist = placeById("fix-change-hoist");
     if (!hoist) throw new Error("missing hoist");

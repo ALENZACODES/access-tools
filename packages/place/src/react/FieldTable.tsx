@@ -1,8 +1,14 @@
-import { useId } from "react";
-import { copy } from "../i18n.js";
 import type { FieldRowView } from "../project.js";
 import type { Lang } from "../types.js";
 import { EnglishText } from "./EnglishText.js";
+
+/** French table name. "Identité" becomes "Champs d'identité", not "Identité champs". */
+export function frenchFieldCaption(heading: string): string {
+  if (heading === "S'y rendre") return "Champs pour s'y rendre";
+  if (heading === "À l'intérieur") return "Champs de l'intérieur";
+  const lower = heading.slice(0, 1).toLocaleLowerCase("fr-CA") + heading.slice(1);
+  return /^[aeiouyàâäéèêëîïôöùûüœh]/i.test(lower) ? `Champs d'${lower}` : `Champs de ${lower}`;
+}
 
 const COLUMNS = {
   en: ["Field", "Value", "Tier", "Source", "Source date", "Record date"],
@@ -21,16 +27,26 @@ export function FieldTable({
   /** The caption is an English record name on a French screen. */
   captionEnglish?: boolean;
 }) {
-  const labelId = useId();
   if (rows.length === 0) return null;
   const columns = COLUMNS[lang];
   return (
-    // The overflow region is a keyboard scroll container, so it keeps tabIndex 0.
+    // Keyboard scroll container. The section heading is the landmark, so this is not a region.
     // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- keyboard scroll container
-    <div className="table-scroll" tabIndex={0} role="region" aria-labelledby={labelId}>
+    <div className="table-scroll" tabIndex={0}>
       <table>
-        <caption id={labelId} className="visually-hidden">
-          {captionEnglish ? <span lang="en">{caption}</span> : caption} {copy("region.fields", lang)}
+        <caption className="visually-hidden">
+          {lang === "fr" ? (
+            captionEnglish ? (
+              <>
+                {"Champs : "}
+                <span lang="en">{caption}</span>
+              </>
+            ) : (
+              frenchFieldCaption(caption)
+            )
+          ) : (
+            `${caption} fields`
+          )}
         </caption>
         <thead>
           <tr>

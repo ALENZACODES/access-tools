@@ -75,7 +75,6 @@ export const COPY = {
   "problem.moved": { en: "Moved", fr: "Déménagé" },
   "problem.service-not-offered": { en: "Service not offered", fr: "Service non offert" },
   "problem.other": { en: "Other", fr: "Autre" },
-  "region.fields": { en: "fields", fr: "champs" },
   "side.left": { en: "Left", fr: "Gauche" },
   "side.right": { en: "Right", fr: "Droite" },
   "side.both": { en: "Both", fr: "Les deux" },
