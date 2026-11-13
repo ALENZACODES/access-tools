@@ -25,6 +25,8 @@ export function FieldTable({
   if (rows.length === 0) return null;
   const columns = COLUMNS[lang];
   return (
+    // The overflow region is a keyboard scroll container, so it keeps tabIndex 0.
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- keyboard scroll container
     <div className="table-scroll" tabIndex={0} role="region" aria-labelledby={labelId}>
       <table>
         <caption id={labelId} className="visually-hidden">
