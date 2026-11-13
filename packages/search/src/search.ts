@@ -8,6 +8,7 @@ import {
   placeHasHoist,
   placeHasStepFreeEntrance,
   placeHasVanBay,
+  profilePlaceNotes,
   profilePlaceReasons,
   transferSideMatches,
   type EquipmentProfile,
@@ -39,7 +40,7 @@ export interface SearchQuery {
   category?: string;
   placeType?: PlaceType;
   sci: SciFilters;
-  /** On-device equipment profile. Unknown record values are not matches. */
+  /** On-device equipment profile. A missing door width stays visible. Unknown step-free and change-table values are not matches. */
   profile?: EquipmentProfile | null;
   showHidden: boolean;
   sort: "name" | "source-date" | "distance";
@@ -62,6 +63,8 @@ export interface SearchHit {
   datasetStatus: PlaceRecord["datasetStatus"];
   distanceMetres: number | null;
   hiddenReasons: string[];
+  /** Missing door-width notes. These do not hide the record. */
+  profileNotes: string[];
 }
 
 export interface SearchResponse {
@@ -156,6 +159,7 @@ export function searchPack(pack: PlacePack, query: SearchQuery): SearchResponse 
       datasetStatus: place.datasetStatus,
       distanceMetres: distance,
       hiddenReasons: reasons(place, pack, query.sci, query.lang, query.profile ?? null),
+      profileNotes: profilePlaceNotes(place, query.profile ?? null, query.lang),
     });
   }
   const hidden = prepared.filter((hit) => hit.hiddenReasons.length > 0);

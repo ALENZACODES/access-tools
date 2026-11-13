@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import { copy, type CopyKey } from "../i18n.js";
 import { CHAIR_TYPES, deleteProfile, parseWidthMm, readProfile, saveProfile, type ChairType, type EquipmentProfile } from "../profile.js";
 import type { Lang } from "../types.js";
@@ -10,6 +10,9 @@ const CHAIR_LABEL: Record<ChairType, CopyKey> = {
   other: "profile.chair.other",
 };
 
+type StatusKey = "profile.saved" | "profile.deleted";
+type ErrorKey = "profile.width-invalid" | "profile.storage-failed";
+
 export function EquipmentProfileForm({
   lang,
   storage,
@@ -20,24 +23,55 @@ export function EquipmentProfileForm({
   onChange: (profile: EquipmentProfile | null) => void;
 }) {
   const saved = readProfile(storage);
-  const [name, setName] = useState(saved?.name ?? "");
   const [chairType, setChairType] = useState<ChairType | "">(saved?.chairType ?? "");
   const [widthText, setWidthText] = useState(saved?.widthMm === null || saved === null ? "" : String(saved.widthMm));
   const [stepFreeRequired, setStepFreeRequired] = useState(saved?.stepFreeRequired ?? false);
   const [adultChangeTable, setAdultChangeTable] = useState(saved?.adultChangeTable ?? false);
-  const [status, setStatus] = useState("");
-  const [error, setError] = useState("");
-  const nameId = useId();
+  const [statusKey, setStatusKey] = useState<StatusKey | null>(null);
+  const [errorKey, setErrorKey] = useState<ErrorKey | null>(null);
+  const [confirming, setConfirming] = useState(false);
   const chairId = useId();
+  const chairHintId = useId();
   const widthId = useId();
   const widthHintId = useId();
+  const widthErrorId = useId();
+  const stepHintId = useId();
+  const tableHintId = useId();
+  const confirmId = useId();
+  const deleteButtonRef = useRef<HTMLButtonElement>(null);
+  const confirmButtonRef = useRef<HTMLButtonElement>(null);
+  const openedConfirm = useRef(false);
+  const widthInvalid = errorKey === "profile.width-invalid";
+
+  useEffect(() => {
+    if (confirming) {
+      openedConfirm.current = true;
+      confirmButtonRef.current?.focus();
+      return;
+    }
+    if (openedConfirm.current) deleteButtonRef.current?.focus();
+  }, [confirming]);
 
   function clearForm(): void {
-    setName("");
     setChairType("");
     setWidthText("");
     setStepFreeRequired(false);
     setAdultChangeTable(false);
+  }
+
+  function cancelDeleteOnEscape(event: KeyboardEvent<HTMLButtonElement>): void {
+    if (event.key !== "Escape") return;
+    event.preventDefault();
+    setConfirming(false);
+  }
+
+  function removeProfile(): void {
+    deleteProfile(storage);
+    clearForm();
+    setErrorKey(null);
+    setConfirming(false);
+    setStatusKey("profile.deleted");
+    onChange(null);
   }
 
   return (
@@ -46,39 +80,35 @@ export function EquipmentProfileForm({
         event.preventDefault();
         const widthMm = parseWidthMm(widthText);
         if (widthMm === "invalid") {
-          setError(copy("profile.width-invalid", lang));
-          setStatus("");
+          setErrorKey("profile.width-invalid");
+          setStatusKey(null);
           return;
         }
         const result = saveProfile(storage, {
-          name,
           chairType: chairType === "" ? null : chairType,
           widthMm,
           stepFreeRequired,
           adultChangeTable,
         });
         if (!result.ok) {
-          setStatus("");
-          const errorKey: CopyKey =
-            result.error === "width" ? "profile.width-invalid" : result.error === "storage" ? "profile.storage-failed" : "profile.name-required";
-          setError(copy(errorKey, lang));
+          setStatusKey(null);
+          setErrorKey(result.error === "width" ? "profile.width-invalid" : "profile.storage-failed");
           return;
         }
-        setName(result.profile.name);
-        setError("");
-        setStatus(copy("profile.saved", lang));
+        setErrorKey(null);
+        setConfirming(false);
+        setStatusKey("profile.saved");
         onChange(result.profile);
       }}
     >
       <fieldset>
         <legend>{copy("profile.title", lang)}</legend>
         <p>{copy("profile.intro", lang)}</p>
-        <label htmlFor={nameId}>{copy("profile.name", lang)}</label>
-        <input id={nameId} type="text" value={name} autoComplete="off" onChange={(event) => setName(event.target.value)} />
         <label htmlFor={chairId}>{copy("profile.chair", lang)}</label>
         <select
           id={chairId}
           value={chairType}
+          aria-describedby={chairHintId}
           onChange={(event) => setChairType(event.target.value as ChairType | "")}
         >
           <option value="">{copy("profile.chair.unset", lang)}</option>
@@ -88,41 +118,62 @@ export function EquipmentProfileForm({
             </option>
           ))}
         </select>
+        <p id={chairHintId}>{copy("profile.chair-hint", lang)}</p>
         <label htmlFor={widthId}>{copy("profile.width", lang)}</label>
         <input
           id={widthId}
           type="text"
           inputMode="numeric"
-          aria-describedby={widthHintId}
+          aria-invalid={widthInvalid || undefined}
+          aria-errormessage={widthInvalid ? widthErrorId : undefined}
+          aria-describedby={widthInvalid ? `${widthHintId} ${widthErrorId}` : widthHintId}
           value={widthText}
-          onChange={(event) => setWidthText(event.target.value)}
+          onChange={(event) => {
+            setWidthText(event.target.value);
+            if (errorKey === "profile.width-invalid") setErrorKey(null);
+          }}
         />
         <p id={widthHintId}>{copy("profile.width-hint", lang)}</p>
         <label>
-          <input type="checkbox" checked={stepFreeRequired} onChange={(event) => setStepFreeRequired(event.target.checked)} />{" "}
+          <input
+            type="checkbox"
+            checked={stepFreeRequired}
+            aria-describedby={stepHintId}
+            onChange={(event) => setStepFreeRequired(event.target.checked)}
+          />{" "}
           {copy("profile.step-free", lang)}
         </label>
+        <p id={stepHintId}>{copy("profile.step-free-hint", lang)}</p>
         <label>
-          <input type="checkbox" checked={adultChangeTable} onChange={(event) => setAdultChangeTable(event.target.checked)} />{" "}
+          <input
+            type="checkbox"
+            checked={adultChangeTable}
+            aria-describedby={tableHintId}
+            onChange={(event) => setAdultChangeTable(event.target.checked)}
+          />{" "}
           {copy("profile.change-table", lang)}
         </label>
+        <p id={tableHintId}>{copy("profile.change-table-hint", lang)}</p>
         <button type="submit">{copy("profile.save", lang)}</button>{" "}
-        <button
-          type="button"
-          onClick={() => {
-            deleteProfile(storage);
-            clearForm();
-            setError("");
-            setStatus(copy("profile.deleted", lang));
-            onChange(null);
-          }}
-        >
-          {copy("profile.delete", lang)}
-        </button>
-        {status ? <p role="status">{status}</p> : null}
-        {error ? (
-          <p role="alert" className="error">
-            {error}
+        {confirming ? (
+          <div role="group" aria-labelledby={confirmId}>
+            <p id={confirmId}>{copy("profile.delete-confirm", lang)}</p>
+            <button ref={confirmButtonRef} type="button" onClick={removeProfile} onKeyDown={cancelDeleteOnEscape}>
+              {copy("profile.delete-yes", lang)}
+            </button>{" "}
+            <button type="button" onClick={() => setConfirming(false)} onKeyDown={cancelDeleteOnEscape}>
+              {copy("profile.delete-cancel", lang)}
+            </button>
+          </div>
+        ) : (
+          <button ref={deleteButtonRef} type="button" onClick={() => setConfirming(true)}>
+            {copy("profile.delete", lang)}
+          </button>
+        )}
+        {statusKey ? <p role="status">{copy(statusKey, lang)}</p> : null}
+        {errorKey ? (
+          <p id={errorKey === "profile.width-invalid" ? widthErrorId : undefined} role="alert" className="error">
+            {copy(errorKey, lang)}
           </p>
         ) : null}
       </fieldset>

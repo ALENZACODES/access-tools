@@ -8,6 +8,7 @@ import {
   labelOf,
   tierPhrase,
   transferSideMatches,
+  profileWashroomNotes,
   profileWashroomReasons,
   unknownLabel,
   useLabelText,
@@ -33,7 +34,7 @@ export interface WashroomQuery {
   registerOnly: boolean;
   openAt: CivilClock | null;
   showHidden: boolean;
-  /** On-device equipment profile. Unknown record values are not matches. */
+  /** On-device equipment profile. A missing door width stays visible. Unknown step-free and change-table values are not matches. */
   profile?: EquipmentProfile | null;
 }
 
@@ -56,6 +57,8 @@ export interface WashroomHit {
   recommendation: string;
   phone: string | null;
   hiddenReasons: string[];
+  /** Missing door-width notes. These do not hide the record. */
+  profileNotes: string[];
 }
 
 export interface WashroomResult {
@@ -128,6 +131,7 @@ export function findWashrooms(pack: PlacePack, query: WashroomQuery): WashroomRe
         recommendation: useLabelText(washroomUseLabel(place.datasetStatus, washroom), query.lang),
         phone,
         hiddenReasons: reasons(place, washroom, query),
+        profileNotes: profileWashroomNotes(washroom, query.profile ?? null, query.lang),
       });
     }
   }

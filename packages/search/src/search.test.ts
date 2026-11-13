@@ -36,15 +36,18 @@ describe("search", () => {
     const query = emptySearchQuery("en");
     query.profile = {
       schemaVersion: "equipment-profile-1.0.0",
-      name: "Day chair",
       chairType: "power",
       widthMm: 900,
       stepFreeRequired: false,
       adultChangeTable: false,
     };
     const result = searchPack(fixturePack, query);
-    expect(result.hits.map((hit) => hit.placeId)).not.toContain("fix-community-centre");
-    expect(result.hidden.find((hit) => hit.placeId === "fix-cafe")?.hiddenReasons.join(" ")).toMatch(/unknown or narrower/);
+    const centre = result.hidden.find((hit) => hit.placeId === "fix-community-centre");
+    expect(centre?.hiddenReasons.join(" ")).toMatch(/narrower than the saved chair width/);
+    expect(centre?.profileNotes).toEqual([]);
+    const cafe = result.hits.find((hit) => hit.placeId === "fix-cafe");
+    expect(cafe?.profileNotes.join(" ")).toMatch(/Cannot judge, measurement missing/);
+    expect(result.hidden.some((hit) => hit.placeId === "fix-cafe")).toBe(false);
   });
 
   it("filters adult change tables and van bays without a quality score", () => {

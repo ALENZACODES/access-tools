@@ -404,8 +404,11 @@ export const MODEL_COPY = {
     en: "Saved on this device only. It filters records in the App. It is not medical advice and it does not decide eligibility.",
     fr: "Enregistré seulement sur cet appareil. Il filtre les fiches dans l'application. Ce n'est pas un avis médical et ce n'est pas une décision d'admissibilité.",
   },
-  "profile.name": { en: "Profile name", fr: "Nom du profil" },
   "profile.chair": { en: "Chair type", fr: "Type de fauteuil" },
+  "profile.chair-hint": {
+    en: "Stored on this device. This does not filter records yet.",
+    fr: "Enregistré sur cet appareil. Ceci ne filtre pas encore les fiches.",
+  },
   "profile.chair.unset": { en: "Not set", fr: "Non précisé" },
   "profile.chair.manual": { en: "Manual wheelchair", fr: "Fauteuil roulant manuel" },
   "profile.chair.power": { en: "Power wheelchair", fr: "Fauteuil roulant motorisé" },
@@ -413,16 +416,29 @@ export const MODEL_COPY = {
   "profile.chair.other": { en: "Other wheelchair or scooter", fr: "Autre fauteuil ou scooter" },
   "profile.width": { en: "Chair width for door clearance (mm)", fr: "Largeur du fauteuil pour le passage de porte (mm)" },
   "profile.width-hint": {
-    en: "Used only when a door clear width is recorded as a number. An unknown width is not a match.",
-    fr: "Utilisée seulement quand une largeur libre de porte est enregistrée comme un nombre. Une largeur inconnue n'est pas une correspondance.",
+    en: "Leave this blank to ignore door width. A missing measurement stays visible. A measured door that is narrower is not a match.",
+    fr: "Laisser vide pour ignorer la largeur de porte. Une mesure manquante reste visible. Une porte mesurée plus étroite n'est pas une correspondance.",
   },
   "profile.step-free": { en: "Step-free required", fr: "Sans marche exigé" },
+  "profile.step-free-hint": {
+    en: "Hides a record unless step-free is recorded as yes. Unknown is not a match.",
+    fr: "Cache une fiche sauf si sans marche est enregistré comme oui. Inconnu n'est pas une correspondance.",
+  },
   "profile.change-table": { en: "Adult change table needed", fr: "Table à langer pour adultes nécessaire" },
+  "profile.change-table-hint": {
+    en: "Hides a record unless an adult change table is recorded as present. Unknown is not a match.",
+    fr: "Cache une fiche sauf si une table à langer pour adultes est enregistrée comme présente. Inconnu n'est pas une correspondance.",
+  },
   "profile.save": { en: "Save profile", fr: "Enregistrer le profil" },
   "profile.saved": { en: "Profile saved on this device.", fr: "Profil enregistré sur cet appareil." },
   "profile.delete": { en: "Delete my profile", fr: "Supprimer mon profil" },
+  "profile.delete-confirm": {
+    en: "This deletes the profile saved on this device.",
+    fr: "Ceci supprime le profil enregistré sur cet appareil.",
+  },
+  "profile.delete-yes": { en: "Delete the saved profile", fr: "Supprimer le profil enregistré" },
+  "profile.delete-cancel": { en: "Keep my profile", fr: "Garder mon profil" },
   "profile.deleted": { en: "Profile deleted from this device.", fr: "Profil supprimé de cet appareil." },
-  "profile.name-required": { en: "Enter a profile name before saving.", fr: "Entrez un nom de profil avant d'enregistrer." },
   "profile.width-invalid": {
     en: "Chair width must be a whole number of millimetres, or leave it blank.",
     fr: "La largeur du fauteuil doit être un nombre entier de millimètres, ou rester vide.",
@@ -443,8 +459,12 @@ export const MODEL_COPY = {
     en: "An adult change table is not recorded as present, so this record is not shown as a match.",
     fr: "Aucune table à langer pour adultes n'est enregistrée comme présente, donc cette fiche n'est pas un résultat.",
   },
-  "profile.reason.door": {
-    en: "Door clear width is unknown or narrower than the saved chair width, so this record is not shown as a match.",
-    fr: "La largeur libre de la porte est inconnue ou plus étroite que la largeur enregistrée, donc cette fiche n'est pas un résultat.",
+  "profile.reason.missing": {
+    en: "Cannot judge, measurement missing.",
+    fr: "Impossible de juger, mesure manquante.",
+  },
+  "profile.reason.narrower": {
+    en: "The measured door is narrower than the saved chair width, so this record is not shown as a match.",
+    fr: "La porte mesurée est plus étroite que la largeur enregistrée, donc cette fiche n'est pas un résultat.",
   },
 } as const;
