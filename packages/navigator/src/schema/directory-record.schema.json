@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://access-tools.local/schema/directory-record-1.0.0.json",
+  "title": "Directory record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "category",
+    "topics",
+    "readingContexts",
+    "name",
+    "administrator",
+    "geography",
+    "summary",
+    "officialUrl",
+    "sourceName",
+    "retrievedOn",
+    "nextReviewOn",
+    "verificationTier",
+    "verificationPlain",
+    "neverMeans",
+    "licenceNote",
+    "notEligibilityAdvice",
+    "framing"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "directory-record-1.0.0" },
+    "id": { "type": "string", "minLength": 3 },
+    "category": {
+      "enum": ["benefits", "funding", "equipment", "employment", "housing", "services"]
+    },
+    "topics": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 2 }
+    },
+    "readingContexts": {
+      "type": "array",
+      "items": {
+        "enum": ["newly_injured", "rehabilitation", "early_community", "long_term", "any"]
+      }
+    },
+    "name": { "$ref": "#/$defs/bilingual" },
+    "administrator": { "$ref": "#/$defs/bilingual" },
+    "geography": {
+      "enum": ["canada", "ontario", "toronto", "london", "hamilton", "thunder_bay", "sudbury"]
+    },
+    "summary": { "$ref": "#/$defs/bilingual" },
+    "doesNot": { "$ref": "#/$defs/bilingual" },
+    "officialUrl": { "type": "string", "format": "uri" },
+    "frenchOfficialUrl": { "type": "string", "format": "uri" },
+    "phone": { "type": "string" },
+    "phoneNote": { "$ref": "#/$defs/bilingual" },
+    "figure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["statement", "qualifier", "sourceUrls", "retrievedOn"],
+      "properties": {
+        "statement": { "$ref": "#/$defs/bilingual" },
+        "qualifier": { "$ref": "#/$defs/bilingual" },
+        "sourceUrls": { "type": "array", "minItems": 1, "items": { "type": "string", "format": "uri" } },
+        "retrievedOn": { "type": "string", "format": "date" }
+      }
+    },
+    "sourceName": { "type": "string", "minLength": 3 },
+    "retrievedOn": { "type": "string", "format": "date" },
+    "nextReviewOn": { "type": "string", "format": "date" },
+    "verificationTier": { "const": "administrator_page" },
+    "verificationPlain": { "$ref": "#/$defs/bilingual" },
+    "neverMeans": { "$ref": "#/$defs/bilingual" },
+    "licenceNote": { "$ref": "#/$defs/bilingual" },
+    "notEligibilityAdvice": { "const": true },
+    "framing": { "$ref": "#/$defs/bilingual" },
+    "placeFacts": { "const": "none" }
+  },
+  "$defs": {
+    "bilingual": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["en", "fr"],
+      "properties": {
+        "en": { "type": "string", "minLength": 2 },
+        "fr": { "type": "string", "minLength": 2 }
+      }
+    }
+  }
+}

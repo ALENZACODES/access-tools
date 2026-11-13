@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://access-tools.local/schema/timing-document-1.0.0.json",
+  "title": "User-stated timing constraints",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "maxTimeBetweenWashroomsMin",
+    "maxContinuousTravelMin",
+    "restBreakEveryMin",
+    "reminderLeadMin",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "timing-constraints-1.0.0" },
+    "maxTimeBetweenWashroomsMin": {
+      "type": ["integer", "null"],
+      "minimum": 1,
+      "maximum": 10080,
+      "description": "Minutes the user typed. Null means unset. There is no clinical default."
+    },
+    "maxContinuousTravelMin": {
+      "type": ["integer", "null"],
+      "minimum": 1,
+      "maximum": 10080
+    },
+    "restBreakEveryMin": {
+      "type": ["integer", "null"],
+      "minimum": 1,
+      "maximum": 10080,
+      "description": "User-stated travel rest preference. Not a pressure-relief timer."
+    },
+    "reminderLeadMin": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "maximum": 10080,
+      "description": "How many minutes before the user's own limit to show a note. Null means at the limit."
+    },
+    "updatedAt": { "type": ["string", "null"], "format": "date-time" }
+  }
+}

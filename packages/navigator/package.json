@@ -1,0 +1,18 @@
+{
+  "name": "@access-tools/navigator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Ontario and federal benefits, funding, equipment, employment, housing, and service directory. Linking only. Not eligibility advice.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}

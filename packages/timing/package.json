@@ -1,0 +1,18 @@
+{
+  "name": "@access-tools/timing",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "User-stated timing constraints, washroom-stop reminders, and emergency pathway links. No medical advice.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}
