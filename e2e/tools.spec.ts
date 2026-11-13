@@ -12,7 +12,7 @@ test("directory, timing, and a game are usable without advice or a timer", async
   await page.getByRole("button", { name: "Timing" }).click();
   await expect(page.getByRole("link", { name: "Call 911 now" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Text 9-8-8 Suicide Crisis Helpline" })).toHaveAttribute("href", "sms:988");
-  await expect(page.getByRole("link", { name: "Text CONNEX to 247247" })).toHaveAttribute("href", "sms:247247?body=CONNEX");
+  await expect(page.getByRole("link", { name: "Text CONNEX to 247247" })).toHaveAttribute("href", "sms:247247?&body=CONNEX");
   await expect(page.getByLabel("Minutes between washroom stops")).toHaveCount(0);
 
   await page.getByRole("button", { name: "Games" }).click();

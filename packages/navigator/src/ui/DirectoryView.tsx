@@ -156,7 +156,7 @@ export function DirectoryView(props: DirectoryViewProps) {
                 {record.id === "connexontario" ? (
                   <>
                     {" "}
-                    <a href="sms:247247?body=CONNEX" style={linkStyle}>
+                    <a href="sms:247247?&body=CONNEX" style={linkStyle}>
                       {copy.textConnex}
                     </a>
                   </>

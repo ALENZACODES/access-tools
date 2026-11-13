@@ -57,7 +57,7 @@ export const EMERGENCY_PATHWAYS: readonly EmergencyPathway[] = [
       en: "Text CONNEX to 247247",
       fr: "Texter CONNEX au 247247",
     },
-    textHref: "sms:247247?body=CONNEX",
+    textHref: "sms:247247?&body=CONNEX",
     detail: {
       en: "ConnexOntario's site, retrieved 13 November 2026, publishes 1-866-531-2600 and text CONNEX to 247247 for mental health, addiction, and problem gambling connections. The App does not assess risk.",
       fr: "Le site de ConnexOntario, consulté le 13 novembre 2026, publie le 1-866-531-2600 et le texto CONNEX au 247247 pour la santé mentale, les dépendances et le jeu problématique. L'application n'évalue pas le risque.",

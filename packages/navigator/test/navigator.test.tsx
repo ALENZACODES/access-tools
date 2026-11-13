@@ -107,7 +107,7 @@ describe("directory screen", () => {
     const { container } = render(<Harness />);
     expect(screen.getByRole("note").textContent).toBe(DIRECTORY_FRAMING.en);
     expect(screen.getByRole("link", { name: "Text 9-8-8 Suicide Crisis Helpline" })).toHaveAttribute("href", "sms:988");
-    expect(screen.getByRole("link", { name: "Text CONNEX to 247247" })).toHaveAttribute("href", "sms:247247?body=CONNEX");
+    expect(screen.getByRole("link", { name: "Text CONNEX to 247247" })).toHaveAttribute("href", "sms:247247?&body=CONNEX");
     expect(screen.queryByRole("link", { name: /call or text/i })).not.toBeInTheDocument();
     const user = userEvent.setup();
     await user.type(screen.getByLabelText("Search programs and services"), "Connex");
@@ -116,7 +116,7 @@ describe("directory screen", () => {
     expect(link).toHaveFocus();
     await user.click(screen.getByRole("button", { name: "Français" }));
     expect(screen.getByRole("note").textContent).toBe(DIRECTORY_FRAMING.fr);
-    expect(screen.getByRole("link", { name: "Texter CONNEX au 247247" })).toHaveAttribute("href", "sms:247247?body=CONNEX");
+    expect(screen.getByRole("link", { name: "Texter CONNEX au 247247" })).toHaveAttribute("href", "sms:247247?&body=CONNEX");
     const results = await axe.run(container, {
       rules: { "color-contrast": { enabled: false }, region: { enabled: false } },
     });
