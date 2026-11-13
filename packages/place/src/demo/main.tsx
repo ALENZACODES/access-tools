@@ -3,6 +3,8 @@ import { createRoot } from "react-dom/client";
 import { appendChange, appendCorrection, correctionsFor, changesFor, emptyLog, readLog, writeLog } from "../corrections.js";
 import { fixturePack, FIXTURE_DAY } from "../fixtures.js";
 import { copy } from "../i18n.js";
+import { readProfile, type EquipmentProfile } from "../profile.js";
+import { EquipmentProfileForm } from "../react/EquipmentProfileForm.js";
 import { FixturePlaceNav } from "../react/FixturePlaceNav.js";
 import { PlacePage } from "../react/PlacePage.js";
 import { a11yCss } from "../react/a11yCss.js";
@@ -11,6 +13,13 @@ import type { Lang, ReportLog } from "../types.js";
 export function PlaceDemo() {
   const [lang, setLang] = useState<Lang>("en");
   const [placeId, setPlaceId] = useState(fixturePack.places[0]?.id ?? "");
+  const [profile, setProfile] = useState<EquipmentProfile | null>(() => {
+    try {
+      return readProfile(window.localStorage);
+    } catch {
+      return null;
+    }
+  });
   const [log, setLog] = useState<ReportLog>(() => {
     try {
       return readLog(window.localStorage);
@@ -50,11 +59,13 @@ export function PlaceDemo() {
       </header>
       <FixturePlaceNav places={fixturePack.places} lang={lang} currentId={place.id} onSelect={setPlaceId} />
       <main id="demo-main">
+      <EquipmentProfileForm lang={lang} storage={window.localStorage} onChange={setProfile} />
       <PlacePage
         place={place}
         pack={fixturePack}
         lang={lang}
         today={FIXTURE_DAY}
+        profile={profile}
         corrections={correctionsFor(log, place.id)}
         changes={changesFor(log, place.id)}
         onCorrection={(input) => {

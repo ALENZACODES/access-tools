@@ -36,6 +36,27 @@ describe("washroom finder", () => {
     expect(register.hits.map((hit) => hit.washroomId)).toEqual(["fix-hoist-wash"]);
     expect(register.hits[0]?.hoistText).toContain("not provided");
     expect(register.hits[0]?.changeTableText).toContain("present");
+    const fitted = findWashrooms(fixturePack, {
+      text: "",
+      lang: "en",
+      origin: null,
+      transferSide: "any",
+      changeTable: false,
+      hoist: false,
+      registerOnly: false,
+      openAt: null,
+      showHidden: true,
+      profile: {
+        schemaVersion: "equipment-profile-1.0.0",
+        name: "Day chair",
+        chairType: "power",
+        widthMm: 900,
+        stepFreeRequired: false,
+        adultChangeTable: true,
+      },
+    });
+    expect(fitted.hits.map((hit) => hit.washroomId)).toEqual(["fix-hoist-wash"]);
+    expect(fitted.hidden.find((hit) => hit.washroomId === "fix-cc-wash-2")?.hiddenReasons.join(" ")).toMatch(/unknown or narrower/);
   });
 
   it("does not treat unknown hours as open", () => {
@@ -71,6 +92,28 @@ describe("parking finder", () => {
     expect(result.hidden.some((hit) => hit.bayId === "fix-cc-bay-b")).toBe(true);
     expect(result.hits[0]?.privilegeText).toContain("unknown");
     expect(result.hits[0]?.winterText).toBe("Winter clearance unknown");
+  });
+
+  it("does not treat an unknown step-free route as a match", () => {
+    const result = findParking(fixturePack, {
+      text: "",
+      lang: "en",
+      origin: null,
+      vanLift: false,
+      showHidden: true,
+      month: 11,
+      profile: {
+        schemaVersion: "equipment-profile-1.0.0",
+        name: "Day chair",
+        chairType: "manual",
+        widthMm: null,
+        stepFreeRequired: true,
+        adultChangeTable: false,
+      },
+    });
+    expect(result.hits).toEqual([]);
+    expect(result.hidden.length).toBeGreaterThan(0);
+    expect(result.hidden.every((hit) => /not recorded as yes/.test(hit.hiddenReasons.join(" ")))).toBe(true);
   });
 });
 

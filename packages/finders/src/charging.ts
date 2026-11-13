@@ -5,8 +5,10 @@ import {
   isGeoPoint,
   labelOf,
   isOpenAt,
+  profileStepFreeReason,
   rangeNote,
   tierPhrase,
+  type EquipmentProfile,
   unknownLabel,
   useLabelText,
   type CivilClock,
@@ -23,6 +25,8 @@ export interface ChargingQuery {
   openAt: CivilClock | null;
   showHidden: boolean;
   userTestedRangeMetres: number | null;
+  /** On-device equipment profile. An unknown step-free route is not a match. */
+  profile?: EquipmentProfile | null;
 }
 
 export interface ChargingHit {
@@ -68,6 +72,8 @@ export function findCharging(pack: PlacePack, query: ChargingQuery): ChargingRes
           reasons.push(finderCopy(open === "unknown" ? "finder.hours-unknown-open" : "finder.closed", query.lang));
         }
       }
+      const stepFree = profileStepFreeReason(point.stepFreeRoute.value, query.profile ?? null, query.lang);
+      if (stepFree) reasons.push(stepFree);
       hits.push({
         placeId: place.id,
         pointId: point.id,

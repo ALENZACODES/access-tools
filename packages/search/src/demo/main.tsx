@@ -7,10 +7,13 @@ import {
   changesFor,
   correctionsFor,
   emptyLog,
+  EquipmentProfileForm,
   fixturePack,
   FIXTURE_DAY,
   PlacePage,
+  readProfile,
   readLog,
+  type EquipmentProfile,
   writeLog,
   type Lang,
   type ReportLog,
@@ -23,6 +26,13 @@ export function SearchDemo() {
   const [lang, setLang] = useState<Lang>("en");
   const [query, setQuery] = useState<SearchQuery>(emptySearchQuery("en"));
   const [placeId, setPlaceId] = useState<string | null>(null);
+  const [profile, setProfile] = useState<EquipmentProfile | null>(() => {
+    try {
+      return readProfile(window.localStorage);
+    } catch {
+      return null;
+    }
+  });
   const [log, setLog] = useState<ReportLog>(() => {
     try {
       return readLog(window.localStorage);
@@ -62,9 +72,10 @@ export function SearchDemo() {
         </button>
       </header>
       <main id="search-main">
+        <EquipmentProfileForm lang={lang} storage={window.localStorage} onChange={setProfile} />
         <SearchPanel
           pack={fixturePack}
-          query={{ ...query, lang }}
+          query={{ ...query, lang, profile }}
           onQueryChange={setQuery}
           onOpenPlace={setPlaceId}
         />
@@ -75,6 +86,7 @@ export function SearchDemo() {
             lang={lang}
             today={FIXTURE_DAY}
             headingLevel={2}
+            profile={profile}
             corrections={correctionsFor(log, place.id)}
             changes={changesFor(log, place.id)}
             onCorrection={(input) => {
