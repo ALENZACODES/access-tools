@@ -29,6 +29,7 @@ export interface ParkingHit {
   placeId: string;
   bayId: string;
   placeName: string;
+  placeNameIsEnglish: boolean;
   bayName: string;
   kindText: string;
   widthText: string;
@@ -65,6 +66,7 @@ export function findParking(pack: PlacePack, query: ParkingQuery): ParkingResult
         placeId: place.id,
         bayId: bay.id,
         placeName,
+        placeNameIsEnglish: query.lang === "fr" && !place.nameFr,
         bayName: bay.name,
         kindText: labelOf(`bay.${bay.kind}`, query.lang),
         widthText: formatMm(bay.widthMm.value, query.lang),

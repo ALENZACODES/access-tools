@@ -71,7 +71,7 @@ export function PlacePage({
                     <p>
                       <EnglishText lang={lang} text={washroom.attendantText} fragments={washroom.englishFragments} />
                     </p>
-                    <FieldTable rows={washroom.rows} caption={washroom.heading} lang={lang} />
+                    <FieldTable rows={washroom.rows} caption={washroom.heading} lang={lang} captionEnglish={lang === "fr"} />
                   </article>
                 ))
               : null}
@@ -84,7 +84,7 @@ export function PlacePage({
                     <p>{bay.kindText}</p>
                     <p>{bay.vanLiftText}</p>
                     <p>{bay.privilegeText}</p>
-                    <FieldTable rows={bay.rows} caption={bay.heading} lang={lang} />
+                    <FieldTable rows={bay.rows} caption={bay.heading} lang={lang} captionEnglish={lang === "fr"} />
                   </article>
                 ))
               : null}
@@ -94,7 +94,7 @@ export function PlacePage({
                     <h3 id={`c-${point.id}`}>
                       <RecordText lang={lang} text={point.heading} />
                     </h3>
-                    <FieldTable rows={point.rows} caption={point.heading} lang={lang} />
+                    <FieldTable rows={point.rows} caption={point.heading} lang={lang} captionEnglish={lang === "fr"} />
                   </article>
                 ))
               : null}

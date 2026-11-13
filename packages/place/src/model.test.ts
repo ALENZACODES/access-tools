@@ -129,6 +129,45 @@ describe("display rules", () => {
     expect(schemaErrors().join(" ")).toMatch(/tier|provenance|required/i);
   });
 
+  it("rejects a tier 4 record with no clock time or no expiry", () => {
+    const broken = structuredClone(fixturePack);
+    const place = broken.places[0]!;
+    const { prototypeLabel: _label, ...base } = place.recordProvenance;
+    place.recordProvenance = { ...base, tier: 4, verifierType: "operator-feed" };
+    expect(validatePlacePack(broken)).toBe(false);
+    expect(schemaErrors().join(" ")).toMatch(/observedAt|expiresAt|required/i);
+
+    place.recordProvenance = {
+      ...place.recordProvenance,
+      observedAt: "2026-11-13T14:00",
+      expiresAt: "2026-11-13T16:00:00Z",
+    };
+    expect(validatePlacePack(broken)).toBe(false);
+    expect(schemaErrors().join(" ")).toMatch(/observedAt|pattern/i);
+
+    place.recordProvenance = {
+      ...place.recordProvenance,
+      observedAt: "2026-11-13T14:00:00Z",
+      expiresAt: "2026-11-13T16:00",
+    };
+    expect(validatePlacePack(broken)).toBe(false);
+
+    place.recordProvenance = {
+      ...place.recordProvenance,
+      observedAt: "2026-11-13T14:00:00+00:00",
+      expiresAt: "2026-11-13T16:00:00Z",
+    };
+    expect(validatePlacePack(broken)).toBe(true);
+
+    const nested = structuredClone(fixturePack);
+    const step = nested.places[0]!.entrance.stepCount;
+    const stepSource: Provenance = { ...(step.provenance ?? base) };
+    delete stepSource.prototypeLabel;
+    step.provenance = { ...stepSource, tier: 4, verifierType: "operator-feed" };
+    expect(validatePlacePack(nested)).toBe(false);
+    expect(schemaErrors().join(" ")).toMatch(/observedAt|expiresAt|required/i);
+  });
+
   it("rejects a tier 3 record that has no evidence", () => {
     const broken = structuredClone(fixturePack);
     const place = broken.places[0]!;
@@ -248,6 +287,30 @@ describe("freshness and hours", () => {
     const french = freshness({ ...provenance, observedAt: "2026-10-01T12:00:00Z" }, "2026-11-13T12:00:00Z", "charging", "fr");
     expect(french.text).toContain("inconnu");
     expect(french.text).not.toContain("30 jours");
+  });
+
+  it("treats a live timestamp without a timezone offset as unknown", () => {
+    const provenance: Provenance = {
+      sourceName: "specimen feed",
+      sourceId: "specimen-feed",
+      licence: "specimen",
+      sourceDate: "2026-11-13",
+      recordDate: "2026-11-13",
+      retrievedAt: "2026-11-13",
+      tier: 4,
+      verifierType: "operator-feed",
+      observedAt: "2026-11-13T14:00",
+      expiresAt: "2026-11-13T16:00:00Z",
+    };
+    const noObservedOffset = freshness(provenance, "2026-11-13T15:00:00Z", "charging", "en");
+    expect(noObservedOffset.state).toBe("live-age-unknown");
+    const noExpiryOffset = freshness(
+      { ...provenance, observedAt: "2026-11-13T14:00:00Z", expiresAt: "2026-11-13T16:00" },
+      "2026-11-13T15:00:00Z",
+      "charging",
+      "en",
+    );
+    expect(noExpiryOffset.state).toBe("live-age-unknown");
   });
 
   it("refuses a generic in-range claim", () => {

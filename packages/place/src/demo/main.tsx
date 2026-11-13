@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { appendChange, appendCorrection, correctionsFor, changesFor, emptyLog, readLog, writeLog } from "../corrections.js";
 import { fixturePack, FIXTURE_DAY } from "../fixtures.js";
+import { FixturePlaceNav } from "../react/FixturePlaceNav.js";
 import { PlacePage } from "../react/PlacePage.js";
 import { a11yCss } from "../react/a11yCss.js";
 import type { Lang, ReportLog } from "../types.js";
@@ -43,26 +44,7 @@ function Demo() {
           {lang === "en" ? "Français" : "English"}
         </button>
       </header>
-      <nav aria-label={lang === "fr" ? "Lieux du jeu d'essai" : "Fixture places"}>
-        <h2>{lang === "fr" ? "Lieux étiquetés" : "Labelled places"}</h2>
-        <ul>
-          {fixturePack.places.map((item) => (
-            <li key={item.id}>
-              <a
-                href={`#${item.id}`}
-                aria-current={item.id === place.id ? "page" : undefined}
-                onClick={(event) => {
-                  event.preventDefault();
-                  setPlaceId(item.id);
-                }}
-              >
-                {lang === "fr" && item.nameFr ? item.nameFr : item.identity.name} —{" "}
-                <span lang="en">PROTOTYPE-UNVERIFIED</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      <FixturePlaceNav places={fixturePack.places} lang={lang} currentId={place.id} onSelect={setPlaceId} />
       <main id="demo-main">
       <PlacePage
         place={place}

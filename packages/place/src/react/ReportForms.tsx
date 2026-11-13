@@ -41,17 +41,20 @@ export function CorrectionForm({
       </p>
       <label htmlFor="correction-field">{lang === "fr" ? "Champ" : "Field"}</label>
       <select id="correction-field" value={fieldId} onChange={(event) => setFieldId(event.target.value)}>
-        {groups.map((group) => (
-          <optgroup key={group} label={group}>
-            {fields
-              .filter((field) => field.group === group)
-              .map((field) => (
-                <option key={field.id} value={field.id}>
-                  {field.label}
-                </option>
-              ))}
-          </optgroup>
-        ))}
+        {groups.map((group) => {
+          const groupEnglish = fields.some((field) => field.group === group && field.groupEnglish);
+          return (
+            <optgroup key={group} label={group} lang={groupEnglish ? "en" : undefined}>
+              {fields
+                .filter((field) => field.group === group)
+                .map((field) => (
+                  <option key={field.id} value={field.id} lang={lang}>
+                    {field.label}
+                  </option>
+                ))}
+            </optgroup>
+          );
+        })}
       </select>
       <label htmlFor="correction-suggested">{lang === "fr" ? "Correction proposée" : "Suggested correction"}</label>
       <textarea

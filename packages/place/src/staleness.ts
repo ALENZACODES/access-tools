@@ -17,6 +17,9 @@ export interface Freshness {
  */
 export const LIVE_STATUS_MAX_HOURS = 2;
 
+/** Clock time plus Z or ±hh:mm. A bare "2026-11-13T14:00" is device-local and is not a live timestamp. */
+export const CLOCK_WITH_OFFSET = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})$/;
+
 export function daysBetween(sourceDate: string, today: string): number | null {
   const start = Date.parse(`${sourceDate.slice(0, 10)}T00:00:00Z`);
   const end = Date.parse(`${today.slice(0, 10)}T00:00:00Z`);
@@ -142,7 +145,7 @@ export function freshness(provenance: Provenance | null, today: string, layer: F
 }
 
 function clockMillis(value: string): number | null {
-  if (!/T\d{2}:\d{2}/.test(value)) return null;
+  if (!CLOCK_WITH_OFFSET.test(value)) return null;
   const parsed = Date.parse(value);
   return Number.isNaN(parsed) ? null : parsed;
 }
@@ -150,14 +153,14 @@ function clockMillis(value: string): number | null {
 function liveFreshness(provenance: Provenance, today: string, ageDays: number | null, lang: Lang): Freshness {
   const observed = provenance.observedAt ? clockMillis(provenance.observedAt) : null;
   const checked = clockMillis(today);
-  const expiry = provenance.expiresAt ? Date.parse(provenance.expiresAt) : Number.NaN;
+  const expiry = provenance.expiresAt ? clockMillis(provenance.expiresAt) : null;
   const ageHours = observed !== null && checked !== null ? (checked - observed) / 3_600_000 : null;
-  const pastExpiry = !Number.isNaN(expiry) && checked !== null && expiry < checked;
+  const pastExpiry = expiry !== null && checked !== null && expiry < checked;
   const fresh =
     ageHours !== null &&
     ageHours >= 0 &&
     ageHours <= LIVE_STATUS_MAX_HOURS &&
-    !Number.isNaN(expiry) &&
+    expiry !== null &&
     checked !== null &&
     expiry >= checked;
   if (!fresh || pastExpiry) {

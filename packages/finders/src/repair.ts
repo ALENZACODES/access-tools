@@ -31,6 +31,7 @@ export interface DirectoryHit {
   id: string;
   kind: "repair" | "supply";
   name: string;
+  nameIsEnglish: boolean;
   distanceMetres: number | null;
   servicesText: string;
   hoursText: string;
@@ -89,6 +90,7 @@ export function findRepairAndSupply(pack: PlacePack, query: RepairQuery): Repair
         id: repairer.id,
         kind: "repair",
         name,
+        nameIsEnglish: query.lang === "fr" && !repairer.nameFr,
         distanceMetres: query.origin && geo ? distanceMetres(query.origin, geo) : null,
         servicesText:
           repairer.servicesPublished.length === 0
@@ -145,6 +147,7 @@ export function findRepairAndSupply(pack: PlacePack, query: RepairQuery): Repair
         id: store.id,
         kind: "supply",
         name,
+        nameIsEnglish: query.lang === "fr" && !store.nameFr,
         distanceMetres: query.origin && geo ? distanceMetres(query.origin, geo) : null,
         servicesText:
           store.categoriesPublished.length === 0

@@ -28,6 +28,7 @@ export interface ChargingHit {
   placeId: string;
   pointId: string;
   placeName: string;
+  placeNameIsEnglish: boolean;
   pointName: string;
   distanceMetres: number | null;
   accessText: string;
@@ -78,6 +79,7 @@ export function findCharging(pack: PlacePack, query: ChargingQuery): ChargingRes
         placeId: place.id,
         pointId: point.id,
         placeName,
+        placeNameIsEnglish: query.lang === "fr" && !place.nameFr,
         pointName: point.name,
         distanceMetres: metres,
         accessText: point.accessMethod.value ? labelOf(`access.${point.accessMethod.value}`, query.lang) : unknownLabel(query.lang),

@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { copy } from "../i18n.js";
 import type { FieldRowView } from "../project.js";
 import type { Lang } from "../types.js";
@@ -8,13 +9,27 @@ const COLUMNS = {
   fr: ["Champ", "Valeur", "Niveau", "Source", "Date de source", "Date de fiche"],
 } as const;
 
-export function FieldTable({ rows, caption, lang }: { rows: FieldRowView[]; caption: string; lang: Lang }) {
+export function FieldTable({
+  rows,
+  caption,
+  lang,
+  captionEnglish = false,
+}: {
+  rows: FieldRowView[];
+  caption: string;
+  lang: Lang;
+  /** The caption is an English record name on a French screen. */
+  captionEnglish?: boolean;
+}) {
+  const labelId = useId();
   if (rows.length === 0) return null;
   const columns = COLUMNS[lang];
   return (
-    <div className="table-scroll" tabIndex={0} role="region" aria-label={`${caption} ${copy("region.fields", lang)}`}>
+    <div className="table-scroll" tabIndex={0} role="region" aria-labelledby={labelId}>
       <table>
-        <caption className="visually-hidden">{caption}</caption>
+        <caption id={labelId} className="visually-hidden">
+          {captionEnglish ? <span lang="en">{caption}</span> : caption} {copy("region.fields", lang)}
+        </caption>
         <thead>
           <tr>
             {columns.map((column) => (

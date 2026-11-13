@@ -14,5 +14,7 @@ export * from "./project.js";
 export { fixturePack, placeById, FIXTURE_DAY, FIXTURE_PROVENANCE } from "./fixtures.js";
 export { canonicalFixtureRecords } from "./canonical.js";
 export { PlacePage } from "./react/PlacePage.js";
+export { FixturePlaceNav } from "./react/FixturePlaceNav.js";
 export { EnglishOnlyNote, EnglishText, RecordText } from "./react/EnglishText.js";
+export { auditFixtureLanguage, englishFixtureSamples } from "./frenchFixtureLang.js";
 export { a11yCss } from "./react/a11yCss.js";

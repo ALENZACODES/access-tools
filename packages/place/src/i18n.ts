@@ -80,8 +80,8 @@ export const COPY = {
   "side.right": { en: "Right", fr: "Droite" },
   "side.both": { en: "Both", fr: "Les deux" },
   "note.english-only": {
-    en: "English only. Authored record text has no other language.",
-    fr: "Anglais seulement. Le texte rédigé dans la fiche n'a pas de traduction française.",
+    en: "English only. This is sample fixture text and has no French translation.",
+    fr: "Anglais seulement. Ce texte est un texte de jeu d'essai et n'a pas de traduction française.",
   },
   "provenance.source.labelled-fixture": {
     en: "access-tools labelled fixture",

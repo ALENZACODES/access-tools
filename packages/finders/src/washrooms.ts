@@ -35,7 +35,9 @@ export interface WashroomHit {
   placeId: string;
   washroomId: string;
   placeName: string;
+  placeNameIsEnglish: boolean;
   washroomName: string;
+  englishFragments: string[];
   municipality: string;
   distanceMetres: number | null;
   transferText: string;
@@ -102,11 +104,21 @@ export function findWashrooms(pack: PlacePack, query: WashroomQuery): WashroomRe
       const point = isGeoPoint(place.identity.latitude, place.identity.longitude);
       const provenance = washroom.turningDiameterMm.provenance ?? washroom.transfer.provenance ?? place.recordProvenance;
       const phone = washroom.accessPolicy.value?.phone ?? place.identity.phone;
+      const hoist = washroom.hoist.value;
+      const table = washroom.changeTable.value;
+      const access = washroom.accessPolicy.value;
       hits.push({
         placeId: place.id,
         washroomId: washroom.id,
         placeName: name,
+        placeNameIsEnglish: query.lang === "fr" && !place.nameFr,
         washroomName: washroom.name,
+        englishFragments:
+          query.lang === "fr"
+            ? [hoist?.type, hoist?.slingPolicy, hoist?.operatorAvailability, table?.heightRange, table?.productLabel, access?.howToObtain].filter(
+                (item): item is string => typeof item === "string" && item.trim().length > 0,
+              )
+            : [],
         municipality: place.identity.municipality,
         distanceMetres: query.origin && point ? distanceMetres(query.origin, point) : null,
         transferText: formatTransfer(washroom.transfer.value, query.lang),

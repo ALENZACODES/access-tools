@@ -73,9 +73,9 @@ export interface Provenance {
   verifierType: "open-data-import" | "business" | "peer" | "surveyor" | "operator-feed" | "fixture-author" | "desk-reviewer";
   /** Required when tier is 3 or prototypeLabel is VERIFIED. */
   evidence?: SurveyEvidence;
-  /** Minute-level timestamp for a live feed. Absent means the age is unknown. */
+  /** Clock time with Z or ±hh:mm. Required, with expiresAt, when tier is 4. */
   observedAt?: string;
-  /** After this instant a live status is unknown. */
+  /** Clock time with Z or ±hh:mm. Required when tier is 4. After this instant a live status is unknown. */
   expiresAt?: string;
 }
 

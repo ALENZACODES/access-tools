@@ -1,5 +1,6 @@
 import Ajv from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
+import { CLOCK_WITH_OFFSET } from "./staleness.js";
 
 const evidence = {
   type: "object",
@@ -34,13 +35,17 @@ const provenance = {
       enum: ["open-data-import", "business", "peer", "surveyor", "operator-feed", "fixture-author", "desk-reviewer"],
     },
     evidence,
-    observedAt: { type: "string" },
-    expiresAt: { type: "string" },
+    observedAt: { type: "string", pattern: CLOCK_WITH_OFFSET.source },
+    expiresAt: { type: "string", pattern: CLOCK_WITH_OFFSET.source },
   },
   allOf: [
     {
       if: { properties: { tier: { const: 3 } }, required: ["tier"] },
       then: { required: ["evidence"] },
+    },
+    {
+      if: { properties: { tier: { const: 4 } }, required: ["tier"] },
+      then: { required: ["observedAt", "expiresAt"] },
     },
     {
       if: { properties: { prototypeLabel: { const: "VERIFIED" } }, required: ["prototypeLabel"] },

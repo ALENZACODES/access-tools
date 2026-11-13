@@ -87,7 +87,11 @@ describe("French place page", () => {
     for (const key of RAW_KEYS) {
       expect(text).not.toContain(key);
     }
-    const regions = screen.getAllByRole("region").map((region) => region.getAttribute("aria-label") ?? "");
+    const regions = screen.getAllByRole("region").map((region) => {
+      const labelledBy = region.getAttribute("aria-labelledby");
+      const caption = labelledBy ? document.getElementById(labelledBy)?.textContent ?? "" : region.getAttribute("aria-label") ?? "";
+      return caption;
+    });
     expect(regions.some((label) => label.endsWith("fields"))).toBe(false);
     expect(regions.some((label) => label.endsWith("champs"))).toBe(true);
     cleanup();

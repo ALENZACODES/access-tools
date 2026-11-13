@@ -1,10 +1,16 @@
-import { a11yCss, EnglishOnlyNote, EnglishText, RecordText, type PlacePack } from "@access-tools/place";
+import type { ReactNode } from "react";
+import { a11yCss, EnglishOnlyNote, EnglishText, RecordText, type Lang, type PlacePack } from "@access-tools/place";
 import { findCharging, type ChargingQuery } from "../charging.js";
 import { findParking, type ParkingQuery } from "../parking.js";
 import { findRepairAndSupply, type RepairQuery } from "../repair.js";
 import { findWashrooms, type WashroomQuery } from "../washrooms.js";
 
-function HiddenList({ title, items }: { title: string; items: Array<{ id: string; name: string; reasons: string[] }> }) {
+function PlaceName({ lang, name, english }: { lang: Lang; name: string; english: boolean }) {
+  if (!english) return <>{name}</>;
+  return <RecordText lang={lang} text={name} />;
+}
+
+function HiddenList({ title, items }: { title: string; items: Array<{ id: string; name: ReactNode; reasons: string[] }> }) {
   if (items.length === 0) return null;
   return (
     <section aria-labelledby={`hidden-${title}`}>
@@ -42,7 +48,8 @@ export function WashroomFinder({ pack, query }: { pack: PlacePack; query: Washro
         {result.hits.map((hit) => (
           <li key={hit.washroomId} className="card">
             <h3>
-              {hit.placeName} — <RecordText lang={lang} text={hit.washroomName} />
+              <PlaceName lang={lang} name={hit.placeName} english={hit.placeNameIsEnglish} /> —{" "}
+              <RecordText lang={lang} text={hit.washroomName} />
             </h3>
             <p>{hit.recommendation}</p>
             <dl>
@@ -51,11 +58,17 @@ export function WashroomFinder({ pack, query }: { pack: PlacePack; query: Washro
               <dt>{lang === "fr" ? "Transfert" : "Transfer"}</dt>
               <dd>{hit.transferText}</dd>
               <dt>{lang === "fr" ? "Table de change" : "Change table"}</dt>
-              <dd>{hit.changeTableText}</dd>
+              <dd>
+                <EnglishText lang={lang} text={hit.changeTableText} fragments={hit.englishFragments} />
+              </dd>
               <dt>{lang === "fr" ? "Lève-personne" : "Hoist"}</dt>
-              <dd>{hit.hoistText}</dd>
+              <dd>
+                <EnglishText lang={lang} text={hit.hoistText} fragments={hit.englishFragments} />
+              </dd>
               <dt>{lang === "fr" ? "Accès" : "Access"}</dt>
-              <dd>{hit.accessText}</dd>
+              <dd>
+                <EnglishText lang={lang} text={hit.accessText} fragments={hit.englishFragments} />
+              </dd>
               <dt>{lang === "fr" ? "Heures" : "Hours"}</dt>
               <dd>
                 <RecordText lang={lang} text={hit.hoursText} />
@@ -76,7 +89,11 @@ export function WashroomFinder({ pack, query }: { pack: PlacePack; query: Washro
       {query.showHidden ? (
         <HiddenList
           title={lang === "fr" ? "Fiches cachées" : "Hidden records"}
-          items={result.hidden.map((hit) => ({ id: hit.washroomId, name: hit.placeName, reasons: hit.hiddenReasons }))}
+          items={result.hidden.map((hit) => ({
+            id: hit.washroomId,
+            name: <PlaceName lang={lang} name={hit.placeName} english={hit.placeNameIsEnglish} />,
+            reasons: hit.hiddenReasons,
+          }))}
         />
       ) : null}
     </section>
@@ -101,7 +118,8 @@ export function ParkingFinder({ pack, query }: { pack: PlacePack; query: Parking
         {result.hits.map((hit) => (
           <li key={hit.bayId} className="card">
             <h3>
-              {hit.placeName} — <RecordText lang={lang} text={hit.bayName} />
+              <PlaceName lang={lang} name={hit.placeName} english={hit.placeNameIsEnglish} /> —{" "}
+              <RecordText lang={lang} text={hit.bayName} />
             </h3>
             <dl>
               <dt>{lang === "fr" ? "Type" : "Type"}</dt>
@@ -138,7 +156,16 @@ export function ParkingFinder({ pack, query }: { pack: PlacePack; query: Parking
       {query.showHidden ? (
         <HiddenList
           title={lang === "fr" ? "Places cachées" : "Hidden bays"}
-          items={result.hidden.map((hit) => ({ id: hit.bayId, name: `${hit.placeName} ${hit.bayName}`, reasons: hit.hiddenReasons }))}
+          items={result.hidden.map((hit) => ({
+            id: hit.bayId,
+            name: (
+              <>
+                <PlaceName lang={lang} name={hit.placeName} english={hit.placeNameIsEnglish} />{" "}
+                <RecordText lang={lang} text={hit.bayName} />
+              </>
+            ),
+            reasons: hit.hiddenReasons,
+          }))}
         />
       ) : null}
     </section>
@@ -163,7 +190,8 @@ export function ChargingFinder({ pack, query }: { pack: PlacePack; query: Chargi
         {result.hits.map((hit) => (
           <li key={hit.pointId} className="card">
             <h3>
-              {hit.placeName} — <RecordText lang={lang} text={hit.pointName} />
+              <PlaceName lang={lang} name={hit.placeName} english={hit.placeNameIsEnglish} /> —{" "}
+              <RecordText lang={lang} text={hit.pointName} />
             </h3>
             <p>{hit.recommendation}</p>
             <dl>
@@ -211,7 +239,9 @@ export function RepairSupplyFinder({ pack, query }: { pack: PlacePack; query: Re
       <ul>
         {result.hits.map((hit) => (
           <li key={hit.id} className="card">
-            <h3>{hit.name}</h3>
+            <h3>
+              <PlaceName lang={lang} name={hit.name} english={hit.nameIsEnglish} />
+            </h3>
             <dl>
               <dt>{lang === "fr" ? "Distance à vol d'oiseau" : "Straight-line distance"}</dt>
               <dd>{hit.distanceMetres === null ? (lang === "fr" ? "Inconnu" : "Unknown") : `${hit.distanceMetres} m`}</dd>
@@ -251,7 +281,11 @@ export function RepairSupplyFinder({ pack, query }: { pack: PlacePack; query: Re
       {query.showHidden ? (
         <HiddenList
           title={lang === "fr" ? "Fiches cachées" : "Hidden records"}
-          items={result.hidden.map((hit) => ({ id: hit.id, name: hit.name, reasons: hit.hiddenReasons }))}
+          items={result.hidden.map((hit) => ({
+            id: hit.id,
+            name: <PlaceName lang={lang} name={hit.name} english={hit.nameIsEnglish} />,
+            reasons: hit.hiddenReasons,
+          }))}
         />
       ) : null}
     </section>

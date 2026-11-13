@@ -972,8 +972,11 @@ function projectSupply(store: SupplyStore, lang: Lang): DirectoryCardView {
   };
 }
 
-export function correctableFields(place: PlaceRecord, lang: Lang): Array<{ id: string; label: string; group: string }> {
-  const fields: Array<{ id: string; label: string; group: string }> = [];
+export function correctableFields(
+  place: PlaceRecord,
+  lang: Lang,
+): Array<{ id: string; label: string; group: string; groupEnglish?: boolean }> {
+  const fields: Array<{ id: string; label: string; group: string; groupEnglish?: boolean }> = [];
   const add = (id: string, group: string) => fields.push({ id, label: label(id, lang), group });
   for (const id of IDENTITY_IDS) add(id, lang === "fr" ? "Identité" : "Identity");
   for (const id of DAY3_EXTRA_IDS) add(id, lang === "fr" ? "Entrée" : "Entrance");
@@ -985,8 +988,9 @@ export function correctableFields(place: PlaceRecord, lang: Lang): Array<{ id: s
     for (const id of WASHROOM_IDS) {
       fields.push({
         id: `washroom:${washroom.id}:${id}`,
-        label: `${washroom.name} — ${label(id, lang)}`,
-        group: lang === "fr" ? "Toilettes" : "Washrooms",
+        label: label(id, lang),
+        group: washroom.name,
+        groupEnglish: true,
       });
     }
   }
