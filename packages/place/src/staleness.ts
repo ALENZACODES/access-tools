@@ -10,8 +10,12 @@ export interface Freshness {
   text: string;
 }
 
-/** Status observations leave the headline after this snapshot. Part 3 Tables T3-12 and T3-13. */
-export const STATUS_SNAPSHOT_DAYS = 30;
+/**
+ * Tier 4 is a live feed. Part 1 §5.5 puts that freshness in minutes to hours.
+ * Past this threshold the status is unknown. It is not shown as still working.
+ * The 30-day count is the T3-12/T3-13 snapshot, not live status.
+ */
+export const LIVE_STATUS_MAX_HOURS = 2;
 
 export function daysBetween(sourceDate: string, today: string): number | null {
   const start = Date.parse(`${sourceDate.slice(0, 10)}T00:00:00Z`);
@@ -137,31 +141,44 @@ export function freshness(provenance: Provenance | null, today: string, layer: F
   };
 }
 
+function clockMillis(value: string): number | null {
+  if (!/T\d{2}:\d{2}/.test(value)) return null;
+  const parsed = Date.parse(value);
+  return Number.isNaN(parsed) ? null : parsed;
+}
+
 function liveFreshness(provenance: Provenance, today: string, ageDays: number | null, lang: Lang): Freshness {
-  const observedDay = provenance.observedAt ? daysBetween(provenance.observedAt, today) : null;
+  const observed = provenance.observedAt ? clockMillis(provenance.observedAt) : null;
+  const checked = clockMillis(today);
   const expiry = provenance.expiresAt ? Date.parse(provenance.expiresAt) : Number.NaN;
-  const todayStamp = Date.parse(`${today.slice(0, 10)}T00:00:00Z`);
-  const pastExpiry = !Number.isNaN(expiry) && !Number.isNaN(todayStamp) && expiry < todayStamp;
-  const tooOld = observedDay === null || observedDay > STATUS_SNAPSHOT_DAYS;
-  if (!provenance.observedAt || pastExpiry || tooOld) {
+  const ageHours = observed !== null && checked !== null ? (checked - observed) / 3_600_000 : null;
+  const pastExpiry = !Number.isNaN(expiry) && checked !== null && expiry < checked;
+  const fresh =
+    ageHours !== null &&
+    ageHours >= 0 &&
+    ageHours <= LIVE_STATUS_MAX_HOURS &&
+    !Number.isNaN(expiry) &&
+    checked !== null &&
+    expiry >= checked;
+  if (!fresh || pastExpiry) {
     return {
       state: "live-age-unknown",
-      ageDays: observedDay,
-      limitDays: STATUS_SNAPSHOT_DAYS,
+      ageDays,
+      limitDays: null,
       text:
         lang === "fr"
-          ? "Statut en direct inconnu. Le flux est absent, expiré, ou plus vieux que 30 jours."
-          : "Live status unknown. The feed is missing, expired, or older than 30 days.",
+          ? `Statut en direct inconnu. Le flux est absent, sans horloge, expiré, ou plus vieux que ${LIVE_STATUS_MAX_HOURS} heures. Un statut périmé n'est pas affiché comme fonctionnel.`
+          : `Live status unknown. The feed is missing, has no clock time, is expired, or is older than ${LIVE_STATUS_MAX_HOURS} hours. A stale status is not shown as working.`,
     };
   }
   return {
     state: "within-estimate",
-    ageDays: observedDay,
-    limitDays: STATUS_SNAPSHOT_DAYS,
+    ageDays,
+    limitDays: null,
     text:
       lang === "fr"
-        ? `Horodatage du flux : ${provenance.observedAt}. Dans la fenêtre de 30 jours.`
-        : `Feed timestamp: ${provenance.observedAt}. Within the 30-day snapshot.`,
+        ? `Horodatage du flux : ${provenance.observedAt}. Dans la fenêtre de ${LIVE_STATUS_MAX_HOURS} heures. Ce n'est pas une promesse que l'équipement fonctionne.`
+        : `Feed timestamp: ${provenance.observedAt}. Within the ${LIVE_STATUS_MAX_HOURS}-hour window. This is not a promise the equipment is working.`,
   };
 }
 

@@ -1,6 +1,7 @@
 import { copy } from "../i18n.js";
 import type { FieldRowView } from "../project.js";
 import type { Lang } from "../types.js";
+import { EnglishText } from "./EnglishText.js";
 
 const COLUMNS = {
   en: ["Field", "Value", "Tier", "Source", "Source date", "Record date"],
@@ -28,10 +29,14 @@ export function FieldTable({ rows, caption, lang }: { rows: FieldRowView[]; capt
             <tr key={row.id} className={row.unknown ? "unknown" : undefined}>
               <th scope="row">{row.label}</th>
               <td>
-                <p>{row.valueText}</p>
+                <p>
+                  <EnglishText lang={lang} text={row.valueText} fragments={row.englishFragments} />
+                </p>
                 <ul>
                   {row.photos.map((photo) => (
-                    <li key={photo.id}>{photo.text}</li>
+                    <li key={photo.id}>
+                      <EnglishText lang={lang} text={photo.text} fragments={photo.englishFragments} />
+                    </li>
                   ))}
                 </ul>
                 <p>{row.freshnessText}</p>

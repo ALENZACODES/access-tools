@@ -39,6 +39,7 @@ export interface DirectoryHit {
   verificationDate: string;
   tierText: string;
   extraText: string;
+  englishFragments: string[];
   hiddenReasons: string[];
 }
 
@@ -108,6 +109,7 @@ export function findRepairAndSupply(pack: PlacePack, query: RepairQuery): Repair
             : query.lang === "fr"
               ? `Rayon mobile enregistré : ${repairer.mobileRadiusKm} km. ${repairer.coverageNote ?? ""}`
               : `Recorded mobile radius: ${repairer.mobileRadiusKm} km. ${repairer.coverageNote ?? ""}`,
+        englishFragments: query.lang === "fr" ? [repairer.coverageNote, repairer.hoursText].filter((item): item is string => Boolean(item)) : [],
         hiddenReasons: reasons,
       });
     }
@@ -159,6 +161,7 @@ export function findRepairAndSupply(pack: PlacePack, query: RepairQuery): Repair
           query.lang === "fr"
             ? `Livraison : ${store.delivery ?? "Inconnu"}. ${SUPPLY_STOCK_NOTE.fr}`
             : `Delivery: ${store.delivery ?? "Unknown"}. ${SUPPLY_STOCK_NOTE.en}`,
+        englishFragments: query.lang === "fr" && store.hoursText ? [store.hoursText] : [],
         hiddenReasons: reasons,
       });
     }

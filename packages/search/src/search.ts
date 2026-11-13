@@ -46,6 +46,8 @@ export interface SearchQuery {
 export interface SearchHit {
   placeId: string;
   name: string;
+  /** True when the French screen is showing the English record name. */
+  nameIsEnglish: boolean;
   municipality: string;
   category: string;
   tier: string;
@@ -170,6 +172,7 @@ export function searchPack(pack: PlacePack, query: SearchQuery): SearchResponse 
     prepared.push({
       placeId: place.id,
       name: query.lang === "fr" && place.nameFr ? place.nameFr : place.identity.name,
+      nameIsEnglish: query.lang === "fr" && !place.nameFr,
       municipality: place.identity.municipality,
       category: labelOf(`category.${place.identity.category}`, query.lang),
       tier: tierPhrase(place.recordProvenance, place.datasetStatus, query.lang, place.publicationContext),

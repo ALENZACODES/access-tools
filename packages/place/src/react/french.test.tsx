@@ -65,7 +65,19 @@ describe("French place page", () => {
     expect(text).not.toContain("Not a data licence");
     expect(text).not.toContain("access-tools labelled fixture");
     expect(text).toContain("Pas une licence de données");
+    expect(text).toContain("Anglais seulement");
+    expect(text).toContain("English only");
     expect(text).not.toContain("open data");
+    const english = [...document.querySelectorAll('[lang="en"]')].map((node) => node.textContent ?? "");
+    for (const sample of [
+      "Fixture: Synthetic Community Centre",
+      "1 Fixture Lane (not a real address)",
+      "Not a surveyed entrance",
+      "Fixture washroom B, nothing measured",
+      "Fixture hours: weekdays 09:00–17:00",
+    ]) {
+      expect(english.some((item) => item.includes(sample)), sample).toBe(true);
+    }
     expect(text).toContain("Pas un lieu réel");
     expect(text).toContain("Largeur libre de la porte");
     expect(text).toContain("Automatique");
@@ -78,6 +90,12 @@ describe("French place page", () => {
     const regions = screen.getAllByRole("region").map((region) => region.getAttribute("aria-label") ?? "");
     expect(regions.some((label) => label.endsWith("fields"))).toBe(false);
     expect(regions.some((label) => label.endsWith("champs"))).toBe(true);
+    cleanup();
+    const hoist = placeById("fix-change-hoist");
+    if (!hoist) throw new Error("missing hoist");
+    render(<PlacePage place={hoist} pack={fixturePack} lang="fr" today={FIXTURE_DAY} corrections={[]} changes={[]} onCorrection={() => undefined} onChange={() => undefined} />);
+    const hoistEnglish = [...document.querySelectorAll('[lang="en"]')].map((node) => node.textContent ?? "");
+    expect(hoistEnglish.some((item) => item.includes("Ceiling track, fixture text"))).toBe(true);
     for (const [key, row] of Object.entries(COPY)) {
       expect(row.fr.trim().length, key).toBeGreaterThan(0);
     }

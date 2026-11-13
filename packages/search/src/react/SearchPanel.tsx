@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { a11yCss, labelOf, type PlacePack, type PlaceType, type SupplyCategory } from "@access-tools/place";
+import { a11yCss, EnglishOnlyNote, RecordText, labelOf, type PlacePack, type PlaceType, type SupplyCategory } from "@access-tools/place";
 import { emptySearchQuery, searchPack, type SearchQuery } from "../search.js";
 
 export function SearchPanel({
@@ -38,6 +38,7 @@ export function SearchPanel({
     <section className="app-ui" aria-labelledby="search-heading" lang={lang}>
       <style>{a11yCss}</style>
       <h2 id="search-heading">{lang === "fr" ? "Recherche" : "Search"}</h2>
+      <EnglishOnlyNote lang={lang} />
       <p>
         {lang === "fr"
           ? "La recherche tourne sur le paquet chargé dans ce navigateur. Elle n'appelle pas de serveur. Le tri n'est pas un classement d'accessibilité."
@@ -244,7 +245,7 @@ export function SearchPanel({
                 onOpenPlace(hit.placeId);
               }}
             >
-              {hit.name}
+              {hit.nameIsEnglish ? <RecordText lang={lang} text={hit.name} /> : hit.name}
             </a>
             <p>
               {hit.municipality}. {hit.category}. {hit.tier}. {hit.sourceName}. {hit.sourceDate}.
@@ -265,7 +266,7 @@ export function SearchPanel({
           <ul>
             {result.hidden.map((hit) => (
               <li key={hit.placeId}>
-                {hit.name}: {hit.hiddenReasons.join(" ")}
+                {hit.nameIsEnglish ? <RecordText lang={lang} text={hit.name} /> : hit.name}: {hit.hiddenReasons.join(" ")}
               </li>
             ))}
           </ul>

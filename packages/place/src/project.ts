@@ -32,6 +32,8 @@ import { privilegeText, PROTOTYPE_NOTICE, vanLiftReading, vanLiftText } from "./
 export interface PhotoView {
   id: string;
   text: string;
+  /** Substrings that stay English on a French screen. */
+  englishFragments: string[];
 }
 
 export interface FieldRowView {
@@ -46,6 +48,8 @@ export interface FieldRowView {
   licence: string;
   freshnessText: string;
   photos: PhotoView[];
+  /** Substrings of valueText that stay English on a French screen. */
+  englishFragments: string[];
 }
 
 export interface WashroomCardView {
@@ -54,6 +58,7 @@ export interface WashroomCardView {
   genderText: string;
   attendantText: string;
   rows: FieldRowView[];
+  englishFragments: string[];
 }
 
 export interface BayCardView {
@@ -75,6 +80,7 @@ export interface DirectoryCardView {
   id: string;
   heading: string;
   lines: string[];
+  englishFragments: string[];
 }
 
 export interface SectionView {
@@ -97,7 +103,7 @@ export interface PlaceView {
   charging: ChargingCardView[];
   repairers: DirectoryCardView[];
   supplyStores: DirectoryCardView[];
-  peerTips: string[];
+  peerTips: Array<{ text: string; englishFragments: string[] }>;
 }
 
 interface RowInput {
@@ -108,6 +114,7 @@ interface RowInput {
   provenance: Provenance | null;
   photoSlotIds: string[];
   layer: FreshnessLayer;
+  englishFragments?: string[];
 }
 
 const ENTRANCE_IDS = [
@@ -296,18 +303,18 @@ function label(id: string, lang: Lang): string {
 
 function photoViews(photos: PhotoSlot[], ids: string[], lang: Lang): PhotoView[] {
   if (ids.length === 0) {
-    return [{ id: "none", text: lang === "fr" ? "Aucune photographie au dossier." : "No photograph on file." }];
+    return [{ id: "none", text: lang === "fr" ? "Aucune photographie au dossier." : "No photograph on file.", englishFragments: [] }];
   }
   return ids.map((id) => {
     const photo = photos.find((slot) => slot.id === id);
     if (!photo) {
-      return { id, text: lang === "fr" ? "Emplacement de photo manquant." : "Photograph slot is missing from the record." };
+      return { id, text: lang === "fr" ? "Emplacement de photo manquant." : "Photograph slot is missing from the record.", englishFragments: [] };
     }
     if (photo.status === "empty") {
-      return { id, text: lang === "fr" ? "Aucune photographie au dossier." : "No photograph on file." };
+      return { id, text: lang === "fr" ? "Aucune photographie au dossier." : "No photograph on file.", englishFragments: [] };
     }
     if (photo.status === "withheld") {
-      return { id, text: lang === "fr" ? "Photographie retenue pour protéger la vie privée." : "Photograph withheld to protect privacy." };
+      return { id, text: lang === "fr" ? "Photographie retenue pour protéger la vie privée." : "Photograph withheld to protect privacy.", englishFragments: [] };
     }
     if (!photo.description) {
       return {
@@ -316,6 +323,7 @@ function photoViews(photos: PhotoSlot[], ids: string[], lang: Lang): PhotoView[]
           lang === "fr"
             ? "Une photo a une date mais pas de description d'accès. Elle n'est pas une preuve."
             : "A photograph has a date and no access description. It is not evidence.",
+        englishFragments: [],
       };
     }
     const date = photo.capturedOn ?? (lang === "fr" ? "date inconnue" : "date unknown");
@@ -323,7 +331,11 @@ function photoViews(photos: PhotoSlot[], ids: string[], lang: Lang): PhotoView[]
       lang === "fr"
         ? "Le fichier image n'est pas dans ce paquet. access-maps conserve les fichiers photo."
         : "The image file is not in this package. access-maps holds photograph files.";
-    return { id, text: `${photo.description} (${date}). ${file}` };
+    return {
+      id,
+      text: `${photo.description} (${date}). ${file}`,
+      englishFragments: lang === "fr" ? [photo.description] : [],
+    };
   });
 }
 
@@ -352,7 +364,27 @@ function rowFrom(place: PlaceRecord, input: RowInput, lang: Lang, today: string)
     licence: input.provenance ? authoredFr(input.provenance.licence, lang) : lang === "fr" ? "Aucune licence" : "No licence",
     freshnessText: fresh.text,
     photos: photoViews(place.photos, input.photoSlotIds, lang),
+    englishFragments: input.englishFragments ?? [],
   };
+}
+
+function keptEnglish(fragments: Array<string | null | undefined>, lang: Lang): string[] {
+  if (lang !== "fr") return [];
+  return fragments.filter((item): item is string => typeof item === "string" && item.trim().length > 0);
+}
+
+function proseRow(
+  place: PlaceRecord,
+  id: string,
+  value: string | null,
+  provenance: Provenance | null,
+  photoSlotIds: string[],
+  layer: FreshnessLayer,
+  lang: Lang,
+  today: string,
+): FieldRowView {
+  const read = textOrUnknown(value, lang);
+  return sourcedRow(place, id, read.text, read.unknown, provenance, photoSlotIds, layer, lang, today, keptEnglish(read.unknown ? [] : [value], lang));
 }
 
 function sourcedRow(
@@ -365,10 +397,11 @@ function sourcedRow(
   layer: FreshnessLayer,
   lang: Lang,
   today: string,
+  englishFragments: string[] = [],
 ): FieldRowView {
   return rowFrom(
     place,
-    { id, label: label(id, lang), valueText, unknown, provenance, photoSlotIds, layer },
+    { id, label: label(id, lang), valueText, unknown, provenance, photoSlotIds, layer, englishFragments },
     lang,
     today,
   );
@@ -407,14 +440,14 @@ export function projectPlace(place: PlaceRecord, lang: Lang, today: string, pack
           unknown: false,
         };
   const identityRows: FieldRowView[] = [
-    sourcedRow(place, "identity.name", place.identity.name, false, place.recordProvenance, [], "venue", lang, today),
+    sourcedRow(place, "identity.name", place.identity.name, false, place.recordProvenance, [], "venue", lang, today, keptEnglish([place.identity.name], lang)),
     sourcedRow(place, "identity.place-type", labelOf(`placeType.${place.identity.placeType}`, lang), false, place.recordProvenance, [], "venue", lang, today),
-    sourcedRow(place, "identity.address", textOrUnknown(place.identity.address, lang).text, place.identity.address === null, place.identity.address ? place.recordProvenance : null, [], "venue", lang, today),
+    proseRow(place, "identity.address", place.identity.address, place.identity.address ? place.recordProvenance : null, [], "venue", lang, today),
     sourcedRow(place, "identity.municipality", `${place.identity.municipality}, ${place.identity.province}`, false, place.recordProvenance, [], "venue", lang, today),
-    sourcedRow(place, "identity.coordinates", coords.text, coords.unknown, coords.unknown ? null : place.recordProvenance, [], "venue", lang, today),
+    sourcedRow(place, "identity.coordinates", coords.text, coords.unknown, coords.unknown ? null : place.recordProvenance, [], "venue", lang, today, keptEnglish(coords.unknown ? [] : [place.identity.coordinateNote], lang)),
     sourcedRow(place, "identity.category", labelOf(`category.${place.identity.category}`, lang), false, place.recordProvenance, [], "venue", lang, today),
-    sourcedRow(place, "identity.hours", textOrUnknown(place.identity.hoursText, lang).text, place.identity.hoursText === null, place.identity.hoursText ? place.recordProvenance : null, [], "policy", lang, today),
-    sourcedRow(place, "identity.phone", textOrUnknown(place.identity.phone, lang).text, place.identity.phone === null, place.identity.phone ? place.recordProvenance : null, [], "venue", lang, today),
+    proseRow(place, "identity.hours", place.identity.hoursText, place.identity.hoursText ? place.recordProvenance : null, [], "policy", lang, today),
+    proseRow(place, "identity.phone", place.identity.phone, place.identity.phone ? place.recordProvenance : null, [], "venue", lang, today),
     sourcedRow(
       place,
       "identity.languages",
@@ -457,25 +490,25 @@ export function projectPlace(place: PlaceRecord, lang: Lang, today: string, pack
     sourcedRow(place, "entrance.step-height-mm", formatMm(entrance.stepHeightMm.value, lang), entrance.stepHeightMm.value === null, entrance.stepHeightMm.provenance, entrance.stepHeightMm.photoSlotIds, "venue", lang, today),
     sourcedRow(place, "entrance.threshold-height-mm", formatMm(entrance.thresholdHeightMm.value, lang), entrance.thresholdHeightMm.value === null, entrance.thresholdHeightMm.provenance, entrance.thresholdHeightMm.photoSlotIds, "venue", lang, today),
     sourcedRow(place, "entrance.ramp-present", formatYesNo(entrance.rampPresent.value, lang), entrance.rampPresent.value === null, entrance.rampPresent.provenance, entrance.rampPresent.photoSlotIds, "venue", lang, today),
-    sourcedRow(place, "entrance.named-location", textOrUnknown(entrance.namedLocation.value, lang).text, entrance.namedLocation.value === null, entrance.namedLocation.provenance, entrance.namedLocation.photoSlotIds, "venue", lang, today),
-    sourcedRow(place, "entrance.street-directions", textOrUnknown(entrance.streetDirections.value, lang).text, entrance.streetDirections.value === null, entrance.streetDirections.provenance, entrance.streetDirections.photoSlotIds, "venue", lang, today),
+    proseRow(place, "entrance.named-location", entrance.namedLocation.value, entrance.namedLocation.provenance, entrance.namedLocation.photoSlotIds, "venue", lang, today),
+    proseRow(place, "entrance.street-directions", entrance.streetDirections.value, entrance.streetDirections.provenance, entrance.streetDirections.photoSlotIds, "venue", lang, today),
     sourcedRow(place, "entrance.door-clear-width-mm", formatMm(entrance.doorClearWidthMm.value, lang), entrance.doorClearWidthMm.value === null, entrance.doorClearWidthMm.provenance, entrance.doorClearWidthMm.photoSlotIds, "venue", lang, today),
     sourcedRow(place, "entrance.door-operation", formatDoor(entrance.doorOperation.value, lang), entrance.doorOperation.value === null, entrance.doorOperation.provenance, entrance.doorOperation.photoSlotIds, "venue", lang, today),
     sourcedRow(place, "entrance.ramp-geometry", formatRampGeometry(entrance.rampGeometry.value, lang), entrance.rampGeometry.value === null, entrance.rampGeometry.provenance, entrance.rampGeometry.photoSlotIds, "venue", lang, today),
     sourcedRow(place, "entrance.ramp-length-rise", formatRampLength(entrance.rampLengthRise.value, lang), entrance.rampLengthRise.value === null, entrance.rampLengthRise.provenance, entrance.rampLengthRise.photoSlotIds, "venue", lang, today),
     sourcedRow(place, "entrance.elevator", formatElevator(entrance.elevator.value, lang), entrance.elevator.value === null, entrance.elevator.provenance, entrance.elevator.photoSlotIds, "venue", lang, today),
-    sourcedRow(place, "entrance.lighting-signage", textOrUnknown(entrance.lightingSignage.value, lang).text, entrance.lightingSignage.value === null, entrance.lightingSignage.provenance, entrance.lightingSignage.photoSlotIds, "venue", lang, today),
+    proseRow(place, "entrance.lighting-signage", entrance.lightingSignage.value, entrance.lightingSignage.provenance, entrance.lightingSignage.photoSlotIds, "venue", lang, today),
   ];
 
   const interior = place.interior;
   const interiorRows = [
-    sourcedRow(place, "interior.routes", textOrUnknown(interior.routes.value, lang).text, interior.routes.value === null, interior.routes.provenance, interior.routes.photoSlotIds, "venue", lang, today),
-    sourcedRow(place, "interior.counters", textOrUnknown(interior.counters.value, lang).text, interior.counters.value === null, interior.counters.provenance, interior.counters.photoSlotIds, "venue", lang, today),
-    sourcedRow(place, "interior.seating", textOrUnknown(interior.seating.value, lang).text, interior.seating.value === null, interior.seating.provenance, interior.seating.photoSlotIds, "venue", lang, today),
-    sourcedRow(place, "interior.sensory", textOrUnknown(interior.sensory.value, lang).text, interior.sensory.value === null, interior.sensory.provenance, interior.sensory.photoSlotIds, "venue", lang, today),
-    sourcedRow(place, "interior.assistance-policy", textOrUnknown(interior.assistancePolicy.value, lang).text, interior.assistancePolicy.value === null, interior.assistancePolicy.provenance, interior.assistancePolicy.photoSlotIds, "policy", lang, today),
-    sourcedRow(place, "interior.assistive-listening", textOrUnknown(interior.assistiveListening.value, lang).text, interior.assistiveListening.value === null, interior.assistiveListening.provenance, interior.assistiveListening.photoSlotIds, "venue", lang, today),
-    sourcedRow(place, "interior.rest-space", textOrUnknown(interior.restSpace.value, lang).text, interior.restSpace.value === null, interior.restSpace.provenance, interior.restSpace.photoSlotIds, "venue", lang, today),
+    proseRow(place, "interior.routes", interior.routes.value, interior.routes.provenance, interior.routes.photoSlotIds, "venue", lang, today),
+    proseRow(place, "interior.counters", interior.counters.value, interior.counters.provenance, interior.counters.photoSlotIds, "venue", lang, today),
+    proseRow(place, "interior.seating", interior.seating.value, interior.seating.provenance, interior.seating.photoSlotIds, "venue", lang, today),
+    proseRow(place, "interior.sensory", interior.sensory.value, interior.sensory.provenance, interior.sensory.photoSlotIds, "venue", lang, today),
+    proseRow(place, "interior.assistance-policy", interior.assistancePolicy.value, interior.assistancePolicy.provenance, interior.assistancePolicy.photoSlotIds, "policy", lang, today),
+    proseRow(place, "interior.assistive-listening", interior.assistiveListening.value, interior.assistiveListening.provenance, interior.assistiveListening.photoSlotIds, "venue", lang, today),
+    proseRow(place, "interior.rest-space", interior.restSpace.value, interior.restSpace.provenance, interior.restSpace.photoSlotIds, "venue", lang, today),
   ];
 
   const baySummary =
@@ -506,14 +539,14 @@ export function projectPlace(place: PlaceRecord, lang: Lang, today: string, pack
         lang,
       );
   const parkingRows = [
-    sourcedRow(place, "parking.bay-summary", baySummary.text, baySummary.unknown, baySummary.unknown ? null : place.recordProvenance, [], "parking", lang, today),
-    sourcedRow(place, "parking.route", textOrUnknown(place.parking.route.value, lang).text, place.parking.route.value === null, place.parking.route.provenance, place.parking.route.photoSlotIds, "parking", lang, today),
-    sourcedRow(place, "parking.van-lift", vanSummary.text, vanSummary.unknown, null, [], "parking", lang, today),
-    sourcedRow(place, "parking.surface-snow", snowText, snow.value === null && place.parking.bays.every((bay) => bay.snowClearedOn.value === null), snow.provenance, snow.photoSlotIds, "parking", lang, today),
-    sourcedRow(place, "parking.payment", textOrUnknown(place.parking.payment.value, lang).text, place.parking.payment.value === null, place.parking.payment.provenance, place.parking.payment.photoSlotIds, "policy", lang, today),
-    sourcedRow(place, "parking.drop-off", textOrUnknown(place.parking.dropOff.value, lang).text, place.parking.dropOff.value === null, place.parking.dropOff.provenance, place.parking.dropOff.photoSlotIds, "parking", lang, today),
-    sourcedRow(place, "parking.curb-cuts", textOrUnknown(place.parking.curbCuts.value, lang).text, place.parking.curbCuts.value === null, place.parking.curbCuts.provenance, place.parking.curbCuts.photoSlotIds, "parking", lang, today),
-    sourcedRow(place, "parking.approach-obstacles", textOrUnknown(place.parking.approachObstacles.value, lang).text, place.parking.approachObstacles.value === null, place.parking.approachObstacles.provenance, place.parking.approachObstacles.photoSlotIds, "parking", lang, today),
+    sourcedRow(place, "parking.bay-summary", baySummary.text, baySummary.unknown, baySummary.unknown ? null : place.recordProvenance, [], "parking", lang, today, keptEnglish(place.parking.bays.map((bay) => bay.name), lang)),
+    proseRow(place, "parking.route", place.parking.route.value, place.parking.route.provenance, place.parking.route.photoSlotIds, "parking", lang, today),
+    sourcedRow(place, "parking.van-lift", vanSummary.text, vanSummary.unknown, null, [], "parking", lang, today, keptEnglish(place.parking.bays.map((bay) => bay.name), lang)),
+    sourcedRow(place, "parking.surface-snow", snowText, snow.value === null && place.parking.bays.every((bay) => bay.snowClearedOn.value === null), snow.provenance, snow.photoSlotIds, "parking", lang, today, keptEnglish([snow.value], lang)),
+    proseRow(place, "parking.payment", place.parking.payment.value, place.parking.payment.provenance, place.parking.payment.photoSlotIds, "policy", lang, today),
+    proseRow(place, "parking.drop-off", place.parking.dropOff.value, place.parking.dropOff.provenance, place.parking.dropOff.photoSlotIds, "parking", lang, today),
+    proseRow(place, "parking.curb-cuts", place.parking.curbCuts.value, place.parking.curbCuts.provenance, place.parking.curbCuts.photoSlotIds, "parking", lang, today),
+    proseRow(place, "parking.approach-obstacles", place.parking.approachObstacles.value, place.parking.approachObstacles.provenance, place.parking.approachObstacles.photoSlotIds, "parking", lang, today),
   ];
 
   const chargingSummary =
@@ -532,12 +565,12 @@ export function projectPlace(place: PlaceRecord, lang: Lang, today: string, pack
         : "Directory records are linked. See repair and supply.");
   const transport = place.transport;
   const transportRows = [
-    sourcedRow(place, "transport.nearest-stop", textOrUnknown(transport.nearestStop.value, lang).text, transport.nearestStop.value === null, transport.nearestStop.provenance, transport.nearestStop.photoSlotIds, "venue", lang, today),
-    sourcedRow(place, "transport.elevator-status", textOrUnknown(transport.elevatorStatus.value, lang).text, transport.elevatorStatus.value === null, transport.elevatorStatus.provenance, transport.elevatorStatus.photoSlotIds, "venue", lang, today),
-    sourcedRow(place, "transport.paratransit", textOrUnknown(transport.paratransit.value, lang).text, transport.paratransit.value === null, transport.paratransit.provenance, transport.paratransit.photoSlotIds, "policy", lang, today),
-    sourcedRow(place, "transport.charging", textOrUnknown(chargingSummary, lang).text, chargingSummary === null, transport.chargingSummary.provenance, transport.chargingSummary.photoSlotIds, "charging", lang, today),
-    sourcedRow(place, "transport.repair-supply", textOrUnknown(repairSummary, lang).text, repairSummary === null, transport.repairSupplySummary.provenance, transport.repairSupplySummary.photoSlotIds, "repair", lang, today),
-    sourcedRow(place, "transport.emergency-contacts", textOrUnknown(transport.emergencyContacts.value, lang).text, transport.emergencyContacts.value === null, transport.emergencyContacts.provenance, transport.emergencyContacts.photoSlotIds, "venue", lang, today),
+    proseRow(place, "transport.nearest-stop", transport.nearestStop.value, transport.nearestStop.provenance, transport.nearestStop.photoSlotIds, "venue", lang, today),
+    proseRow(place, "transport.elevator-status", transport.elevatorStatus.value, transport.elevatorStatus.provenance, transport.elevatorStatus.photoSlotIds, "venue", lang, today),
+    proseRow(place, "transport.paratransit", transport.paratransit.value, transport.paratransit.provenance, transport.paratransit.photoSlotIds, "policy", lang, today),
+    sourcedRow(place, "transport.charging", textOrUnknown(chargingSummary, lang).text, chargingSummary === null, transport.chargingSummary.provenance, transport.chargingSummary.photoSlotIds, "charging", lang, today, keptEnglish([place.transport.chargingSummary.value], lang)),
+    sourcedRow(place, "transport.repair-supply", textOrUnknown(repairSummary, lang).text, repairSummary === null, transport.repairSupplySummary.provenance, transport.repairSupplySummary.photoSlotIds, "repair", lang, today, keptEnglish([place.transport.repairSupplySummary.value], lang)),
+    proseRow(place, "transport.emergency-contacts", transport.emergencyContacts.value, transport.emergencyContacts.provenance, transport.emergencyContacts.photoSlotIds, "venue", lang, today),
   ];
 
   const described = place.photos.filter((photo) => photo.status === "described" && photo.description).length;
@@ -710,11 +743,11 @@ export function projectPlace(place: PlaceRecord, lang: Lang, today: string, pack
           ? "Champs du modèle sentier. Ils ne s'affichent pas sur un café."
           : "Trail-template fields. They are not shown on a café.",
       rows: [
-        sourcedRow(place, "trail.surface", textOrUnknown(place.trail.surface.value, lang).text, place.trail.surface.value === null, place.trail.surface.provenance, place.trail.surface.photoSlotIds, "venue", lang, today),
-        sourcedRow(place, "trail.grade", textOrUnknown(place.trail.grade.value, lang).text, place.trail.grade.value === null, place.trail.grade.provenance, place.trail.grade.photoSlotIds, "venue", lang, today),
+        proseRow(place, "trail.surface", place.trail.surface.value, place.trail.surface.provenance, place.trail.surface.photoSlotIds, "venue", lang, today),
+        proseRow(place, "trail.grade", place.trail.grade.value, place.trail.grade.provenance, place.trail.grade.photoSlotIds, "venue", lang, today),
         sourcedRow(place, "trail.width-mm", formatMm(place.trail.widthMm.value, lang), place.trail.widthMm.value === null, place.trail.widthMm.provenance, place.trail.widthMm.photoSlotIds, "venue", lang, today),
-        sourcedRow(place, "trail.obstacles", textOrUnknown(place.trail.obstacles.value, lang).text, place.trail.obstacles.value === null, place.trail.obstacles.provenance, place.trail.obstacles.photoSlotIds, "venue", lang, today),
-        sourcedRow(place, "trail.rest", textOrUnknown(place.trail.rest.value, lang).text, place.trail.rest.value === null, place.trail.rest.provenance, place.trail.rest.photoSlotIds, "venue", lang, today),
+        proseRow(place, "trail.obstacles", place.trail.obstacles.value, place.trail.obstacles.provenance, place.trail.obstacles.photoSlotIds, "venue", lang, today),
+        proseRow(place, "trail.rest", place.trail.rest.value, place.trail.rest.provenance, place.trail.rest.photoSlotIds, "venue", lang, today),
       ],
     });
   }
@@ -750,11 +783,13 @@ export function projectPlace(place: PlaceRecord, lang: Lang, today: string, pack
     charging: place.chargingPoints.map((point) => projectCharging(place, point, lang, today)),
     repairers,
     supplyStores,
-    peerTips: place.peerTips.map((tip) =>
-      lang === "fr"
-        ? `Note de pair du ${tip.date}, non modérée, pas un fait : ${tip.body}`
-        : `Peer tip dated ${tip.date}, not moderated, not a fact: ${tip.body}`,
-    ),
+    peerTips: place.peerTips.map((tip) => ({
+      text:
+        lang === "fr"
+          ? `Note de pair du ${tip.date}, non modérée, pas un fait : ${tip.body}`
+          : `Peer tip dated ${tip.date}, not moderated, not a fact: ${tip.body}`,
+      englishFragments: keptEnglish([tip.body], lang),
+    })),
   };
 }
 
@@ -799,20 +834,20 @@ export function projectWashroom(place: PlaceRecord, washroom: Washroom, lang: La
     : u;
   const gender = washroom.gender === null ? u : labelOf(`gender.${washroom.gender}`, lang);
   const rows = [
-    sourcedRow(place, "washroom.location-and-route", textOrUnknown(washroom.locationAndRoute.value, lang).text, washroom.locationAndRoute.value === null, washroom.locationAndRoute.provenance, washroom.locationAndRoute.photoSlotIds, "washroom", lang, today),
-    sourcedRow(place, "washroom.door", doorText, doorUnknown, washroom.door.provenance ?? washroom.doorClearWidthMm.provenance, [...washroom.door.photoSlotIds, ...washroom.doorClearWidthMm.photoSlotIds], "washroom", lang, today),
+    proseRow(place, "washroom.location-and-route", washroom.locationAndRoute.value, washroom.locationAndRoute.provenance, washroom.locationAndRoute.photoSlotIds, "washroom", lang, today),
+    sourcedRow(place, "washroom.door", doorText, doorUnknown, washroom.door.provenance ?? washroom.doorClearWidthMm.provenance, [...washroom.door.photoSlotIds, ...washroom.doorClearWidthMm.photoSlotIds], "washroom", lang, today, keptEnglish([washroom.door.value?.forceNote, washroom.door.value?.closingSpeedNote], lang)),
     sourcedRow(place, "washroom.turning-diameter-mm", formatMm(washroom.turningDiameterMm.value, lang), washroom.turningDiameterMm.value === null, washroom.turningDiameterMm.provenance, washroom.turningDiameterMm.photoSlotIds, "washroom", lang, today),
     sourcedRow(place, "washroom.transfer", formatTransfer(washroom.transfer.value, lang), washroom.transfer.value === null, washroom.transfer.provenance, washroom.transfer.photoSlotIds, "washroom", lang, today),
-    sourcedRow(place, "washroom.grab-bars", formatGrabBars(washroom.grabBars.value, lang), washroom.grabBars.value === null, washroom.grabBars.provenance, washroom.grabBars.photoSlotIds, "washroom", lang, today),
+    sourcedRow(place, "washroom.grab-bars", formatGrabBars(washroom.grabBars.value, lang), washroom.grabBars.value === null, washroom.grabBars.provenance, washroom.grabBars.photoSlotIds, "washroom", lang, today, keptEnglish([washroom.grabBars.value?.configuration, washroom.grabBars.value?.side, washroom.grabBars.value?.sturdinessNote], lang)),
     sourcedRow(place, "washroom.seat-height-mm", formatMm(washroom.seatHeightMm.value, lang), washroom.seatHeightMm.value === null, washroom.seatHeightMm.provenance, washroom.seatHeightMm.photoSlotIds, "washroom", lang, today),
-    sourcedRow(place, "washroom.sink", formatSink(washroom.sink.value, lang), washroom.sink.value === null, washroom.sink.provenance, washroom.sink.photoSlotIds, "washroom", lang, today),
-    sourcedRow(place, "washroom.shelf-hook-supplies", textOrUnknown(washroom.shelfHookSupplies.value, lang).text, washroom.shelfHookSupplies.value === null, washroom.shelfHookSupplies.provenance, washroom.shelfHookSupplies.photoSlotIds, "washroom", lang, today),
-    sourcedRow(place, "washroom.privacy-lock", textOrUnknown(washroom.privacyLock.value, lang).text, washroom.privacyLock.value === null, washroom.privacyLock.provenance, washroom.privacyLock.photoSlotIds, "washroom", lang, today),
+    sourcedRow(place, "washroom.sink", formatSink(washroom.sink.value, lang), washroom.sink.value === null, washroom.sink.provenance, washroom.sink.photoSlotIds, "washroom", lang, today, keptEnglish([washroom.sink.value?.tap], lang)),
+    proseRow(place, "washroom.shelf-hook-supplies", washroom.shelfHookSupplies.value, washroom.shelfHookSupplies.provenance, washroom.shelfHookSupplies.photoSlotIds, "washroom", lang, today),
+    proseRow(place, "washroom.privacy-lock", washroom.privacyLock.value, washroom.privacyLock.provenance, washroom.privacyLock.photoSlotIds, "washroom", lang, today),
     sourcedRow(place, "washroom.emergency-cord", formatCord(washroom.emergencyCord.value, lang), washroom.emergencyCord.value === null, washroom.emergencyCord.provenance, washroom.emergencyCord.photoSlotIds, "washroom", lang, today),
-    sourcedRow(place, "washroom.change-table", formatChangeTable(washroom.changeTable.value, lang), washroom.changeTable.value === null, washroom.changeTable.provenance, washroom.changeTable.photoSlotIds, "washroom", lang, today),
-    sourcedRow(place, "washroom.hoist", formatHoist(washroom.hoist.value, lang), washroom.hoist.value === null, washroom.hoist.provenance, washroom.hoist.photoSlotIds, "washroom", lang, today),
-    sourcedRow(place, "washroom.access-policy", accessText, access === null, washroom.accessPolicy.provenance, washroom.accessPolicy.photoSlotIds, "policy", lang, today),
-    sourcedRow(place, "washroom.hours-reliability", hoursText, hours === null, washroom.hoursReliability.provenance, washroom.hoursReliability.photoSlotIds, "washroom", lang, today),
+    sourcedRow(place, "washroom.change-table", formatChangeTable(washroom.changeTable.value, lang), washroom.changeTable.value === null, washroom.changeTable.provenance, washroom.changeTable.photoSlotIds, "washroom", lang, today, keptEnglish([washroom.changeTable.value?.heightRange, washroom.changeTable.value?.productLabel], lang)),
+    sourcedRow(place, "washroom.hoist", formatHoist(washroom.hoist.value, lang), washroom.hoist.value === null, washroom.hoist.provenance, washroom.hoist.photoSlotIds, "washroom", lang, today, keptEnglish([washroom.hoist.value?.type, washroom.hoist.value?.slingPolicy, washroom.hoist.value?.operatorAvailability], lang)),
+    sourcedRow(place, "washroom.access-policy", accessText, access === null, washroom.accessPolicy.provenance, washroom.accessPolicy.photoSlotIds, "policy", lang, today, keptEnglish([access?.howToObtain], lang)),
+    sourcedRow(place, "washroom.hours-reliability", hoursText, hours === null, washroom.hoursReliability.provenance, washroom.hoursReliability.photoSlotIds, "washroom", lang, today, keptEnglish([hours?.hoursText, hours?.outOfOrderNote, hours?.lastReportNote], lang)),
   ];
   return {
     id: washroom.id,
@@ -822,6 +857,7 @@ export function projectWashroom(place: PlaceRecord, washroom: Washroom, lang: La
       washroom.attendantAccessNote ??
       (lang === "fr" ? "Accès accompagnateur : Inconnu" : "Attendant access: Unknown"),
     rows,
+    englishFragments: keptEnglish([washroom.name, washroom.attendantAccessNote], lang),
   };
 }
 
@@ -861,8 +897,20 @@ function projectCharging(place: PlaceRecord, point: ChargingPoint, lang: Lang, t
     [lang === "fr" ? "Coût" : "Cost", point.cost.value ?? unknownLabel(lang), point.cost.value === null, point.cost.provenance, point.cost.photoSlotIds],
     [lang === "fr" ? "Chemin sans marche" : "Step-free route", formatYesNo(point.stepFreeRoute.value, lang), point.stepFreeRoute.value === null, point.stepFreeRoute.provenance, point.stepFreeRoute.photoSlotIds],
   ];
+  const authored = [
+    point.locationNote.value,
+    point.outletType.value,
+    null,
+    null,
+    point.permissionContact.value,
+    null,
+    null,
+    point.hoursText.value,
+    point.cost.value,
+    null,
+  ];
   const rows = specs.map((spec, index) => {
-    const built = sourcedRow(place, `${point.id}.${index}`, spec[1], spec[2], spec[3], spec[4], "charging", lang, today);
+    const built = sourcedRow(place, `${point.id}.${index}`, spec[1], spec[2], spec[3], spec[4], "charging", lang, today, keptEnglish([authored[index]], lang));
     built.label = spec[0];
     return built;
   });
@@ -893,6 +941,7 @@ function projectRepairer(repairer: Repairer, lang: Lang): DirectoryCardView {
       lang === "fr" ? `Site : ${repairer.website ?? "Inconnu"}` : `Website: ${repairer.website ?? "Unknown"}`,
       `${authoredFr(repairer.provenance.sourceName, lang)}. ${repairer.provenance.sourceDate}. ${authoredFr(repairer.provenance.licence, lang)}`,
     ],
+    englishFragments: keptEnglish([repairer.coverageNote, repairer.hoursText, repairer.nameFr ? null : repairer.name], lang),
   };
 }
 
@@ -919,6 +968,7 @@ function projectSupply(store: SupplyStore, lang: Lang): DirectoryCardView {
       lang === "fr" ? `Téléphone : ${store.phone ?? "Inconnu"}` : `Phone: ${store.phone ?? "Unknown"}`,
       `${authoredFr(store.provenance.sourceName, lang)}. ${store.provenance.sourceDate}. ${authoredFr(store.provenance.licence, lang)}`,
     ],
+    englishFragments: keptEnglish([store.hoursText, store.nameFr ? null : store.name], lang),
   };
 }
 

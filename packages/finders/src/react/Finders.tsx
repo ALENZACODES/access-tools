@@ -1,4 +1,4 @@
-import { a11yCss, type PlacePack } from "@access-tools/place";
+import { a11yCss, EnglishOnlyNote, EnglishText, RecordText, type PlacePack } from "@access-tools/place";
 import { findCharging, type ChargingQuery } from "../charging.js";
 import { findParking, type ParkingQuery } from "../parking.js";
 import { findRepairAndSupply, type RepairQuery } from "../repair.js";
@@ -27,6 +27,7 @@ export function WashroomFinder({ pack, query }: { pack: PlacePack; query: Washro
     <section className="app-ui" aria-labelledby="washroom-heading" lang={lang}>
       <style>{a11yCss}</style>
       <h2 id="washroom-heading">{lang === "fr" ? "Toilettes, tables de change et lève-personnes" : "Washrooms, change tables, and hoists"}</h2>
+      <EnglishOnlyNote lang={lang} />
       <p>{result.coverage}</p>
       <p role="status">
         {result.empty
@@ -41,7 +42,7 @@ export function WashroomFinder({ pack, query }: { pack: PlacePack; query: Washro
         {result.hits.map((hit) => (
           <li key={hit.washroomId} className="card">
             <h3>
-              {hit.placeName} — {hit.washroomName}
+              {hit.placeName} — <RecordText lang={lang} text={hit.washroomName} />
             </h3>
             <p>{hit.recommendation}</p>
             <dl>
@@ -56,7 +57,9 @@ export function WashroomFinder({ pack, query }: { pack: PlacePack; query: Washro
               <dt>{lang === "fr" ? "Accès" : "Access"}</dt>
               <dd>{hit.accessText}</dd>
               <dt>{lang === "fr" ? "Heures" : "Hours"}</dt>
-              <dd>{hit.hoursText}</dd>
+              <dd>
+                <RecordText lang={lang} text={hit.hoursText} />
+              </dd>
               <dt>{lang === "fr" ? "Date de vérification" : "Verification date"}</dt>
               <dd>
                 {hit.verificationDate}. {hit.tierText}
@@ -87,6 +90,7 @@ export function ParkingFinder({ pack, query }: { pack: PlacePack; query: Parking
     <section className="app-ui" aria-labelledby="parking-heading" lang={lang}>
       <style>{a11yCss}</style>
       <h2 id="parking-heading">{lang === "fr" ? "Stationnement accessible" : "Accessible parking"}</h2>
+      <EnglishOnlyNote lang={lang} />
       <p role="note">{result.disclaimer}</p>
       <p>
         {lang === "fr"
@@ -97,7 +101,7 @@ export function ParkingFinder({ pack, query }: { pack: PlacePack; query: Parking
         {result.hits.map((hit) => (
           <li key={hit.bayId} className="card">
             <h3>
-              {hit.placeName} — {hit.bayName}
+              {hit.placeName} — <RecordText lang={lang} text={hit.bayName} />
             </h3>
             <dl>
               <dt>{lang === "fr" ? "Type" : "Type"}</dt>
@@ -109,7 +113,9 @@ export function ParkingFinder({ pack, query }: { pack: PlacePack; query: Parking
               <dt>{lang === "fr" ? "Distance jusqu'à l'entrée" : "Distance to the entrance"}</dt>
               <dd>{hit.distanceToEntranceText}</dd>
               <dt>{lang === "fr" ? "Paiement" : "Payment"}</dt>
-              <dd>{hit.paymentText}</dd>
+              <dd>
+                <RecordText lang={lang} text={hit.paymentText} />
+              </dd>
               <dt>{lang === "fr" ? "Date" : "Date"}</dt>
               <dd>
                 {hit.verificationDate}. {hit.tierText}
@@ -146,6 +152,7 @@ export function ChargingFinder({ pack, query }: { pack: PlacePack; query: Chargi
     <section className="app-ui" aria-labelledby="charging-heading" lang={lang}>
       <style>{a11yCss}</style>
       <h2 id="charging-heading">{lang === "fr" ? "Recharge des fauteuils et triporteurs" : "Wheelchair and scooter charging"}</h2>
+      <EnglishOnlyNote lang={lang} />
       <p>{result.rangeReminder}</p>
       <p>
         {lang === "fr"
@@ -156,7 +163,7 @@ export function ChargingFinder({ pack, query }: { pack: PlacePack; query: Chargi
         {result.hits.map((hit) => (
           <li key={hit.pointId} className="card">
             <h3>
-              {hit.placeName} — {hit.pointName}
+              {hit.placeName} — <RecordText lang={lang} text={hit.pointName} />
             </h3>
             <p>{hit.recommendation}</p>
             <dl>
@@ -165,7 +172,9 @@ export function ChargingFinder({ pack, query }: { pack: PlacePack; query: Chargi
               <dt>{lang === "fr" ? "Accès" : "Access"}</dt>
               <dd>{hit.accessText}</dd>
               <dt>{lang === "fr" ? "Heures" : "Hours"}</dt>
-              <dd>{hit.hoursText}</dd>
+              <dd>
+                <RecordText lang={lang} text={hit.hoursText} />
+              </dd>
               <dt>{lang === "fr" ? "Siège" : "Seating"}</dt>
               <dd>{hit.seatingText}</dd>
               <dt>{lang === "fr" ? "Date" : "Date"}</dt>
@@ -196,6 +205,7 @@ export function RepairSupplyFinder({ pack, query }: { pack: PlacePack; query: Re
     <section className="app-ui" aria-labelledby="repair-heading" lang={lang}>
       <style>{a11yCss}</style>
       <h2 id="repair-heading">{lang === "fr" ? "Réparation et fournitures" : "Repair and supply"}</h2>
+      <EnglishOnlyNote lang={lang} />
       <p role="note">{result.disclaimer}</p>
       <p>{result.stockNote}</p>
       <ul>
@@ -208,9 +218,13 @@ export function RepairSupplyFinder({ pack, query }: { pack: PlacePack; query: Re
               <dt>{hit.kind === "repair" ? (lang === "fr" ? "Services publiés" : "Published services") : lang === "fr" ? "Catégories publiées" : "Published categories"}</dt>
               <dd>{hit.servicesText}</dd>
               <dt>{lang === "fr" ? "Heures" : "Hours"}</dt>
-              <dd>{hit.hoursText}</dd>
+              <dd>
+                <RecordText lang={lang} text={hit.hoursText} />
+              </dd>
               <dt>{lang === "fr" ? "Détail" : "Detail"}</dt>
-              <dd>{hit.extraText}</dd>
+              <dd>
+                <EnglishText lang={lang} text={hit.extraText} fragments={hit.englishFragments} />
+              </dd>
               <dt>{lang === "fr" ? "Date" : "Date"}</dt>
               <dd>
                 {hit.verificationDate}. {hit.tierText}

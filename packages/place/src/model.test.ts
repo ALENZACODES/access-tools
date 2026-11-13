@@ -117,6 +117,18 @@ describe("display rules", () => {
     expect(tierPhrase(FIXTURE_PROVENANCE, "labelled-fixture", "fr")).not.toContain("données ouvertes");
   });
 
+  it("rejects a nested sourced field whose provenance tier is bogus", () => {
+    const broken = structuredClone(fixturePack);
+    const place = broken.places[0]!;
+    place.entrance.stepCount = {
+      value: 1,
+      provenance: { tier: "bogus" } as unknown as typeof place.entrance.stepCount.provenance,
+      photoSlotIds: [],
+    };
+    expect(validatePlacePack(broken)).toBe(false);
+    expect(schemaErrors().join(" ")).toMatch(/tier|provenance|required/i);
+  });
+
   it("rejects a tier 3 record that has no evidence", () => {
     const broken = structuredClone(fixturePack);
     const place = broken.places[0]!;
@@ -205,9 +217,37 @@ describe("freshness and hours", () => {
       verifierType: "operator-feed",
       observedAt: "2026-01-01T12:00:00Z",
     };
-    const result = freshness(provenance, "2026-11-13", "charging", "en");
+    const result = freshness(provenance, "2026-11-13T12:00:00Z", "charging", "en");
     expect(result.state).toBe("live-age-unknown");
     expect(result.text.toLowerCase()).toContain("unknown");
+    expect(result.text).not.toContain("30-day");
+    expect(result.text.toLowerCase()).not.toContain("within");
+  });
+
+  it("keeps a live feed only inside a two-hour window with an expiry", () => {
+    const provenance: Provenance = {
+      sourceName: "specimen feed",
+      sourceId: "specimen-feed",
+      licence: "specimen",
+      sourceDate: "2026-11-13",
+      recordDate: "2026-11-13",
+      retrievedAt: "2026-11-13",
+      tier: 4,
+      verifierType: "operator-feed",
+      observedAt: "2026-11-13T10:00:00Z",
+      expiresAt: "2026-11-13T12:00:00Z",
+    };
+    const fresh = freshness(provenance, "2026-11-13T11:00:00Z", "charging", "en");
+    expect(fresh.state).toBe("within-estimate");
+    expect(fresh.text).toContain("2-hour");
+    expect(fresh.text.toLowerCase()).not.toContain("unknown");
+    const stale = freshness(provenance, "2026-11-13T13:00:00Z", "charging", "en");
+    expect(stale.state).toBe("live-age-unknown");
+    expect(stale.text.toLowerCase()).toContain("unknown");
+    expect(stale.text).not.toContain("30-day");
+    const french = freshness({ ...provenance, observedAt: "2026-10-01T12:00:00Z" }, "2026-11-13T12:00:00Z", "charging", "fr");
+    expect(french.text).toContain("inconnu");
+    expect(french.text).not.toContain("30 jours");
   });
 
   it("refuses a generic in-range claim", () => {

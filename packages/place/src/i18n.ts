@@ -79,6 +79,10 @@ export const COPY = {
   "side.left": { en: "Left", fr: "Gauche" },
   "side.right": { en: "Right", fr: "Droite" },
   "side.both": { en: "Both", fr: "Les deux" },
+  "note.english-only": {
+    en: "English only. Authored record text has no other language.",
+    fr: "Anglais seulement. Le texte rédigé dans la fiche n'a pas de traduction française.",
+  },
   "provenance.source.labelled-fixture": {
     en: "access-tools labelled fixture",
     fr: "jeu d'essai étiqueté access-tools",
