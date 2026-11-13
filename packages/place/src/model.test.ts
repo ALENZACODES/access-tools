@@ -4,7 +4,7 @@ import { fixturePack, FIXTURE_DAY, FIXTURE_PROVENANCE, placeById } from "./fixtu
 import { formatMm } from "./format.js";
 import { isOpenAt } from "./hours.js";
 import { lintPack, lintPlace } from "./lint.js";
-import { coreFieldIdList, FIELD_COUNTS, projectPlace } from "./project.js";
+import { coreFieldIdList, correctableFields, FIELD_COUNTS, projectPlace } from "./project.js";
 import { rangeNote, useLabelText, washroomUseLabel } from "./recommend.js";
 import { schemaErrors, validatePlacePack } from "./schema.js";
 import { evidenceComplete } from "./evidence.js";
@@ -321,6 +321,22 @@ describe("freshness and hours", () => {
 });
 
 describe("corrections", () => {
+  it("keeps washroom options distinct and uses English colon spacing", () => {
+    const place = placeById("fix-community-centre");
+    if (!place) throw new Error("missing");
+    const english = correctableFields(place, "en")
+      .filter((field) => field.id.startsWith("washroom:"))
+      .map((field) => field.label);
+    const french = correctableFields(place, "fr")
+      .filter((field) => field.id.startsWith("washroom:"))
+      .map((field) => field.label);
+    expect(new Set(english).size).toBe(english.length);
+    expect(english.filter((label) => label.startsWith("Washroom A: "))).toHaveLength(14);
+    expect(english.some((label) => label.includes(" : "))).toBe(false);
+    expect(french.filter((label) => label.startsWith("Toilettes A : "))).toHaveLength(14);
+    expect(french.filter((label) => label.startsWith("Toilettes B : "))).toHaveLength(14);
+  });
+
   it("stores a pending correction without changing the place", () => {
     const place = placeById("fix-cafe");
     if (!place) throw new Error("missing");
