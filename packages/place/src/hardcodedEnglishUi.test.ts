@@ -2,6 +2,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { COPY, frenchColonViolations } from "./i18n.js";
 import { findHardcodedUiCopy } from "./hardcodedEnglishUi.js";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
@@ -14,6 +15,31 @@ const COMPONENT_ROOTS = [
   "packages/finders/src/react",
   "packages/finders/src/demo",
 ];
+
+const MODEL_ROOTS = ["packages/place/src", "packages/search/src", "packages/finders/src"];
+
+const MODEL_EXCLUDED = new Set([
+  "i18n.ts",
+  "modelCopy.ts",
+  "fixtures.ts",
+  // Not the UI catalogue: developer diagnostics, and the fixture-language auditor's own messages.
+  "lint.ts",
+  "frenchFixtureLang.ts",
+]);
+
+function modelFiles(dir: string): string[] {
+  const found: string[] = [];
+  for (const entry of readdirSync(dir)) {
+    const full = path.join(dir, entry);
+    if (statSync(full).isDirectory()) {
+      found.push(...modelFiles(full));
+      continue;
+    }
+    if (!entry.endsWith(".ts") || entry.endsWith(".test.ts") || MODEL_EXCLUDED.has(entry)) continue;
+    found.push(full);
+  }
+  return found;
+}
 
 function componentFiles(dir: string): string[] {
   const found: string[] = [];
@@ -141,6 +167,46 @@ describe("French language coverage for component copy", () => {
     expect(hits).not.toContain("repair");
     expect(hits).not.toContain("{slot} m");
     expect(hits).not.toContain("tel:911");
+  });
+
+  it("fails when a model file types a sentence instead of reading the catalogue", () => {
+    const hits = findHardcodedUiCopy(
+      "sample.ts",
+      `export function label(lang: "en" | "fr") { return lang === "fr" ? "Bonjour." : "Hello there."; }`,
+      true,
+    ).map((hit) => hit.text);
+    expect(hits).toContain("Hello there.");
+    expect(hits).toContain("Bonjour.");
+    expect(findHardcodedUiCopy("sample.ts", `export const id = "entrance.step-free";`, true)).toEqual([]);
+    expect(findHardcodedUiCopy("sample.ts", `export const label = "Unknown";`, true).map((hit) => hit.text)).toContain("Unknown");
+    expect(findHardcodedUiCopy("sample.ts", `export const label = "not recorded";`, true).map((hit) => hit.text)).toContain(
+      "not recorded",
+    );
+  });
+
+  it.each([
+    ["<span>unknown</span>", "unknown"],
+    ['<button aria-label="close" />', "close"],
+    ['<abbr title="approximately">~</abbr>', "approximately"],
+    ['<input placeholder="search" />', "search"],
+    ["<p>note:</p>", "note:"],
+    ["<p>h</p>", "h"],
+  ])("still fails when a component renders %s", (jsx, hit) => {
+    const source = `export function Sample() { return ${jsx}; }`;
+    expect(textsOf(source)).toContain(hit);
+    expect(findHardcodedUiCopy("sample.ts", `export const sample = "${hit}";`, true)).toEqual([]);
+  });
+
+  it("fails when English UI text is typed into a model file instead of the i18n catalogue", () => {
+    const files = MODEL_ROOTS.flatMap((root) => modelFiles(path.join(repoRoot, root)));
+    expect(files.some((file) => file.endsWith(`${path.sep}corrections.ts`))).toBe(true);
+    expect(files.some((file) => file.endsWith(`${path.sep}hours.ts`))).toBe(true);
+    const hits = files.flatMap((file) => findHardcodedUiCopy(path.relative(repoRoot, file), readFileSync(file, "utf8"), true));
+    expect(hits.map((hit) => `${hit.file}:${hit.line} ${hit.text}`)).toEqual([]);
+  });
+
+  it("puts a no-break space before every French colon in the place catalogue", () => {
+    expect(frenchColonViolations(COPY)).toEqual([]);
   });
 
   it("fails when English UI text is typed into a component instead of the i18n catalogue", () => {

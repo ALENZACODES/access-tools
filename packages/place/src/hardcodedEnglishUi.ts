@@ -9,6 +9,7 @@ export interface HardcodedUiCopy {
 const CATALOG_FNS = new Set([
   "setError",
   "copy",
+  "phrase",
   "searchCopy",
   "finderCopy",
   "labelOf",
@@ -111,7 +112,7 @@ const TEXT_PROPS = new Set([
 ]);
 
 /** Units, language codes, URLs, and catalogue keys are not interface sentences. */
-export function isIgnorableUiText(text: string, inCatalogCall = false): boolean {
+export function isIgnorableUiText(text: string, inCatalogCall = false, model = false): boolean {
   const withoutSlots = text.replace(/\{slot\}/g, "").trim();
   if (!/[A-Za-z]/.test(withoutSlots)) return true;
   if (withoutSlots === "en" || withoutSlots === "fr") return true;
@@ -121,7 +122,26 @@ export function isIgnorableUiText(text: string, inCatalogCall = false): boolean 
     return true;
   }
   if (/^[a-z0-9]+(?:[.-][a-z0-9]+)+$/.test(withoutSlots)) return true;
+  if (!model) return false;
+  if (/^(in|kg|h)\.?$/i.test(withoutSlots)) return true;
+  if (isMeasurement(withoutSlots)) return true;
+  if (/^[a-z][a-z0-9_-]*$/.test(withoutSlots)) return true;
+  if (/^[a-z0-9._:-]+$/.test(withoutSlots)) return true;
+  if (/^[a-z][A-Za-z0-9]*$/.test(withoutSlots)) return true;
+  if (/^T\d{2}:\d{2}/.test(withoutSlots)) return true;
+  if (/^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*$/.test(withoutSlots)) return true;
+  if (!/\s/.test(withoutSlots) && (/\[/.test(withoutSlots) || /\.[A-Za-z0-9_{]/.test(withoutSlots))) return true;
+  if (text.includes("font-family") || text.includes(":where(")) return true;
   return false;
+}
+
+/** A measurement such as "900 mm (35.4 in)" is not a sentence. */
+function isMeasurement(text: string): boolean {
+  const words = text
+    .replace(/[0-9.,()%:+-]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean);
+  return words.length > 0 && words.every((word) => /^(mm|cm|km|m|in|kg|h)$/i.test(word));
 }
 
 function isInside(root: ts.Node, node: ts.Node): boolean {
@@ -138,6 +158,25 @@ function inCatalogCall(node: ts.Node): boolean {
   while (current) {
     if (ts.isCallExpression(current) && ts.isIdentifier(current.expression) && CATALOG_FNS.has(current.expression.text)) {
       return current.arguments.some((argument) => argument === node || isInside(argument, node));
+    }
+    if (ts.isSourceFile(current)) return false;
+    current = current.parent;
+  }
+  return false;
+}
+
+function inTypePosition(node: ts.Node): boolean {
+  let current: ts.Node | undefined = node.parent;
+  while (current) {
+    if (
+      ts.isLiteralTypeNode(current) ||
+      ts.isTypeReferenceNode(current) ||
+      ts.isExpressionWithTypeArguments(current) ||
+      ts.isTypeAliasDeclaration(current) ||
+      ts.isInterfaceDeclaration(current) ||
+      ts.isTypeLiteralNode(current)
+    ) {
+      return true;
     }
     if (ts.isSourceFile(current)) return false;
     current = current.parent;
@@ -299,17 +338,17 @@ function resolveInitializer(identifier: ts.Identifier): ts.Expression | null {
   return null;
 }
 
-/** English and French UI copy typed into a component, instead of the i18n catalogue. */
-export function findHardcodedUiCopy(file: string, sourceText: string): HardcodedUiCopy[] {
+/** English and French UI copy typed into a component or model file, instead of the i18n catalogue. */
+export function findHardcodedUiCopy(file: string, sourceText: string, model = false): HardcodedUiCopy[] {
   const source = ts.createSourceFile(file, sourceText, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
   const hits: HardcodedUiCopy[] = [];
   const seen = new Set<number>();
 
   const push = (node: ts.Node, text: string, forced: boolean) => {
-    if (isComparisonOperand(node)) return;
+    if (isComparisonOperand(node) || inTypePosition(node)) return;
     if (node.parent && (ts.isImportDeclaration(node.parent) || ts.isExportDeclaration(node.parent))) return;
-    if (isIgnorableUiText(text, inCatalogCall(node))) return;
-    if (!forced && !isRendered(node, text)) return;
+    if (isIgnorableUiText(text, inCatalogCall(node), model)) return;
+    if (!forced && !model && !isRendered(node, text)) return;
     const position = node.getStart(source);
     if (seen.has(position)) return;
     seen.add(position);

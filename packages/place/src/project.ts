@@ -25,7 +25,7 @@ import {
   formatYesNo,
   unknownLabel,
 } from "./format.js";
-import { labelOf, localizeAuthored } from "./i18n.js";
+import { copy, labelOf, localizeAuthored, phrase } from "./i18n.js";
 import { freshness, tierPhrase, winterClearanceText, type FreshnessLayer } from "./staleness.js";
 import { privilegeText, PROTOTYPE_NOTICE, vanLiftReading, vanLiftText } from "./recommend.js";
 
@@ -218,122 +218,33 @@ export const FIELD_COUNTS = {
 
 export const DAY3_EXTRA_IDS = ["entrance.step-count", "entrance.step-free"] as const;
 
-const LABELS: Record<string, { en: string; fr: string }> = {
-  "entrance.no-single-status": { en: "Overall status", fr: "Statut global" },
-  "entrance.step-count": { en: "Step count", fr: "Nombre de marches" },
-  "entrance.step-free": { en: "Step-free entrance, explicit", fr: "Entrée sans marche, explicite" },
-  "entrance.step-height-mm": { en: "Step height", fr: "Hauteur de marche" },
-  "entrance.threshold-height-mm": { en: "Threshold height", fr: "Hauteur du seuil" },
-  "entrance.ramp-present": { en: "Ramp present", fr: "Rampe présente" },
-  "entrance.named-location": { en: "Named entrance", fr: "Entrée nommée" },
-  "entrance.street-directions": { en: "Street directions", fr: "Indications depuis la rue" },
-  "entrance.door-clear-width-mm": { en: "Door clear width", fr: "Largeur libre de la porte" },
-  "entrance.door-operation": { en: "Door operation", fr: "Fonctionnement de la porte" },
-  "entrance.ramp-geometry": { en: "Ramp slope, width, landing, handrails, surface, drainage", fr: "Pente, largeur, palier, mains courantes, surface, drainage" },
-  "entrance.ramp-length-rise": { en: "Ramp length and rise", fr: "Longueur et dénivelé de la rampe" },
-  "entrance.elevator": { en: "Elevator to the entrance", fr: "Ascenseur jusqu'à l'entrée" },
-  "entrance.lighting-signage": { en: "Entrance lighting and signage", fr: "Éclairage et signalisation de l'entrée" },
-  "washroom.location-and-route": { en: "Location and step-free route", fr: "Emplacement et chemin sans marche" },
-  "washroom.door": { en: "Washroom door", fr: "Porte des toilettes" },
-  "washroom.turning-diameter-mm": { en: "Turning space, door closed", fr: "Espace de rotation, porte fermée" },
-  "washroom.transfer": { en: "Transfer side and clear floor", fr: "Côté de transfert et dégagement" },
-  "washroom.grab-bars": { en: "Grab bars", fr: "Barres d'appui" },
-  "washroom.seat-height-mm": { en: "Toilet seat height", fr: "Hauteur de la cuvette" },
-  "washroom.sink": { en: "Sink and knee clearance", fr: "Lavabo et dégagement des genoux" },
-  "washroom.shelf-hook-supplies": { en: "Shelf, hook, and supplies space", fr: "Tablette, crochet et espace pour les fournitures" },
-  "washroom.privacy-lock": { en: "Privacy and lock", fr: "Intimité et verrou" },
-  "washroom.emergency-cord": { en: "Emergency cord", fr: "Cordon d'alarme" },
-  "washroom.change-table": { en: "Adult change table", fr: "Table de change adulte" },
-  "washroom.hoist": { en: "Hoist", fr: "Lève-personne" },
-  "washroom.access-policy": { en: "Lock, key, and code policy", fr: "Politique de clé, code et accès" },
-  "washroom.hours-reliability": { en: "Hours and reliability", fr: "Heures et fiabilité" },
-  "interior.routes": { en: "Interior step-free routes", fr: "Chemins intérieurs sans marche" },
-  "interior.counters": { en: "Counters and service points", fr: "Comptoirs et points de service" },
-  "interior.seating": { en: "Seating", fr: "Sièges" },
-  "interior.sensory": { en: "Quiet, scent, lighting, and sound", fr: "Calme, parfum, éclairage et bruit" },
-  "interior.assistance-policy": { en: "Assistance and support-person policy", fr: "Aide et politique de personne de soutien" },
-  "interior.assistive-listening": { en: "Assistive listening and communication", fr: "Aide à l'écoute et communication" },
-  "interior.rest-space": { en: "Rest and pressure-relief space", fr: "Espace de repos" },
-  "parking.bay-summary": { en: "Accessible parking records", fr: "Fiches de stationnement accessible" },
-  "parking.route": { en: "Bay location and route", fr: "Emplacement et chemin" },
-  "parking.van-lift": { en: "Van lift deployment", fr: "Déploiement du hayon" },
-  "parking.surface-snow": { en: "Surface, gradient, and snow", fr: "Surface, pente et neige" },
-  "parking.payment": { en: "Payment method", fr: "Mode de paiement" },
-  "parking.drop-off": { en: "Drop-off and pick-up", fr: "Dépose et reprise" },
-  "parking.curb-cuts": { en: "Curb cuts on the approach", fr: "Bateaux de trottoir sur l'approche" },
-  "parking.approach-obstacles": { en: "Approach width and obstacles", fr: "Largeur de l'approche et obstacles" },
-  "transport.nearest-stop": { en: "Nearest transit stop", fr: "Arrêt de transport le plus proche" },
-  "transport.elevator-status": { en: "Elevator dimensions and status", fr: "Dimensions et statut de l'ascenseur" },
-  "transport.paratransit": { en: "Paratransit for this place", fr: "Transport adapté pour ce lieu" },
-  "transport.charging": { en: "Charging for mobility devices", fr: "Recharge des aides à la mobilité" },
-  "transport.repair-supply": { en: "Repair and supply proximity", fr: "Réparation et fournitures à proximité" },
-  "transport.emergency-contacts": { en: "Emergency and help contacts", fr: "Contacts d'urgence et d'aide" },
-  "trust.tier": { en: "Verification tier", fr: "Niveau de vérification" },
-  "trust.last-verified": { en: "Last recorded date", fr: "Dernière date enregistrée" },
-  "trust.source": { en: "Source", fr: "Source" },
-  "trust.photos": { en: "Photo evidence", fr: "Preuves photographiques" },
-  "trust.correction-path": { en: "Correction and report path", fr: "Chemin de correction et de signalement" },
-  "trust.dispute-path": { en: "Venue dispute path", fr: "Chemin de contestation du lieu" },
-  "trust.peer-tips": { en: "Peer tips", fr: "Notes de pairs" },
-  "trust.bilingual": { en: "Bilingual content", fr: "Contenu bilingue" },
-  "identity.name": { en: "Name", fr: "Nom" },
-  "identity.place-type": { en: "Place type", fr: "Type de lieu" },
-  "identity.address": { en: "Address", fr: "Adresse" },
-  "identity.municipality": { en: "Municipality", fr: "Municipalité" },
-  "identity.coordinates": { en: "Coordinates", fr: "Coordonnées" },
-  "identity.category": { en: "Category", fr: "Catégorie" },
-  "identity.hours": { en: "Hours", fr: "Heures" },
-  "identity.phone": { en: "Phone", fr: "Téléphone" },
-  "identity.languages": { en: "Languages of service", fr: "Langues de service" },
-  "identity.statement": { en: "Accessibility statement", fr: "Énoncé d'accessibilité" },
-  "identity.dataset": { en: "Dataset", fr: "Jeu de données" },
-  "identity.depth": { en: "Seed depth", fr: "Profondeur de la graine" },
-  "trail.surface": { en: "Trail surface", fr: "Surface du sentier" },
-  "trail.grade": { en: "Trail grade", fr: "Pente du sentier" },
-  "trail.width-mm": { en: "Trail width", fr: "Largeur du sentier" },
-  "trail.obstacles": { en: "Trail obstacles", fr: "Obstacles du sentier" },
-  "trail.rest": { en: "Trail rest", fr: "Repos sur le sentier" },
-};
-
-function label(id: string, lang: Lang): string {
-  const entry = LABELS[id];
-  if (!entry) return id;
-  return lang === "fr" ? entry.fr : entry.en;
-}
-
 function photoViews(photos: PhotoSlot[], ids: string[], lang: Lang): PhotoView[] {
   if (ids.length === 0) {
-    return [{ id: "none", text: lang === "fr" ? "Aucune photographie au dossier." : "No photograph on file.", englishFragments: [] }];
+    return [{ id: "none", text: copy("photo.none", lang), englishFragments: [] }];
   }
   return ids.map((id) => {
     const photo = photos.find((slot) => slot.id === id);
     if (!photo) {
-      return { id, text: lang === "fr" ? "Emplacement de photo manquant." : "Photograph slot is missing from the record.", englishFragments: [] };
+      return { id, text: copy("photo.missing", lang), englishFragments: [] };
     }
     if (photo.status === "empty") {
-      return { id, text: lang === "fr" ? "Aucune photographie au dossier." : "No photograph on file.", englishFragments: [] };
+      return { id, text: copy("photo.none", lang), englishFragments: [] };
     }
     if (photo.status === "withheld") {
-      return { id, text: lang === "fr" ? "Photographie retenue pour protéger la vie privée." : "Photograph withheld to protect privacy.", englishFragments: [] };
+      return { id, text: copy("photo.withheld", lang), englishFragments: [] };
     }
     if (!photo.description) {
       return {
         id,
-        text:
-          lang === "fr"
-            ? "Une photo a une date mais pas de description d'accès. Elle n'est pas une preuve."
-            : "A photograph has a date and no access description. It is not evidence.",
+        text: copy("photo.no-description", lang),
         englishFragments: [],
       };
     }
-    const date = photo.capturedOn ?? (lang === "fr" ? "date inconnue" : "date unknown");
-    const file =
-      lang === "fr"
-        ? "Le fichier image n'est pas dans ce paquet. access-maps conserve les fichiers photo."
-        : "The image file is not in this package. access-maps holds photograph files.";
+    const date = photo.capturedOn ?? copy("photo.date-unknown", lang);
+    const file = copy("photo.file-absent", lang);
     return {
       id,
-      text: `${photo.description} (${date}). ${file}`,
+      text: phrase("photo.caption", lang, { description: photo.description, date, file }),
       englishFragments: lang === "fr" ? [photo.description] : [],
     };
   });
@@ -349,19 +260,17 @@ function rowFrom(place: PlaceRecord, input: RowInput, lang: Lang, today: string)
     ? tierPhrase(input.provenance, place.datasetStatus, lang, place.publicationContext, {
         requirePhoto: input.id.startsWith("washroom."),
       })
-    : lang === "fr"
-      ? "Aucun niveau. Non vérifié."
-      : "No tier. Unverified.";
+    : copy("tier.none", lang);
   return {
     id: input.id,
     label: input.label,
     valueText: input.valueText,
     unknown: input.unknown,
     tierText,
-    sourceName: input.provenance ? authoredFr(input.provenance.sourceName, lang) : lang === "fr" ? "Aucune source" : "No source",
+    sourceName: input.provenance ? authoredFr(input.provenance.sourceName, lang) : copy("source.none", lang),
     sourceDate: input.provenance?.sourceDate ?? unknownLabel(lang),
     recordDate: input.provenance?.recordDate ?? unknownLabel(lang),
-    licence: input.provenance ? authoredFr(input.provenance.licence, lang) : lang === "fr" ? "Aucune licence" : "No licence",
+    licence: input.provenance ? authoredFr(input.provenance.licence, lang) : copy("licence.none", lang),
     freshnessText: fresh.text,
     photos: photoViews(place.photos, input.photoSlotIds, lang),
     englishFragments: input.englishFragments ?? [],
@@ -401,7 +310,7 @@ function sourcedRow(
 ): FieldRowView {
   return rowFrom(
     place,
-    { id, label: label(id, lang), valueText, unknown, provenance, photoSlotIds, layer, englishFragments },
+    { id, label: labelOf(id, lang), valueText, unknown, provenance, photoSlotIds, layer, englishFragments },
     lang,
     today,
   );
@@ -412,7 +321,7 @@ function ruleRow(place: PlaceRecord, id: string, valueText: string, lang: Lang, 
     place,
     {
       id,
-      label: label(id, lang),
+      label: labelOf(id, lang),
       valueText,
       unknown: false,
       provenance: null,
@@ -479,9 +388,7 @@ export function projectPlace(place: PlaceRecord, lang: Lang, today: string, pack
     ruleRow(
       place,
       "entrance.no-single-status",
-      lang === "fr"
-        ? "Pas de statut unique accessible ou non. Chaque champ est un fait, un inconnu, ou sans objet."
-        : "No single accessible or not-accessible status. Each field is a fact, an unknown, or not applicable.",
+      copy("status.no-single", lang),
       lang,
       today,
     ),
@@ -515,14 +422,14 @@ export function projectPlace(place: PlaceRecord, lang: Lang, today: string, pack
     place.parking.bays.length === 0
       ? { text: u, unknown: true }
       : {
-          text: place.parking.bays.map((bay) => `${bay.name}: ${labelOf(`bay.${bay.kind}`, lang)}`).join("; "),
+          text: place.parking.bays.map((bay) => `${bay.name}${copy("sep.colon", lang)}${labelOf(`bay.${bay.kind}`, lang)}`).join("; "),
           unknown: false,
         };
   const vanSummary =
     place.parking.bays.length === 0
       ? { text: u, unknown: true }
       : {
-          text: place.parking.bays.map((bay) => `${bay.name}: ${vanLiftText(vanLiftReading(bay), lang)}`).join(" "),
+          text: place.parking.bays.map((bay) => `${bay.name}${copy("sep.colon", lang)}${vanLiftText(vanLiftReading(bay), lang)}`).join(" "),
           unknown: false,
         };
   const month = Number(today.slice(5, 7));
@@ -553,16 +460,12 @@ export function projectPlace(place: PlaceRecord, lang: Lang, today: string, pack
     place.transport.chargingSummary.value ??
     (place.chargingPoints.length === 0
       ? null
-      : lang === "fr"
-        ? `${place.chargingPoints.length} fiche de point de recharge est liée. Voir la section recharge.`
-        : `${place.chargingPoints.length} charging-point record is linked. See the charging section.`);
+      : phrase("summary.charging", lang, { count: place.chargingPoints.length }));
   const repairSummary =
     place.transport.repairSupplySummary.value ??
     (place.linkedRepairerIds.length + place.linkedSupplyStoreIds.length === 0
       ? null
-      : lang === "fr"
-        ? "Des fiches d'annuaire sont liées. Voir réparation et fournitures."
-        : "Directory records are linked. See repair and supply.");
+      : copy("summary.directory", lang));
   const transport = place.transport;
   const transportRows = [
     proseRow(place, "transport.nearest-stop", transport.nearestStop.value, transport.nearestStop.provenance, transport.nearestStop.photoSlotIds, "venue", lang, today),
@@ -592,27 +495,21 @@ export function projectPlace(place: PlaceRecord, lang: Lang, today: string, pack
     ruleRow(
       place,
       "trust.photos",
-      lang === "fr"
-        ? `${place.photos.length} emplacements, ${described} décrits, ${empty} vides.`
-        : `${place.photos.length} slots, ${described} described, ${empty} empty.`,
+      phrase("summary.photos", lang, { slots: place.photos.length, described, empty }),
       lang,
       today,
     ),
     ruleRow(
       place,
       "trust.correction-path",
-      lang === "fr"
-        ? "Le formulaire de correction est sur cette page. Un signalement en attente ne modifie pas la fiche. La modération ne tourne pas dans ce prototype."
-        : "The correction form is on this page. A pending report does not change the record. Moderation is not running in this prototype.",
+      copy("trust.correction", lang),
       lang,
       today,
     ),
     ruleRow(
       place,
       "trust.dispute-path",
-      lang === "fr"
-        ? "Un lieu peut proposer une correction avec une preuve. Rien n'est écrasé en silence. Ce prototype ne tranche pas les contestations."
-        : "A venue can submit a correction with evidence. Nothing is overwritten silently. This prototype does not decide disputes.",
+      copy("trust.dispute", lang),
       lang,
       today,
     ),
@@ -620,21 +517,15 @@ export function projectPlace(place: PlaceRecord, lang: Lang, today: string, pack
       place,
       "trust.peer-tips",
       place.peerTips.length === 0
-        ? lang === "fr"
-          ? "Aucune note de pair au dossier. Une note de pair n'est pas un fait."
-          : "No peer tip is on file. A peer tip is not a fact."
-        : lang === "fr"
-          ? `${place.peerTips.length} note de pair, séparée des faits.`
-          : `${place.peerTips.length} peer tip, kept separate from facts.`,
+        ? copy("trust.peer-none", lang)
+        : phrase("trust.peer-count", lang, { count: place.peerTips.length }),
       lang,
       today,
     ),
     ruleRow(
       place,
       "trust.bilingual",
-      lang === "fr"
-        ? "L'interface est en français et en anglais. Les mesures ne sont pas traduites automatiquement. Le nom français n'existe que s'il est écrit dans la fiche."
-        : "The interface is in English and French. Measurements are not machine-translated. A French name exists only when the record has one.",
+      copy("trust.bilingual-note", lang),
       lang,
       today,
     ),
@@ -643,92 +534,73 @@ export function projectPlace(place: PlaceRecord, lang: Lang, today: string, pack
   const sections: SectionView[] = [
     {
       id: "getting-there",
-      heading: lang === "fr" ? "S'y rendre" : "Getting there",
-      intro:
-        lang === "fr"
-          ? "Arrêt, dépose et approche. Une distance à vol d'oiseau n'est pas un chemin."
-          : "Stop, drop-off, and approach. A straight-line distance is not a route.",
+      heading: copy("section.getting-there", lang),
+      intro: copy("section.approach", lang),
       rows: [transportRows[0], parkingRows[5], parkingRows[6], parkingRows[7]].filter((row): row is FieldRowView => row !== undefined),
     },
     {
       id: "entrance",
-      heading: lang === "fr" ? "Entrée" : "Entrance",
+      heading: copy("section.entrance", lang),
       intro: null,
       rows: entranceRows,
     },
     {
       id: "inside",
-      heading: lang === "fr" ? "À l'intérieur" : "Inside",
+      heading: copy("section.inside", lang),
       intro: null,
       rows: [interiorRows[0], interiorRows[6]].filter((row): row is FieldRowView => row !== undefined),
     },
     {
       id: "washrooms",
-      heading: lang === "fr" ? "Toilettes" : "Washrooms",
-      intro:
-        place.washrooms.length === 0
-          ? lang === "fr"
-            ? "Aucune fiche de toilettes n'est liée. Ce n'est pas une affirmation qu'il n'y a pas de toilettes."
-            : "No washroom record is linked. That is not a statement that no washroom exists."
-          : lang === "fr"
-            ? "Chaque toilette est une fiche. Le résumé ne remplace pas les mesures."
-            : "Each washroom is its own record. A summary does not replace the measurements.",
+      heading: copy("section.washrooms", lang),
+      intro: place.washrooms.length === 0 ? copy("washroom.none-linked", lang) : copy("washroom.each-record", lang),
       rows: place.washrooms.length === 0 ? projectWashroom(place, emptyWashroomPlaceholder(), lang, today).rows : [],
     },
     {
       id: "parking",
-      heading: lang === "fr" ? "Stationnement" : "Parking",
-      intro:
-        lang === "fr"
-          ? "Le type de place et le privilège municipal sont séparés. Aucune disponibilité en direct n'est affichée."
-          : "Bay type and the municipal privilege are separate. No live availability is shown.",
+      heading: copy("section.parking", lang),
+      intro: copy("parking.separate", lang),
       rows: parkingRows,
     },
     {
       id: "seating",
-      heading: lang === "fr" ? "Sièges et comptoirs" : "Seating and counters",
+      heading: copy("section.seating", lang),
       intro: null,
       rows: [interiorRows[1], interiorRows[2]].filter((row): row is FieldRowView => row !== undefined),
     },
     {
       id: "policies",
-      heading: lang === "fr" ? "Politiques" : "Policies",
-      intro:
-        lang === "fr"
-          ? "Une politique est citée seulement si la fiche a un texte. L'application ne donne pas de conseil d'admissibilité."
-          : "A policy is quoted only when the record has text. The application does not give eligibility advice.",
+      heading: copy("section.policies", lang),
+      intro: copy("policy.quoted", lang),
       rows: [interiorRows[3], interiorRows[4], interiorRows[5], transportRows[2]].filter((row): row is FieldRowView => row !== undefined),
     },
     {
       id: "charging",
-      heading: lang === "fr" ? "Recharge" : "Charging",
+      heading: copy("section.charging", lang),
       intro: transportRows[3]?.valueText ?? null,
       rows: transportRows[3] ? [transportRows[3]] : [],
     },
     {
       id: "repair",
-      heading: lang === "fr" ? "Réparation et fournitures" : "Repair and supply",
+      heading: copy("section.repair", lang),
       intro: transportRows[4]?.valueText ?? null,
       rows: transportRows[4] ? [transportRows[4]] : [],
     },
     {
       id: "photos",
-      heading: lang === "fr" ? "Photographies" : "Photos",
-      intro:
-        lang === "fr"
-          ? "Une photo sans date ou sans description d'accès n'est pas une preuve."
-          : "A photograph without a date or an access description is not evidence.",
+      heading: copy("section.photos", lang),
+      intro: copy("photo.not-evidence", lang),
       rows: trustRows[3] ? [trustRows[3]] : [],
     },
     {
       id: "reports",
-      heading: lang === "fr" ? "Signalements" : "Reports",
+      heading: copy("section.reports", lang),
       intro: null,
       rows: trustRows.filter((row) => row.id === "trust.correction-path" || row.id === "trust.dispute-path" || row.id === "trust.peer-tips"),
     },
     {
       id: "trust",
-      heading: lang === "fr" ? "Source et fraîcheur" : "Source and freshness",
+      heading: copy("section.source", lang),
       intro: null,
       rows: trustRows.filter((row) => row.id === "trust.tier" || row.id === "trust.last-verified" || row.id === "trust.source" || row.id === "trust.bilingual"),
     },
@@ -737,11 +609,8 @@ export function projectPlace(place: PlaceRecord, lang: Lang, today: string, pack
   if (place.trail) {
     sections.push({
       id: "trail",
-      heading: lang === "fr" ? "Sentier" : "Trail",
-      intro:
-        lang === "fr"
-          ? "Champs du modèle sentier. Ils ne s'affichent pas sur un café."
-          : "Trail-template fields. They are not shown on a café.",
+      heading: copy("section.trail", lang),
+      intro: copy("trail.template", lang),
       rows: [
         proseRow(place, "trail.surface", place.trail.surface.value, place.trail.surface.provenance, place.trail.surface.photoSlotIds, "venue", lang, today),
         proseRow(place, "trail.grade", place.trail.grade.value, place.trail.grade.provenance, place.trail.grade.photoSlotIds, "venue", lang, today),
@@ -754,7 +623,7 @@ export function projectPlace(place: PlaceRecord, lang: Lang, today: string, pack
 
   const identitySection: SectionView = {
     id: "identity",
-    heading: lang === "fr" ? "Identité" : "Identity",
+    heading: copy("section.identity", lang),
     intro: null,
     rows: identityRows,
   };
@@ -767,16 +636,14 @@ export function projectPlace(place: PlaceRecord, lang: Lang, today: string, pack
     prototypeNotice: PROTOTYPE_NOTICE[lang],
     honestyNote: lang === "fr" ? place.honestyNoteFr : place.honestyNote,
     tierBadge: tierPhrase(place.recordProvenance, place.datasetStatus, lang, place.publicationContext),
-    sourceLine:
-      lang === "fr"
-        ? `Source : ${authoredFr(place.recordProvenance.sourceName, lang)}. Date de source : ${place.recordProvenance.sourceDate}. Date de fiche : ${place.recordProvenance.recordDate}. ${authoredFr(place.recordProvenance.licence, lang)}`
-        : `Source: ${place.recordProvenance.sourceName}. Source date: ${place.recordProvenance.sourceDate}. Record date: ${place.recordProvenance.recordDate}. ${place.recordProvenance.licence}`,
+    sourceLine: phrase("place.source-line", lang, {
+      source: authoredFr(place.recordProvenance.sourceName, lang),
+      sourceDate: place.recordProvenance.sourceDate,
+      recordDate: place.recordProvenance.recordDate,
+      licence: authoredFr(place.recordProvenance.licence, lang),
+    }),
     depthStatement:
-      place.depth === "skeleton"
-        ? lang === "fr"
-          ? `Graine incomplète pour ${place.identity.municipality}. Faits présents : le nom et la municipalité. Les mesures d'entrée, de toilettes, de stationnement, de recharge et de réparation sont absentes de cette graine.`
-          : `Skeleton seed for ${place.identity.municipality}. Facts present: the name and the municipality. Entrance, washroom, parking, charging, and repair measurements are absent from this seed.`
-        : null,
+      place.depth === "skeleton" ? phrase("place.skeleton", lang, { municipality: place.identity.municipality }) : null,
     sections: [identitySection, ...sections],
     washrooms: place.washrooms.map((washroom) => projectWashroom(place, washroom, lang, today)),
     bays: place.parking.bays.map((bay) => projectBay(place, bay, lang, today, month)),
@@ -784,10 +651,7 @@ export function projectPlace(place: PlaceRecord, lang: Lang, today: string, pack
     repairers,
     supplyStores,
     peerTips: place.peerTips.map((tip) => ({
-      text:
-        lang === "fr"
-          ? `Note de pair du ${tip.date}, non modérée, pas un fait : ${tip.body}`
-          : `Peer tip dated ${tip.date}, not moderated, not a fact: ${tip.body}`,
+      text: phrase("place.peer-tip", lang, { date: tip.date, body: tip.body }),
       englishFragments: keptEnglish([tip.body], lang),
     })),
   };
@@ -796,7 +660,7 @@ export function projectPlace(place: PlaceRecord, lang: Lang, today: string, pack
 function emptyWashroomPlaceholder(): Washroom {
   return {
     id: "none",
-    name: "No washroom record",
+    name: "none",
     gender: null,
     attendantAccessNote: null,
     locationAndRoute: { value: null, provenance: null, photoSlotIds: [] },
@@ -821,7 +685,10 @@ function emptyWashroomPlaceholder(): Washroom {
 export function projectWashroom(place: PlaceRecord, washroom: Washroom, lang: Lang, today: string): WashroomCardView {
   const u = unknownLabel(lang);
   const doorText = washroom.door.value
-    ? `${formatDoor(washroom.door.value, lang)}. ${lang === "fr" ? "Largeur libre" : "Clear width"}: ${formatMm(washroom.doorClearWidthMm.value, lang)}`
+    ? phrase("washroom.clear-width", lang, {
+        door: formatDoor(washroom.door.value, lang),
+        width: formatMm(washroom.doorClearWidthMm.value, lang),
+      })
     : formatMm(washroom.doorClearWidthMm.value, lang);
   const doorUnknown = washroom.door.value === null && washroom.doorClearWidthMm.value === null;
   const access = washroom.accessPolicy.value;
@@ -830,7 +697,7 @@ export function projectWashroom(place: PlaceRecord, washroom: Washroom, lang: La
     : u;
   const hours = washroom.hoursReliability.value;
   const hoursText = hours
-    ? [hours.hoursText ?? u, hours.outOfOrderNote ?? (lang === "fr" ? "Note de panne : inconnue" : "Out-of-order note: unknown"), hours.lastReportNote ?? (lang === "fr" ? "Dernier signalement : inconnu" : "Last report: unknown")].join(". ")
+    ? [hours.hoursText ?? u, hours.outOfOrderNote ?? copy("washroom.out-of-order", lang), hours.lastReportNote ?? copy("washroom.last-report", lang)].join(". ")
     : u;
   const gender = washroom.gender === null ? u : labelOf(`gender.${washroom.gender}`, lang);
   const rows = [
@@ -852,10 +719,8 @@ export function projectWashroom(place: PlaceRecord, washroom: Washroom, lang: La
   return {
     id: washroom.id,
     heading: washroom.name,
-    genderText: lang === "fr" ? `Genre enregistré : ${gender}` : `Recorded gender: ${gender}`,
-    attendantText:
-      washroom.attendantAccessNote ??
-      (lang === "fr" ? "Accès accompagnateur : Inconnu" : "Attendant access: Unknown"),
+    genderText: phrase("washroom.gender", lang, { gender }),
+    attendantText: washroom.attendantAccessNote ?? copy("washroom.attendant", lang),
     rows,
     englishFragments: keptEnglish([washroom.name, washroom.attendantAccessNote], lang),
   };
@@ -869,11 +734,11 @@ function projectBay(place: PlaceRecord, bay: ParkingBay, lang: Lang, today: stri
     sourcedRow(place, `bay.${bay.id}.snow`, winterClearanceText(bay.snowClearedOn.value, Number.isFinite(month) ? month : 1, lang), bay.snowClearedOn.value === null && (month >= 11 || month <= 4), bay.snowClearedOn.provenance, bay.snowClearedOn.photoSlotIds, "parking", lang, today),
     sourcedRow(place, `bay.${bay.id}.step-free-route`, formatYesNo(bay.stepFreeRoute.value, lang), bay.stepFreeRoute.value === null, bay.stepFreeRoute.provenance, bay.stepFreeRoute.photoSlotIds, "parking", lang, today),
   ];
-  rows[0]!.label = lang === "fr" ? "Largeur de la place" : "Bay width";
-  rows[1]!.label = lang === "fr" ? "Largeur de l'allée" : "Aisle width";
-  rows[2]!.label = lang === "fr" ? "Distance jusqu'à l'entrée" : "Distance to the entrance";
-  rows[3]!.label = lang === "fr" ? "Déneigement" : "Snow clearance";
-  rows[4]!.label = lang === "fr" ? "Chemin sans marche" : "Step-free route";
+  rows[0]!.label = copy("bay.width", lang);
+  rows[1]!.label = copy("bay.aisle", lang);
+  rows[2]!.label = copy("bay.entrance-distance", lang);
+  rows[3]!.label = copy("bay.snow", lang);
+  rows[4]!.label = copy("bay.step-free", lang);
   return {
     id: bay.id,
     heading: bay.name,
@@ -886,16 +751,16 @@ function projectBay(place: PlaceRecord, bay: ParkingBay, lang: Lang, today: stri
 
 function projectCharging(place: PlaceRecord, point: ChargingPoint, lang: Lang, today: string): ChargingCardView {
   const specs: Array<[string, string, boolean, Provenance | null, string[]]> = [
-    [lang === "fr" ? "Emplacement" : "Location", point.locationNote.value ?? unknownLabel(lang), point.locationNote.value === null, point.locationNote.provenance, point.locationNote.photoSlotIds],
-    [lang === "fr" ? "Type de prise" : "Outlet type", point.outletType.value ?? unknownLabel(lang), point.outletType.value === null, point.outletType.provenance, point.outletType.photoSlotIds],
-    [lang === "fr" ? "Nombre de prises" : "Outlet count", point.outletCount.value === null ? unknownLabel(lang) : String(point.outletCount.value), point.outletCount.value === null, point.outletCount.provenance, point.outletCount.photoSlotIds],
-    [lang === "fr" ? "Accès" : "Access method", point.accessMethod.value ? labelOf(`access.${point.accessMethod.value}`, lang) : unknownLabel(lang), point.accessMethod.value === null, point.accessMethod.provenance, point.accessMethod.photoSlotIds],
-    [lang === "fr" ? "Contact pour permission" : "Permission contact", point.permissionContact.value ?? unknownLabel(lang), point.permissionContact.value === null, point.permissionContact.provenance, point.permissionContact.photoSlotIds],
-    [lang === "fr" ? "Siège en attendant" : "Seating while charging", formatYesNo(point.seating.value, lang), point.seating.value === null, point.seating.provenance, point.seating.photoSlotIds],
-    [lang === "fr" ? "Intérieur ou extérieur" : "Indoor or outdoor", point.setting.value ? labelOf(`setting.${point.setting.value}`, lang) : unknownLabel(lang), point.setting.value === null, point.setting.provenance, point.setting.photoSlotIds],
-    [lang === "fr" ? "Heures" : "Hours", point.hoursText.value ?? unknownLabel(lang), point.hoursText.value === null, point.hoursText.provenance, point.hoursText.photoSlotIds],
-    [lang === "fr" ? "Coût" : "Cost", point.cost.value ?? unknownLabel(lang), point.cost.value === null, point.cost.provenance, point.cost.photoSlotIds],
-    [lang === "fr" ? "Chemin sans marche" : "Step-free route", formatYesNo(point.stepFreeRoute.value, lang), point.stepFreeRoute.value === null, point.stepFreeRoute.provenance, point.stepFreeRoute.photoSlotIds],
+    [copy("charging.location", lang), point.locationNote.value ?? unknownLabel(lang), point.locationNote.value === null, point.locationNote.provenance, point.locationNote.photoSlotIds],
+    [copy("charging.outlet", lang), point.outletType.value ?? unknownLabel(lang), point.outletType.value === null, point.outletType.provenance, point.outletType.photoSlotIds],
+    [copy("charging.count", lang), point.outletCount.value === null ? unknownLabel(lang) : String(point.outletCount.value), point.outletCount.value === null, point.outletCount.provenance, point.outletCount.photoSlotIds],
+    [copy("charging.access", lang), point.accessMethod.value ? labelOf(`access.${point.accessMethod.value}`, lang) : unknownLabel(lang), point.accessMethod.value === null, point.accessMethod.provenance, point.accessMethod.photoSlotIds],
+    [copy("charging.permission", lang), point.permissionContact.value ?? unknownLabel(lang), point.permissionContact.value === null, point.permissionContact.provenance, point.permissionContact.photoSlotIds],
+    [copy("charging.seating", lang), formatYesNo(point.seating.value, lang), point.seating.value === null, point.seating.provenance, point.seating.photoSlotIds],
+    [copy("charging.setting", lang), point.setting.value ? labelOf(`setting.${point.setting.value}`, lang) : unknownLabel(lang), point.setting.value === null, point.setting.provenance, point.setting.photoSlotIds],
+    [copy("charging.hours", lang), point.hoursText.value ?? unknownLabel(lang), point.hoursText.value === null, point.hoursText.provenance, point.hoursText.photoSlotIds],
+    [copy("charging.cost", lang), point.cost.value ?? unknownLabel(lang), point.cost.value === null, point.cost.provenance, point.cost.photoSlotIds],
+    [copy("bay.step-free", lang), formatYesNo(point.stepFreeRoute.value, lang), point.stepFreeRoute.value === null, point.stepFreeRoute.provenance, point.stepFreeRoute.photoSlotIds],
   ];
   const authored = [
     point.locationNote.value,
@@ -918,27 +783,23 @@ function projectCharging(place: PlaceRecord, point: ChargingPoint, lang: Lang, t
 }
 
 function projectRepairer(repairer: Repairer, lang: Lang): DirectoryCardView {
+  const unknown = copy("value.unknown", lang);
   const services =
     repairer.servicesPublished.length === 0
-      ? lang === "fr"
-        ? "Aucune liste de services publiée dans cette fiche."
-        : "No published service list is in this record."
+      ? copy("directory.no-services", lang)
       : repairer.servicesPublished.map((service) => labelOf(`repair.${service}`, lang)).join(", ");
+  const radius = repairer.mobileRadiusKm === null ? unknown : `${repairer.mobileRadiusKm} km`;
   return {
     id: repairer.id,
     heading: lang === "fr" && repairer.nameFr ? repairer.nameFr : repairer.name,
     lines: [
       lang === "fr" ? repairer.honestyNoteFr : repairer.honestyNote,
-      lang === "fr" ? `Services publiés : ${services}` : `Published services: ${services}`,
-      lang === "fr"
-        ? `Couverture : ${repairer.coverageNote ?? "Inconnu"}`
-        : `Coverage: ${repairer.coverageNote ?? "Unknown"}`,
-      lang === "fr"
-        ? `Rayon mobile : ${repairer.mobileRadiusKm === null ? "Inconnu" : `${repairer.mobileRadiusKm} km`}`
-        : `Mobile radius: ${repairer.mobileRadiusKm === null ? "Unknown" : `${repairer.mobileRadiusKm} km`}`,
-      lang === "fr" ? `Heures : ${repairer.hoursText ?? "Inconnu"}` : `Hours: ${repairer.hoursText ?? "Unknown"}`,
-      lang === "fr" ? `Téléphone : ${repairer.phone ?? "Inconnu"}` : `Phone: ${repairer.phone ?? "Unknown"}`,
-      lang === "fr" ? `Site : ${repairer.website ?? "Inconnu"}` : `Website: ${repairer.website ?? "Unknown"}`,
+      phrase("directory.services", lang, { services }),
+      phrase("directory.coverage", lang, { note: repairer.coverageNote ?? unknown }),
+      phrase("directory.radius", lang, { radius }),
+      phrase("directory.hours", lang, { hours: repairer.hoursText ?? unknown }),
+      phrase("directory.phone", lang, { phone: repairer.phone ?? unknown }),
+      phrase("directory.website", lang, { website: repairer.website ?? unknown }),
       `${authoredFr(repairer.provenance.sourceName, lang)}. ${repairer.provenance.sourceDate}. ${authoredFr(repairer.provenance.licence, lang)}`,
     ],
     englishFragments: keptEnglish([repairer.coverageNote, repairer.hoursText, repairer.nameFr ? null : repairer.name], lang),
@@ -946,26 +807,22 @@ function projectRepairer(repairer: Repairer, lang: Lang): DirectoryCardView {
 }
 
 function projectSupply(store: SupplyStore, lang: Lang): DirectoryCardView {
+  const unknown = copy("value.unknown", lang);
   const categories =
     store.categoriesPublished.length === 0
-      ? lang === "fr"
-        ? "Aucune catégorie publiée dans cette fiche."
-        : "No published category is in this record."
+      ? copy("directory.no-categories", lang)
       : store.categoriesPublished.map((category) => labelOf(`supply.${category}`, lang)).join(", ");
-  const delivery =
-    store.delivery === null ? (lang === "fr" ? "Inconnu" : "Unknown") : store.delivery === "yes" ? (lang === "fr" ? "Oui" : "Yes") : lang === "fr" ? "Non" : "No";
+  const delivery = store.delivery === null ? unknown : formatYesNo(store.delivery, lang);
   return {
     id: store.id,
     heading: lang === "fr" && store.nameFr ? store.nameFr : store.name,
     lines: [
       lang === "fr" ? store.honestyNoteFr : store.honestyNote,
-      lang === "fr" ? `Catégories publiées : ${categories}` : `Published categories: ${categories}`,
-      lang === "fr"
-        ? "Une catégorie n'est pas un stock d'un produit précis."
-        : "A category is not stock of a specific product.",
-      lang === "fr" ? `Heures : ${store.hoursText ?? "Inconnu"}` : `Hours: ${store.hoursText ?? "Unknown"}`,
-      lang === "fr" ? `Livraison : ${delivery}` : `Delivery: ${delivery}`,
-      lang === "fr" ? `Téléphone : ${store.phone ?? "Inconnu"}` : `Phone: ${store.phone ?? "Unknown"}`,
+      phrase("directory.categories", lang, { categories }),
+      copy("directory.not-stock", lang),
+      phrase("directory.hours", lang, { hours: store.hoursText ?? unknown }),
+      phrase("directory.delivery", lang, { delivery }),
+      phrase("directory.phone", lang, { phone: store.phone ?? unknown }),
       `${authoredFr(store.provenance.sourceName, lang)}. ${store.provenance.sourceDate}. ${authoredFr(store.provenance.licence, lang)}`,
     ],
     englishFragments: keptEnglish([store.hoursText, store.nameFr ? null : store.name], lang),
@@ -975,7 +832,7 @@ function projectSupply(store: SupplyStore, lang: Lang): DirectoryCardView {
 /** A short page-language tag so two washroom options stay distinct when the group label is skipped. */
 function washroomOptionPrefix(name: string, index: number, lang: Lang, used: Set<string>): string {
   const letter = name.match(/\b([A-Z])\b/)?.[1];
-  const noun = lang === "fr" ? "Toilettes" : "Washroom";
+  const noun = copy("section.washroom", lang);
   let prefix = letter ? `${noun} ${letter}` : `${noun} ${index + 1}`;
   if (used.has(prefix)) prefix = `${noun} ${index + 1}`;
   used.add(prefix);
@@ -987,21 +844,21 @@ export function correctableFields(
   lang: Lang,
 ): Array<{ id: string; label: string; group: string; groupEnglish?: boolean }> {
   const fields: Array<{ id: string; label: string; group: string; groupEnglish?: boolean }> = [];
-  const add = (id: string, group: string) => fields.push({ id, label: label(id, lang), group });
-  for (const id of IDENTITY_IDS) add(id, lang === "fr" ? "Identité" : "Identity");
-  for (const id of DAY3_EXTRA_IDS) add(id, lang === "fr" ? "Entrée" : "Entrance");
-  for (const id of ENTRANCE_IDS) add(id, lang === "fr" ? "Entrée" : "Entrance");
-  for (const id of INTERIOR_IDS) add(id, lang === "fr" ? "Intérieur" : "Inside");
-  for (const id of PARKING_IDS) add(id, lang === "fr" ? "Stationnement" : "Parking");
-  for (const id of TRANSPORT_IDS) add(id, lang === "fr" ? "Transport" : "Transport");
+  const add = (id: string, group: string) => fields.push({ id, label: labelOf(id, lang), group });
+  for (const id of IDENTITY_IDS) add(id, copy("section.identity", lang));
+  for (const id of DAY3_EXTRA_IDS) add(id, copy("section.entrance", lang));
+  for (const id of ENTRANCE_IDS) add(id, copy("section.entrance", lang));
+  for (const id of INTERIOR_IDS) add(id, copy("group.inside", lang));
+  for (const id of PARKING_IDS) add(id, copy("section.parking", lang));
+  for (const id of TRANSPORT_IDS) add(id, copy("section.transport", lang));
   const usedPrefixes = new Set<string>();
   for (const [index, washroom] of place.washrooms.entries()) {
     const prefix = washroomOptionPrefix(washroom.name, index, lang, usedPrefixes);
-    const separator = lang === "fr" ? "\u00A0: " : ": ";
+    const separator = copy("sep.colon", lang);
     for (const id of WASHROOM_IDS) {
       fields.push({
         id: `washroom:${washroom.id}:${id}`,
-        label: `${prefix}${separator}${label(id, lang)}`,
+        label: `${prefix}${separator}${labelOf(id, lang)}`,
         group: washroom.name,
         groupEnglish: true,
       });
@@ -1009,7 +866,7 @@ export function correctableFields(
   }
   if (place.trail) {
     for (const id of ["trail.surface", "trail.grade", "trail.width-mm", "trail.obstacles", "trail.rest"]) {
-      add(id, lang === "fr" ? "Sentier" : "Trail");
+      add(id, copy("section.trail", lang));
     }
   }
   return fields;

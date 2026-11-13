@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { fixturePack, FIXTURE_PROVENANCE, type Repairer } from "@access-tools/place";
+import { fixturePack, FIXTURE_PROVENANCE, frenchColonViolations, type Repairer } from "@access-tools/place";
+import { FINDER_COPY } from "./i18n.js";
 import { findCharging } from "./charging.js";
 import { findParking } from "./parking.js";
 import { findRepairAndSupply } from "./repair.js";
@@ -161,5 +162,9 @@ describe("repair and supply finder", () => {
     expect(result.hits.map((hit) => hit.id)).toEqual(["fix-pharmacy"]);
     expect(result.stockNote).toContain("not a statement that a specific product is in stock");
     expect(result.hits[0]?.servicesText).not.toMatch(/brand|model/i);
+  });
+
+  it("puts a no-break space before every French colon", () => {
+    expect(frenchColonViolations(FINDER_COPY)).toEqual([]);
   });
 });

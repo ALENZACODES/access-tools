@@ -1,3 +1,4 @@
+import { MODEL_COPY } from "./modelCopy.js";
 import type { Lang } from "./types.js";
 
 /**
@@ -146,6 +147,7 @@ export const COPY = {
     en: "Skeleton seed. Not a data licence. No venue is identified.",
     fr: "Graine squelette. Pas une licence de données. Aucun lieu n'est identifié.",
   },
+  ...MODEL_COPY,
 } as const;
 
 const AUTHORED_KEYS: Record<string, CopyKey> = {
@@ -167,6 +169,29 @@ export type CopyKey = keyof typeof COPY;
 export function copy(key: CopyKey, lang: Lang): string {
   const row = COPY[key];
   return lang === "fr" ? row.fr : row.en;
+}
+
+/** Catalogue string with `{name}` placeholders filled. */
+export function phrase(key: CopyKey, lang: Lang, values: Record<string, string | number> = {}): string {
+  return fill(copy(key, lang), values);
+}
+
+/**
+ * A French colon takes a no-break space. A time or ratio such as 09:00 is left alone.
+ * Returns the catalogue keys that still use a plain space.
+ */
+export function frenchColonViolations(catalog: Record<string, { fr: string }>): string[] {
+  const bad: string[] = [];
+  for (const [key, row] of Object.entries(catalog)) {
+    const fr = row.fr;
+    for (let index = 0; index < fr.length; index += 1) {
+      if (fr[index] !== ":") continue;
+      const previous = fr[index - 1];
+      if (previous === undefined || /\d/.test(previous)) continue;
+      if (previous !== "\u00A0") bad.push(key);
+    }
+  }
+  return bad;
 }
 
 /** Fills `{name}` placeholders in a catalogue string. */

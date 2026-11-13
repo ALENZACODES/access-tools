@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { fixturePack } from "@access-tools/place";
+import { fixturePack, frenchColonViolations } from "@access-tools/place";
+import { SEARCH_COPY } from "./i18n.js";
 import { emptySearchQuery, searchPack } from "./search.js";
 import { tokenize } from "./tokenize.js";
 
@@ -76,5 +77,9 @@ describe("search", () => {
     expect(result.hits).toHaveLength(10);
     expect(result.page).toBe(2);
     expect(result.pageCount).toBe(3);
+  });
+
+  it("puts a no-break space before every French colon", () => {
+    expect(frenchColonViolations(SEARCH_COPY)).toEqual([]);
   });
 });

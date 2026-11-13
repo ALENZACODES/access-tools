@@ -18,6 +18,7 @@ import {
   type Washroom,
 } from "@access-tools/place";
 import { coverageSentence } from "./coverage.js";
+import { finderCopy } from "./i18n.js";
 
 export interface WashroomQuery {
   text: string;
@@ -61,34 +62,22 @@ export interface WashroomResult {
 
 function reasons(washroom: Washroom, query: WashroomQuery): string[] {
   const list: string[] = [];
-  const say = (en: string, fr: string) => list.push(query.lang === "fr" ? fr : en);
   const side = washroom.transfer.value?.side ?? null;
   if (query.transferSide !== "any" && !transferSideMatches(side, query.transferSide)) {
-    say(
-      "Transfer side does not match. Unknown is not a match.",
-      "Le côté de transfert ne correspond pas. Inconnu n'est pas une correspondance.",
-    );
+    list.push(finderCopy("finder.reason.transfer", query.lang));
   }
   if (query.changeTable && washroom.changeTable.value?.present !== "yes") {
-    say("No adult change table is recorded as present.", "Aucune table de change adulte n'est enregistrée comme présente.");
+    list.push(finderCopy("finder.reason.no-table", query.lang));
   }
   if (query.hoist && washroom.hoist.value?.present !== "yes") {
-    say("No hoist is recorded as present.", "Aucun lève-personne n'est enregistré comme présent.");
+    list.push(finderCopy("finder.reason.no-hoist", query.lang));
   }
   const inRegister = washroom.changeTable.value?.present === "yes" || washroom.hoist.value?.present === "yes";
-  if (query.registerOnly && !inRegister) {
-    say(
-      "No adult change table or hoist is recorded as present.",
-      "Aucune table de change adulte ni lève-personne n'est enregistré comme présent.",
-    );
-  }
+  if (query.registerOnly && !inRegister) list.push(finderCopy("finder.reason.no-register", query.lang));
   if (query.openAt) {
     const open = isOpenAt(washroom.hours, query.openAt);
-    if (open === "unknown") {
-      say("Hours are unknown, so this record is not shown as open.", "Les heures sont inconnues, donc cette fiche n'est pas affichée comme ouverte.");
-    } else if (open === "closed") {
-      say("Closed at the time you entered.", "Fermé à l'heure que vous avez saisie.");
-    }
+    if (open === "unknown") list.push(finderCopy("finder.reason.hours-unknown", query.lang));
+    else if (open === "closed") list.push(finderCopy("finder.closed", query.lang));
   }
   return list;
 }

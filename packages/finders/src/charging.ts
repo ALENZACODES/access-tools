@@ -14,6 +14,7 @@ import {
   type Lang,
   type PlacePack,
 } from "@access-tools/place";
+import { finderCopy } from "./i18n.js";
 
 export interface ChargingQuery {
   text: string;
@@ -64,15 +65,7 @@ export function findCharging(pack: PlacePack, query: ChargingQuery): ChargingRes
       if (query.openAt) {
         const open = isOpenAt(point.hours, query.openAt);
         if (open !== "open") {
-          reasons.push(
-            open === "unknown"
-              ? query.lang === "fr"
-                ? "Les heures sont inconnues, donc ce point n'est pas affiché comme ouvert."
-                : "Hours are unknown, so this point is not shown as open."
-              : query.lang === "fr"
-                ? "Fermé à l'heure que vous avez saisie."
-                : "Closed at the time you entered.",
-          );
+          reasons.push(finderCopy(open === "unknown" ? "finder.hours-unknown-open" : "finder.closed", query.lang));
         }
       }
       hits.push({
@@ -110,9 +103,6 @@ export function findCharging(pack: PlacePack, query: ChargingQuery): ChargingRes
     hits: shown,
     hidden,
     empty: shown.length === 0,
-    rangeReminder:
-      query.lang === "fr"
-        ? "L'application n'utilise pas d'autonomie générique de fauteuil. Une distance à vol d'oiseau n'est pas un trajet."
-        : "The application does not use a generic chair range. A straight-line distance is not a journey.",
+    rangeReminder: finderCopy("finder.range-reminder", query.lang),
   };
 }

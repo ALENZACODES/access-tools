@@ -1,4 +1,5 @@
 import {
+  copy,
   distanceMetres,
   isGeoPoint,
   isOpenAt,
@@ -14,6 +15,7 @@ import {
   type RepairService,
   type SupplyCategory,
 } from "@access-tools/place";
+import { finderCopy, finderFill } from "./i18n.js";
 
 export interface RepairQuery {
   text: string;
@@ -66,25 +68,13 @@ export function findRepairAndSupply(pack: PlacePack, query: RepairQuery): Repair
       const geo = isGeoPoint(repairer.latitude, repairer.longitude);
       const reasons: string[] = [];
       if (query.mobileOnly && !repairer.servicesPublished.includes("mobile")) {
-        reasons.push(
-          query.lang === "fr"
-            ? "La réparation mobile n'est pas dans la liste publiée."
-            : "Mobile repair is not in the published list.",
-        );
+        reasons.push(finderCopy("finder.reason.not-mobile", query.lang));
       }
       if (query.outOfHours && !repairer.servicesPublished.includes("out-of-hours")) {
-        reasons.push(
-          query.lang === "fr"
-            ? "Le service hors heures n'est pas dans la liste publiée."
-            : "Out-of-hours service is not in the published list.",
-        );
+        reasons.push(finderCopy("finder.reason.not-after-hours", query.lang));
       }
       if (query.openAt && isOpenAt(repairer.hours, query.openAt) !== "open") {
-        reasons.push(
-          query.lang === "fr"
-            ? "Pas affiché comme ouvert à l'heure saisie."
-            : "Not shown as open at the time you entered.",
-        );
+        reasons.push(finderCopy("finder.reason.not-open", query.lang));
       }
       hits.push({
         id: repairer.id,
@@ -94,9 +84,7 @@ export function findRepairAndSupply(pack: PlacePack, query: RepairQuery): Repair
         distanceMetres: query.origin && geo ? distanceMetres(query.origin, geo) : null,
         servicesText:
           repairer.servicesPublished.length === 0
-            ? query.lang === "fr"
-              ? "Aucune liste de services publiée dans cette fiche."
-              : "No published service list is in this record."
+            ? copy("directory.no-services", query.lang)
             : publishedServices(repairer.servicesPublished, query.lang),
         hoursText: repairer.hoursText ?? unknownLabel(query.lang),
         phone: repairer.phone,
@@ -105,12 +93,8 @@ export function findRepairAndSupply(pack: PlacePack, query: RepairQuery): Repair
         tierText: tierPhrase(repairer.provenance, repairer.datasetStatus, query.lang, repairer.publicationContext),
         extraText:
           repairer.mobileRadiusKm === null
-            ? query.lang === "fr"
-              ? `Couverture : ${repairer.coverageNote ?? "Inconnu"}`
-              : `Coverage: ${repairer.coverageNote ?? "Unknown"}`
-            : query.lang === "fr"
-              ? `Rayon mobile enregistré\u00A0: ${repairer.mobileRadiusKm} km. ${repairer.coverageNote ?? ""}`
-              : `Recorded mobile radius: ${repairer.mobileRadiusKm} km. ${repairer.coverageNote ?? ""}`,
+            ? finderFill("finder.coverage", query.lang, { note: repairer.coverageNote ?? copy("value.unknown", query.lang) })
+            : finderFill("finder.radius", query.lang, { km: repairer.mobileRadiusKm, note: repairer.coverageNote ?? "" }),
         englishFragments: query.lang === "fr" ? [repairer.coverageNote, repairer.hoursText].filter((item): item is string => Boolean(item)) : [],
         hiddenReasons: reasons,
       });
@@ -123,25 +107,11 @@ export function findRepairAndSupply(pack: PlacePack, query: RepairQuery): Repair
       const geo = isGeoPoint(store.latitude, store.longitude);
       const reasons: string[] = [];
       if (query.supplyCategory !== "any" && !store.categoriesPublished.includes(query.supplyCategory)) {
-        reasons.push(
-          query.lang === "fr"
-            ? "Cette catégorie n'est pas dans la liste publiée."
-            : "That category is not in the published list.",
-        );
+        reasons.push(finderCopy("finder.reason.category", query.lang));
       }
-      if (query.mobileOnly) {
-        reasons.push(
-          query.lang === "fr"
-            ? "Ce n'est pas une fiche de réparation mobile."
-            : "This is not a mobile-repair record.",
-        );
-      }
+      if (query.mobileOnly) reasons.push(finderCopy("finder.reason.not-mobile-repair", query.lang));
       if (query.openAt && isOpenAt(store.hours, query.openAt) !== "open") {
-        reasons.push(
-          query.lang === "fr"
-            ? "Pas affiché comme ouvert à l'heure saisie."
-            : "Not shown as open at the time you entered.",
-        );
+        reasons.push(finderCopy("finder.reason.not-open", query.lang));
       }
       hits.push({
         id: store.id,
@@ -151,19 +121,17 @@ export function findRepairAndSupply(pack: PlacePack, query: RepairQuery): Repair
         distanceMetres: query.origin && geo ? distanceMetres(query.origin, geo) : null,
         servicesText:
           store.categoriesPublished.length === 0
-            ? query.lang === "fr"
-              ? "Aucune catégorie publiée dans cette fiche."
-              : "No published category is in this record."
+            ? copy("directory.no-categories", query.lang)
             : store.categoriesPublished.map((category) => labelOf(`supply.${category}`, query.lang)).join(", "),
         hoursText: store.hoursText ?? unknownLabel(query.lang),
         phone: store.phone,
         website: store.website,
         verificationDate: store.provenance.sourceDate,
         tierText: tierPhrase(store.provenance, store.datasetStatus, query.lang, store.publicationContext),
-        extraText:
-          query.lang === "fr"
-            ? `Livraison : ${store.delivery ?? "Inconnu"}. ${SUPPLY_STOCK_NOTE.fr}`
-            : `Delivery: ${store.delivery ?? "Unknown"}. ${SUPPLY_STOCK_NOTE.en}`,
+        extraText: finderFill("finder.delivery", query.lang, {
+          delivery: store.delivery === null ? copy("value.unknown", query.lang) : store.delivery === "yes" ? copy("value.yes", query.lang) : copy("value.no", query.lang),
+          stock: SUPPLY_STOCK_NOTE[query.lang],
+        }),
         englishFragments: query.lang === "fr" && store.hoursText ? [store.hoursText] : [],
         hiddenReasons: reasons,
       });
@@ -176,8 +144,8 @@ export function findRepairAndSupply(pack: PlacePack, query: RepairQuery): Repair
   return {
     hits: shown,
     hidden,
-    disclaimer: query.lang === "fr" ? REPAIR_DISCLAIMER.fr : REPAIR_DISCLAIMER.en,
-    stockNote: query.lang === "fr" ? SUPPLY_STOCK_NOTE.fr : SUPPLY_STOCK_NOTE.en,
+    disclaimer: REPAIR_DISCLAIMER[query.lang],
+    stockNote: SUPPLY_STOCK_NOTE[query.lang],
     empty: shown.length === 0,
   };
 }
