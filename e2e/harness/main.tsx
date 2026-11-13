@@ -1,21 +1,15 @@
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { DIRECTORY, DirectoryView, emptyNote, toggleProgram, type Language as DirectoryLanguage, type NavigatorNote } from "../../packages/navigator/src/index.js";
-import { TimingPanel, blankTimingDocument, parseTimingDocument, type TimingDocument } from "../../packages/timing/src/index.js";
+import { TimingPanel } from "../../packages/timing/src/index.js";
 import { GamesApp, defaultSettings, type GamesRound, type GamesSettings } from "../../packages/games/src/index.js";
 
 type Tab = "directory" | "timing" | "games";
-
-const exampleLegs = [
-  { id: "example-a", label: "Example leg, not a real route", durationMin: 40 },
-  { id: "example-b", label: "Example leg, not a real route", durationMin: 70 },
-];
 
 function Harness() {
   const [tab, setTab] = useState<Tab>("directory");
   const [language, setLanguage] = useState<DirectoryLanguage>("en");
   const [note, setNote] = useState<NavigatorNote>(emptyNote());
-  const [timing, setTiming] = useState<TimingDocument>(blankTimingDocument());
   const [settings, setSettings] = useState<GamesSettings>(defaultSettings("harness-player-1"));
   const [rounds, setRounds] = useState<GamesRound[]>([]);
   const tabStyle = { boxSizing: "border-box" as const, minHeight: "48px", marginRight: "0.5rem", font: "inherit" };
@@ -51,14 +45,7 @@ function Harness() {
         />
       ) : null}
       {tab === "timing" ? (
-        <TimingPanel
-          language={language}
-          document={timing}
-          legs={exampleLegs}
-          waypoints={[]}
-          onLanguage={setLanguage}
-          onChange={(document) => setTiming(parseTimingDocument(document))}
-        />
+        <TimingPanel language={language} onLanguage={setLanguage} />
       ) : null}
       {tab === "games" ? (
         <GamesApp

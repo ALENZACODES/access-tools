@@ -141,16 +141,28 @@ export function DirectoryView(props: DirectoryViewProps) {
               <p style={{ margin: 0 }}>
                 <a href={record.phone} style={linkStyle}>
                   {copy.call} {record.name[language]}
-                  {record.phone === "tel:988" || !record.phoneNote ? "" : `, ${record.phoneNote[language]}`}
+                  {record.id === "suicide-crisis-helpline" || record.id === "connexontario" || !record.phoneNote
+                    ? ""
+                    : `, ${record.phoneNote[language]}`}
                 </a>
-                {record.phone === "tel:988" ? (
+                {record.id === "suicide-crisis-helpline" ? (
                   <>
                     {" "}
                     <a href="sms:988" style={linkStyle}>
                       {copy.text988}
                     </a>
-                    {record.phoneNote ? <span> {record.phoneNote[language]}</span> : null}
                   </>
+                ) : null}
+                {record.id === "connexontario" ? (
+                  <>
+                    {" "}
+                    <a href="sms:247247?body=CONNEX" style={linkStyle}>
+                      {copy.textConnex}
+                    </a>
+                  </>
+                ) : null}
+                {record.id === "suicide-crisis-helpline" || record.id === "connexontario" ? (
+                  record.phoneNote ? <span> {record.phoneNote[language]}</span> : null
                 ) : null}
               </p>
             ) : null}
@@ -200,7 +212,8 @@ const en = {
   open: "Official page:",
   frenchPage: "Official French page",
   call: "Call",
-  text988: "Text 9-8-8",
+  text988: "Text 9-8-8 Suicide Crisis Helpline",
+  textConnex: "Text CONNEX to 247247",
   englishOnly: "English only",
   save: "Save this title on this device",
   clear: "Delete the on-device list",
@@ -217,7 +230,8 @@ const fr: typeof en = {
   open: "Page officielle :",
   frenchPage: "Page officielle en français",
   call: "Appeler",
-  text988: "Texter le 9-8-8",
+  text988: "Texter le 9-8-8 Ligne d'aide en cas de crise de suicide",
+  textConnex: "Texter CONNEX au 247247",
   englishOnly: "En anglais seulement",
   save: "Garder ce titre sur cet appareil",
   clear: "Effacer la liste sur l'appareil",

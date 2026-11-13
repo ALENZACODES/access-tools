@@ -52,7 +52,10 @@ describe("directory records", () => {
     expect(odsp?.figure?.statement.en).toMatch(/sponsored-immigrant/);
     expect(odsp?.figure?.statement.en).toMatch(/not a general shelter amount/);
     expect(odsp?.figure?.qualifier.en).toMatch(/not your payment/i);
-    expect(DIRECTORY.find((record) => record.id === "home-vehicle-modification")?.summary.en).toMatch(/\$38,000/);
+    const hvmp = DIRECTORY.find((record) => record.id === "home-vehicle-modification");
+    expect(hvmp?.summary.en).toMatch(/\$38,000/);
+    expect(hvmp?.summary.en).not.toMatch(/marchofdimes\.ca/i);
+    expect(JSON.stringify(DIRECTORY)).not.toMatch(/marchofdimes\.ca/i);
     expect(DIRECTORY.find((record) => record.id === "providence-care")).toBeUndefined();
     expect(DIRECTORY.find((record) => record.id === "march-of-dimes-hvmp")).toBeUndefined();
     expect(DIRECTORY.find((record) => record.id === "call-911")).toBeUndefined();
@@ -103,6 +106,9 @@ describe("directory screen", () => {
   it("keeps the not-advice notice visible and finds a program from the keyboard", async () => {
     const { container } = render(<Harness />);
     expect(screen.getByRole("note").textContent).toBe(DIRECTORY_FRAMING.en);
+    expect(screen.getByRole("link", { name: "Text 9-8-8 Suicide Crisis Helpline" })).toHaveAttribute("href", "sms:988");
+    expect(screen.getByRole("link", { name: "Text CONNEX to 247247" })).toHaveAttribute("href", "sms:247247?body=CONNEX");
+    expect(screen.queryByRole("link", { name: /call or text/i })).not.toBeInTheDocument();
     const user = userEvent.setup();
     await user.type(screen.getByLabelText("Search programs and services"), "Connex");
     const link = screen.getByRole("link", { name: /Official page: ConnexOntario/i });
@@ -110,6 +116,7 @@ describe("directory screen", () => {
     expect(link).toHaveFocus();
     await user.click(screen.getByRole("button", { name: "Français" }));
     expect(screen.getByRole("note").textContent).toBe(DIRECTORY_FRAMING.fr);
+    expect(screen.getByRole("link", { name: "Texter CONNEX au 247247" })).toHaveAttribute("href", "sms:247247?body=CONNEX");
     const results = await axe.run(container, {
       rules: { "color-contrast": { enabled: false }, region: { enabled: false } },
     });
