@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   a11yCss,
@@ -19,7 +19,7 @@ import { searchCopy } from "../i18n.js";
 import { emptySearchQuery, type SearchQuery } from "../search.js";
 import { SearchPanel } from "../react/SearchPanel.js";
 
-function Demo() {
+export function SearchDemo() {
   const [lang, setLang] = useState<Lang>("en");
   const [query, setQuery] = useState<SearchQuery>(emptySearchQuery("en"));
   const [placeId, setPlaceId] = useState<string | null>(null);
@@ -31,6 +31,9 @@ function Demo() {
     }
   });
   const place = fixturePack.places.find((item) => item.id === placeId) ?? null;
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
   const save = (next: ReportLog) => {
     setLog(next);
     try {
@@ -48,14 +51,14 @@ function Demo() {
         <p>{searchCopy("demo.intro", lang)}</p>
         <button
           type="button"
+          lang={lang === "en" ? "fr" : "en"}
           onClick={() => {
             const next = lang === "en" ? "fr" : "en";
             setLang(next);
             setQuery((current) => ({ ...current, lang: next }));
-            document.documentElement.lang = next;
           }}
         >
-          {lang === "en" ? searchCopy("lang.show-french", lang) : <span lang="en">{searchCopy("lang.show-english", "en")}</span>}
+          {lang === "en" ? searchCopy("lang.show-french", "en") : searchCopy("lang.show-english", "en")}
         </button>
       </header>
       <main id="search-main">
@@ -92,4 +95,4 @@ function Demo() {
 }
 
 const root = document.getElementById("root");
-if (root) createRoot(root).render(<Demo />);
+if (root?.dataset.demo === "search") createRoot(root).render(<SearchDemo />);

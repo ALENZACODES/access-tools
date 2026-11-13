@@ -31,7 +31,7 @@ export function FixturePlaceNav({
             >
               {lang === "fr" && item.nameFr ? item.nameFr : <RecordText lang={lang} text={item.identity.name} />}
               {" — "}
-              <span lang="en">PROTOTYPE-UNVERIFIED</span>
+              <span lang="en">{copy("status.prototype-unverified", "en")}</span>
             </a>
           </li>
         ))}

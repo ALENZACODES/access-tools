@@ -103,6 +103,8 @@ describe("French place page", () => {
       "Champs de source et fraîcheur",
     ]));
     expect(captions.some((label) => label.startsWith("Champs : "))).toBe(true);
+    const rawCaptions = [...document.querySelectorAll("caption")].map((node) => node.textContent ?? "");
+    expect(rawCaptions.some((label) => label.includes("Champs\u202F:"))).toBe(true);
     expect(captions.some((label) => label.includes("Identité champs") || label.endsWith(" champs"))).toBe(false);
     expect(document.querySelectorAll(".table-scroll[role='region']")).toHaveLength(0);
     const regions = screen.getAllByRole("region");
@@ -147,7 +149,12 @@ describe("French place page", () => {
         expect(caption?.tagName, lang).toBe("CAPTION");
         const name = caption?.textContent?.replace(/\s+/g, " ").trim() ?? "";
         expect(name.length, lang).toBeGreaterThan(0);
-        const namePattern = new RegExp(`^${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`);
+        const namePattern = new RegExp(
+          `^${name
+            .split(" ")
+            .map((part) => part.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+            .join("\\s+")}$`,
+        );
         expect(screen.getAllByRole("group", { name: namePattern }), lang).toContain(scroll);
       }
       const expected = lang === "fr" ? /^Champs d'identité$/ : /^Identity fields$/;

@@ -6,10 +6,13 @@ import { EnglishText } from "./EnglishText.js";
 
 /** French table name. "Identité" becomes "Champs d'identité", not "Identité champs". */
 export function frenchFieldCaption(heading: string): string {
-  if (heading === "S'y rendre") return "Champs pour s'y rendre";
-  if (heading === "À l'intérieur") return "Champs de l'intérieur";
+  if (heading === copy("section.getting-there", "fr")) return copy("table.caption.getting-there", "fr");
+  if (heading === copy("section.inside", "fr")) return copy("table.caption.inside", "fr");
   const lower = heading.slice(0, 1).toLocaleLowerCase("fr-CA") + heading.slice(1);
-  return /^[aeiouyàâäéèêëîïôöùûüœh]/i.test(lower) ? `Champs d'${lower}` : `Champs de ${lower}`;
+  const prefix = /^[aeiouyàâäéèêëîïôöùûüœh]/i.test(lower)
+    ? copy("table.caption.elided", "fr")
+    : copy("table.caption.of", "fr");
+  return `${prefix}${lower}`;
 }
 
 const COLUMN_KEYS = [

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { appendChange, appendCorrection, correctionsFor, changesFor, emptyLog, readLog, writeLog } from "../corrections.js";
 import { fixturePack, FIXTURE_DAY } from "../fixtures.js";
@@ -8,7 +8,7 @@ import { PlacePage } from "../react/PlacePage.js";
 import { a11yCss } from "../react/a11yCss.js";
 import type { Lang, ReportLog } from "../types.js";
 
-function Demo() {
+export function PlaceDemo() {
   const [lang, setLang] = useState<Lang>("en");
   const [placeId, setPlaceId] = useState(fixturePack.places[0]?.id ?? "");
   const [log, setLog] = useState<ReportLog>(() => {
@@ -19,6 +19,9 @@ function Demo() {
     }
   });
   const place = useMemo(() => fixturePack.places.find((item) => item.id === placeId) ?? fixturePack.places[0], [placeId]);
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
   if (!place) return null;
   const save = (next: ReportLog) => {
     setLog(next);
@@ -36,13 +39,13 @@ function Demo() {
         <p>{copy("demo.place-title", lang)}</p>
         <button
           type="button"
+          lang={lang === "en" ? "fr" : "en"}
           onClick={() => {
             const next = lang === "en" ? "fr" : "en";
             setLang(next);
-            document.documentElement.lang = next;
           }}
         >
-          {lang === "en" ? copy("lang.show-french", lang) : <span lang="en">{copy("lang.show-english", "en")}</span>}
+          {lang === "en" ? copy("lang.show-french", "en") : copy("lang.show-english", "en")}
         </button>
       </header>
       <FixturePlaceNav places={fixturePack.places} lang={lang} currentId={place.id} onSelect={setPlaceId} />
@@ -69,4 +72,4 @@ function Demo() {
 }
 
 const root = document.getElementById("root");
-if (root) createRoot(root).render(<Demo />);
+if (root?.dataset.demo === "place") createRoot(root).render(<PlaceDemo />);

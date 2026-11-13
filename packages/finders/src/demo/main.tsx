@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { a11yCss, fixturePack, type Lang } from "@access-tools/place";
 import { finderCopy } from "../i18n.js";
 import { ChargingFinder, ParkingFinder, RepairSupplyFinder, WashroomFinder } from "../react/Finders.js";
 
-function Demo() {
+export function FinderDemo() {
   const [lang, setLang] = useState<Lang>("en");
   const [registerOnly, setRegisterOnly] = useState(false);
   const [vanLift, setVanLift] = useState(false);
@@ -12,6 +12,9 @@ function Demo() {
   const [range, setRange] = useState("");
   const parsedRange = range.trim() === "" ? null : Number(range);
   const userTestedRangeMetres = parsedRange !== null && Number.isFinite(parsedRange) ? parsedRange : null;
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
   return (
     <div className="app-ui" lang={lang}>
       <style>{a11yCss}</style>
@@ -21,13 +24,13 @@ function Demo() {
         <p>{finderCopy("demo.intro", lang)}</p>
         <button
           type="button"
+          lang={lang === "en" ? "fr" : "en"}
           onClick={() => {
             const next = lang === "en" ? "fr" : "en";
             setLang(next);
-            document.documentElement.lang = next;
           }}
         >
-          {lang === "en" ? finderCopy("lang.show-french", lang) : <span lang="en">{finderCopy("lang.show-english", "en")}</span>}
+          {lang === "en" ? finderCopy("lang.show-french", "en") : finderCopy("lang.show-english", "en")}
         </button>
       </header>
       <main id="finder-main" className="stack">
@@ -104,4 +107,4 @@ function Demo() {
 }
 
 const root = document.getElementById("root");
-if (root) createRoot(root).render(<Demo />);
+if (root?.dataset.demo === "finders") createRoot(root).render(<FinderDemo />);
