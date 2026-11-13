@@ -333,9 +333,9 @@ describe("corrections", () => {
     expect(new Set(english).size).toBe(english.length);
     expect(english.filter((label) => label.startsWith("Washroom A: "))).toHaveLength(14);
     expect(english.some((label) => label.includes(" : "))).toBe(false);
-    expect(french.filter((label) => label.startsWith("Toilettes A\u202F: "))).toHaveLength(14);
-    expect(french.filter((label) => label.startsWith("Toilettes B\u202F: "))).toHaveLength(14);
-    expect(french.some((label) => label.includes("\u202F:"))).toBe(true);
+    expect(french.filter((label) => label.startsWith("Toilettes A\u00A0: "))).toHaveLength(14);
+    expect(french.filter((label) => label.startsWith("Toilettes B\u00A0: "))).toHaveLength(14);
+    expect(french.some((label) => label.includes("\u00A0:"))).toBe(true);
   });
 
   it("stores a pending correction without changing the place", () => {

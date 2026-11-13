@@ -1,8 +1,8 @@
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import axe from "axe-core";
 import { useState } from "react";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { a11yCss, fixturePack } from "@access-tools/place";
 import { emptySearchQuery, type SearchQuery } from "../search.js";
 import { SearchPanel } from "./SearchPanel.js";
@@ -18,6 +18,8 @@ function Harness() {
     </div>
   );
 }
+
+afterEach(() => cleanup());
 
 describe("search panel", () => {
   it("has no axe violations and an honest empty state", async () => {
@@ -36,6 +38,32 @@ describe("search panel", () => {
     expect(a11yCss).toContain("min-width: 24px");
     expect(a11yCss).toContain("min-height: 24px");
     expect(box).toBeInstanceOf(HTMLInputElement);
+  });
+
+  it("keeps a space before the distance in English and French", () => {
+    const { unmount } = render(
+      <SearchPanel
+        pack={fixturePack}
+        query={emptySearchQuery("en")}
+        onQueryChange={() => undefined}
+        onOpenPlace={() => undefined}
+      />,
+    );
+    const english = document.body.textContent ?? "";
+    expect(english).toContain(". Distance unknown.");
+    expect(english).not.toContain(".Distance");
+    unmount();
+    render(
+      <SearchPanel
+        pack={fixturePack}
+        query={emptySearchQuery("fr")}
+        onQueryChange={() => undefined}
+        onOpenPlace={() => undefined}
+      />,
+    );
+    const french = document.body.textContent ?? "";
+    expect(french).toContain(". Distance inconnue.");
+    expect(french).not.toContain(".Distance");
   });
 
   it("labels French filters instead of showing raw keys", () => {

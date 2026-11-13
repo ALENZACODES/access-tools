@@ -101,8 +101,8 @@ describe("French fixture language", () => {
     const washroomLabels = washroomOptions.map((option) => option.textContent ?? "");
     expect(washroomOptions).toHaveLength(28);
     expect(new Set(washroomLabels).size).toBe(washroomLabels.length);
-    expect(washroomLabels.filter((text) => text.startsWith("Toilettes A\u202F: "))).toHaveLength(14);
-    expect(washroomLabels.filter((text) => text.startsWith("Toilettes B\u202F: "))).toHaveLength(14);
+    expect(washroomLabels.filter((text) => text.startsWith("Toilettes A\u00A0: "))).toHaveLength(14);
+    expect(washroomLabels.filter((text) => text.startsWith("Toilettes B\u00A0: "))).toHaveLength(14);
     expect(washroomOptions.every((option) => option.getAttribute("lang") === "fr")).toBe(true);
     expect(washroomLabels.some((text) => text.includes("Fixture"))).toBe(false);
   }, 20_000);

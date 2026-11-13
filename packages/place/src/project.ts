@@ -997,7 +997,7 @@ export function correctableFields(
   const usedPrefixes = new Set<string>();
   for (const [index, washroom] of place.washrooms.entries()) {
     const prefix = washroomOptionPrefix(washroom.name, index, lang, usedPrefixes);
-    const separator = lang === "fr" ? "\u202F: " : ": ";
+    const separator = lang === "fr" ? "\u00A0: " : ": ";
     for (const id of WASHROOM_IDS) {
       fields.push({
         id: `washroom:${washroom.id}:${id}`,

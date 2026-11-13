@@ -38,14 +38,17 @@ export function FinderDemo() {
           <legend>{finderCopy("demo.filters", lang)}</legend>
           <label>
             <input type="checkbox" checked={registerOnly} onChange={(event) => setRegisterOnly(event.target.checked)} />
+            {" "}
             {finderCopy("demo.register", lang)}
           </label>
           <label>
             <input type="checkbox" checked={vanLift} onChange={(event) => setVanLift(event.target.checked)} />
+            {" "}
             {finderCopy("demo.lift", lang)}
           </label>
           <label>
             <input type="checkbox" checked={showHidden} onChange={(event) => setShowHidden(event.target.checked)} />
+            {" "}
             {finderCopy("demo.hidden", lang)}
           </label>
           <label htmlFor="range">{finderCopy("demo.range", lang)}</label>

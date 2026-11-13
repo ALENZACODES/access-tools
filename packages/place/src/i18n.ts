@@ -123,7 +123,7 @@ export const COPY = {
   "table.col.source-date": { en: "Source date", fr: "Date de source" },
   "table.col.record-date": { en: "Record date", fr: "Date de fiche" },
   "table.fields": { en: "fields", fr: "champs" },
-  "table.caption.prefix": { en: "Fields: ", fr: "Champs\u202F: " },
+  "table.caption.prefix": { en: "Fields: ", fr: "Champs\u00A0: " },
   "section.getting-there": { en: "Getting there", fr: "S'y rendre" },
   "section.inside": { en: "Inside", fr: "À l'intérieur" },
   "table.caption.getting-there": { en: "Getting there fields", fr: "Champs pour s'y rendre" },

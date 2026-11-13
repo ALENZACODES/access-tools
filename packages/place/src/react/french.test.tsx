@@ -104,7 +104,7 @@ describe("French place page", () => {
     ]));
     expect(captions.some((label) => label.startsWith("Champs : "))).toBe(true);
     const rawCaptions = [...document.querySelectorAll("caption")].map((node) => node.textContent ?? "");
-    expect(rawCaptions.some((label) => label.includes("Champs\u202F:"))).toBe(true);
+    expect(rawCaptions.some((label) => label.includes("Champs\u00A0:"))).toBe(true);
     expect(captions.some((label) => label.includes("Identité champs") || label.endsWith(" champs"))).toBe(false);
     expect(document.querySelectorAll(".table-scroll[role='region']")).toHaveLength(0);
     const regions = screen.getAllByRole("region");

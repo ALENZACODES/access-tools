@@ -128,6 +128,19 @@ describe("repair and supply finder", () => {
     });
     expect(result.hits).toHaveLength(1);
     expect(result.hits[0]?.servicesText).toBe("Tyre");
+    const french = findRepairAndSupply(fixturePack, {
+      text: "",
+      lang: "fr",
+      origin: null,
+      kind: "repair",
+      mobileOnly: false,
+      outOfHours: false,
+      supplyCategory: "any",
+      openAt: null,
+      showHidden: true,
+    });
+    const radius = [...french.hits, ...french.hidden].find((hit) => hit.id === "fix-repairer")?.extraText ?? "";
+    expect(radius).toContain("Rayon mobile enregistré\u00A0: 15 km");
     expect(result.hits[0]?.servicesText).not.toContain("power-chair");
     expect(result.disclaimer).toContain("does not recommend");
     expect(result.disclaimer).toContain("medical");

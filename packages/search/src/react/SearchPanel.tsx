@@ -135,6 +135,7 @@ export function SearchPanel({
               checked={query.sci.stepFreeEntrance === true}
               onChange={(event) => set({ sci: { ...query.sci, stepFreeEntrance: event.target.checked || undefined } })}
             />
+            {" "}
             {searchCopy("search.filter.step-free", lang)}
           </label>
           <label>
@@ -143,6 +144,7 @@ export function SearchPanel({
               checked={query.sci.adultChangeTable === true}
               onChange={(event) => set({ sci: { ...query.sci, adultChangeTable: event.target.checked || undefined } })}
             />
+            {" "}
             {searchCopy("search.filter.change-table", lang)}
           </label>
           <label>
@@ -151,6 +153,7 @@ export function SearchPanel({
               checked={query.sci.hoist === true}
               onChange={(event) => set({ sci: { ...query.sci, hoist: event.target.checked || undefined } })}
             />
+            {" "}
             {searchCopy("search.filter.hoist", lang)}
           </label>
           <label>
@@ -159,6 +162,7 @@ export function SearchPanel({
               checked={query.sci.vanAccessibleBay === true}
               onChange={(event) => set({ sci: { ...query.sci, vanAccessibleBay: event.target.checked || undefined } })}
             />
+            {" "}
             {searchCopy("search.filter.van", lang)}
           </label>
           <label>
@@ -167,6 +171,7 @@ export function SearchPanel({
               checked={query.sci.chargingRecorded === true}
               onChange={(event) => set({ sci: { ...query.sci, chargingRecorded: event.target.checked || undefined } })}
             />
+            {" "}
             {searchCopy("search.filter.charging", lang)}
           </label>
           <label htmlFor="search-side">{searchCopy("search.transfer-side", lang)}</label>
@@ -213,6 +218,7 @@ export function SearchPanel({
               checked={query.showHidden}
               onChange={(event) => onQueryChange({ ...query, showHidden: event.target.checked })}
             />
+            {" "}
             {searchCopy("search.show-hidden", lang)}
           </label>
         </fieldset>
@@ -238,6 +244,7 @@ export function SearchPanel({
             </a>
             <p>
               {hit.municipality}. {hit.category}. {hit.tier}. {hit.sourceName}. {hit.sourceDate}.
+              {" "}
               {hit.distanceMetres === null
                 ? searchCopy("search.distance.unknown", lang)
                 : searchFill("search.distance.known", lang, { metres: hit.distanceMetres })}

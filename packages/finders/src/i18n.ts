@@ -46,7 +46,7 @@ export const FINDER_COPY = {
   "finder.services": { en: "Published services", fr: "Services publiés" },
   "finder.categories": { en: "Published categories", fr: "Catégories publiées" },
   "finder.detail": { en: "Detail", fr: "Détail" },
-  "finder.phone-unknown": { en: "Phone: Unknown", fr: "Téléphone\u202F: Inconnu" },
+  "finder.phone-unknown": { en: "Phone: Unknown", fr: "Téléphone\u00A0: Inconnu" },
   "finder.fixture-page": { en: "Fixture page", fr: "Page du jeu d'essai" },
   "finder.repair.empty": { en: "No record is shown.", fr: "Aucune fiche affichée." },
   "nav.skip": { en: "Skip to content", fr: "Aller au contenu" },
