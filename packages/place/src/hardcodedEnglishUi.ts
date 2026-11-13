@@ -16,6 +16,10 @@ const CATALOG_FNS = new Set([
   "searchFill",
   "finderFill",
   "fill",
+  "gameCopy",
+  "gamePhrase",
+  "directoryCopy",
+  "timingCopy",
 ]);
 
 /** Attributes whose string values are not interface copy. */

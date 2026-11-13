@@ -176,7 +176,7 @@ export function GamesApp(props: GamesAppProps) {
         {GAMES_BOUNDARY[language]}
       </p>
       <p>{copy.switchHelp}</p>
-      {language === "fr" ? <p>{copy.namesStayEnglish}</p> : null}
+      <p>{copy.namesStayEnglish}</p>
       <section aria-labelledby="daily-title">
         <h2 id="daily-title">{copy.daily}</h2>
         <p>{DAILY_NOTE[language]}</p>

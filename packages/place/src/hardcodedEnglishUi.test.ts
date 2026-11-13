@@ -175,6 +175,11 @@ describe("French language coverage for component copy", () => {
     expect(hits).not.toContain("repair");
     expect(hits).not.toContain("{slot} m");
     expect(hits).not.toContain("tel:911");
+    expect(textsOf(`export function Sample() { return <p>{gameCopy("Ui.Names", "en")}</p>; }`)).not.toContain("Ui.Names");
+    expect(textsOf(`export function Sample() { return <p>{gamePhrase("Ui.Names", "en")}</p>; }`)).not.toContain("Ui.Names");
+    expect(textsOf(`export function Sample() { return <p>{directoryCopy("Dir.Title", "en")}</p>; }`)).not.toContain("Dir.Title");
+    expect(textsOf(`export function Sample() { return <p>{timingCopy("Timing.Title", "en")}</p>; }`)).not.toContain("Timing.Title");
+    expect(textsOf(`export function Sample() { return <p>Ui.Names</p>; }`)).toContain("Ui.Names");
   });
 
   it("fails when a model file types a sentence instead of reading the catalogue", () => {
