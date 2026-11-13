@@ -8,24 +8,29 @@ import { findHardcodedUiCopy } from "./hardcodedEnglishUi.js";
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 
 const COMPONENT_ROOTS = [
-  "packages/place/src/react",
-  "packages/place/src/demo",
-  "packages/search/src/react",
-  "packages/search/src/demo",
-  "packages/finders/src/react",
-  "packages/finders/src/demo",
+  "packages/place/src",
+  "packages/search/src",
+  "packages/finders/src",
+  "packages/games/src",
+  "packages/navigator/src",
+  "packages/timing/src",
 ];
 
 const MODEL_ROOTS = ["packages/place/src", "packages/search/src", "packages/finders/src"];
+
+const EXTRA_MODEL_FILES = ["packages/games/src/engine.ts"];
 
 const MODEL_EXCLUDED = new Set([
   "i18n.ts",
   "modelCopy.ts",
   "fixtures.ts",
-  // Not the UI catalogue: developer diagnostics, and the fixture-language auditor's own messages.
+  // Not the UI catalogue: developer diagnostics, the fixture-language auditor, and canonical export data.
   "lint.ts",
   "frenchFixtureLang.ts",
+  "canonical.ts",
 ]);
+
+const COMPONENT_DIRS = new Set(["react", "demo", "ui"]);
 
 function modelFiles(dir: string): string[] {
   const found: string[] = [];
@@ -35,7 +40,10 @@ function modelFiles(dir: string): string[] {
       found.push(...modelFiles(full));
       continue;
     }
-    if (!entry.endsWith(".ts") || entry.endsWith(".test.ts") || MODEL_EXCLUDED.has(entry)) continue;
+    const source = entry.endsWith(".ts") || entry.endsWith(".tsx");
+    const inComponentTree = full.split(path.sep).some((part) => COMPONENT_DIRS.has(part));
+    if (!source || entry.endsWith(".test.ts") || entry.endsWith(".test.tsx") || MODEL_EXCLUDED.has(entry)) continue;
+    if (entry.endsWith(".tsx") && inComponentTree) continue;
     found.push(full);
   }
   return found;
@@ -198,9 +206,13 @@ describe("French language coverage for component copy", () => {
   });
 
   it("fails when English UI text is typed into a model file instead of the i18n catalogue", () => {
-    const files = MODEL_ROOTS.flatMap((root) => modelFiles(path.join(repoRoot, root)));
+    const files = [
+      ...MODEL_ROOTS.flatMap((root) => modelFiles(path.join(repoRoot, root))),
+      ...EXTRA_MODEL_FILES.map((file) => path.join(repoRoot, file)),
+    ];
     expect(files.some((file) => file.endsWith(`${path.sep}corrections.ts`))).toBe(true);
     expect(files.some((file) => file.endsWith(`${path.sep}hours.ts`))).toBe(true);
+    expect(files.some((file) => file.endsWith(`${path.sep}engine.ts`))).toBe(true);
     const hits = files.flatMap((file) => findHardcodedUiCopy(path.relative(repoRoot, file), readFileSync(file, "utf8"), true));
     expect(hits.map((hit) => `${hit.file}:${hit.line} ${hit.text}`)).toEqual([]);
   });
@@ -210,11 +222,11 @@ describe("French language coverage for component copy", () => {
   });
 
   it("fails when English UI text is typed into a component instead of the i18n catalogue", () => {
-    const hits = COMPONENT_ROOTS.flatMap((root) =>
-      componentFiles(path.join(repoRoot, root)).flatMap((file) =>
-        findHardcodedUiCopy(path.relative(repoRoot, file), readFileSync(file, "utf8")),
-      ),
-    );
+    const files = COMPONENT_ROOTS.flatMap((root) => componentFiles(path.join(repoRoot, root)));
+    for (const name of ["GamesApp.tsx", "DirectoryView.tsx", "TimingPanel.tsx"]) {
+      expect(files.some((file) => file.endsWith(`${path.sep}${name}`))).toBe(true);
+    }
+    const hits = files.flatMap((file) => findHardcodedUiCopy(path.relative(repoRoot, file), readFileSync(file, "utf8")));
     expect(hits.map((hit) => `${hit.file}:${hit.line} ${hit.text}`)).toEqual([]);
   });
 });

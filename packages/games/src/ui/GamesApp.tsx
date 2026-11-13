@@ -1,17 +1,50 @@
 import { useEffect, useId, useRef, useState, type CSSProperties } from "react";
 import { DAILY_NOTE, GAMES_BOUNDARY, GRACE_RULE, PRACTICE_BANNER } from "../boundaries.js";
 import { TASK_FAMILY_LABEL, choose, createSession, pauseSession, viewSession } from "../engine.js";
-import { buildDailySet, filterGames, searchGames, streakFromRounds, surpriseGame } from "../hub.js";
+import { HUB_FILTERS, buildDailySet, filterGames, searchGames, streakFromRounds, surpriseGame } from "../hub.js";
+import { gameCopy, type GameCopyKey } from "../i18n.js";
 import { stepScan } from "../scan.js";
 import type { GameSession, GamesRound, GamesSettings, HubFilter, Language } from "../types.js";
 
-const FILTERS: HubFilter[] = ["all", "favourites", "short"];
-
-const FILTER_LABEL: Record<HubFilter, Record<Language, string>> = {
-  all: { en: "All games", fr: "Tous les jeux" },
-  favourites: { en: "My favourites", fr: "Mes favoris" },
-  short: { en: "Short games", fr: "Jeux courts" },
+const FILTER_LABEL: Record<HubFilter, GameCopyKey> = {
+  all: "ui.filter-all",
+  favourites: "ui.filter-favourites",
+  short: "ui.filter-short",
 };
+
+function uiCopy(language: Language) {
+  const text = (key: GameCopyKey) => gameCopy(key, language);
+  return {
+    games: text("ui.games"),
+    daily: text("ui.daily"),
+    replay: text("ui.replay"),
+    replayNote: text("ui.replay-note"),
+    streak: text("ui.streak"),
+    streakCount: text("ui.streak-count"),
+    graceLeft: text("ui.grace-left"),
+    resetStreak: text("ui.reset-streak"),
+    search: text("ui.search"),
+    filters: text("ui.filters"),
+    surprise: text("ui.surprise"),
+    play: text("ui.play"),
+    practice: text("ui.practice"),
+    namesStayEnglish: text("ui.names-english"),
+    switchHelp: text("ui.switch-help"),
+    settings: text("ui.settings"),
+    hideStreak: text("ui.hide-streak"),
+    text: text("ui.text"),
+    textDefault: text("ui.text-default"),
+    textLarge: text("ui.text-large"),
+    textExtra: text("ui.text-extra"),
+    next: text("ui.next"),
+    choose: text("ui.choose"),
+    pause: text("ui.pause"),
+    resume: text("ui.resume"),
+    back: text("ui.back"),
+    points: text("ui.points"),
+    insideOnly: text("ui.inside-only"),
+  };
+}
 
 export interface GamesAppProps {
   settings: GamesSettings;
@@ -31,7 +64,7 @@ export function GamesApp(props: GamesAppProps) {
   const [replayNote, setReplayNote] = useState(false);
   const returnFocusId = useRef<string | null>(null);
   const language = props.settings.language;
-  const copy = language === "fr" ? fr : en;
+  const copy = uiCopy(language);
   const scale = props.settings.textScale === "extra_large" ? "1.5rem" : props.settings.textScale === "large" ? "1.25rem" : "1.125rem";
   const colors =
     props.settings.contrast === "high"
@@ -136,7 +169,7 @@ export function GamesApp(props: GamesAppProps) {
       <header style={{ display: "flex", justifyContent: "space-between", gap: "0.75rem", flexWrap: "wrap" }}>
         <h1 style={{ margin: 0 }}>{copy.games}</h1>
         <button type="button" style={button} onClick={() => props.onSettings({ ...props.settings, language: language === "en" ? "fr" : "en" })}>
-          {language === "en" ? "Français" : "English"}
+          {language === "en" ? gameCopy("lang.show-french", "en") : gameCopy("lang.show-english", "en")}
         </button>
       </header>
       <p role="note" style={note(colors)}>
@@ -174,9 +207,9 @@ export function GamesApp(props: GamesAppProps) {
         <input id="game-search" value={query} onChange={(event) => setQuery(event.target.value)} style={{ ...button, width: "100%", fontWeight: 400 }} />
       </label>
       <div role="group" aria-label={copy.filters} style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-        {FILTERS.map((item) => (
+        {HUB_FILTERS.map((item) => (
           <button key={item} type="button" aria-pressed={filter === item} style={button} onClick={() => setFilter(item)}>
-            {FILTER_LABEL[item][language]}
+            {gameCopy(FILTER_LABEL[item], language)}
           </button>
         ))}
       </div>
@@ -232,7 +265,7 @@ function GamePlay(props: {
   frame: CSSProperties;
   button: CSSProperties;
   colors: { background: string; color: string; accent: string; border: string };
-  copy: typeof en;
+  copy: ReturnType<typeof uiCopy>;
   onSession: (session: GameSession) => void;
   onExit: () => void;
 }) {
@@ -303,7 +336,9 @@ function GamePlay(props: {
       </div>
       {view.scoreVisible ? (
         <p>
-          {props.copy.points}: {view.points}. {props.copy.insideOnly}
+          {props.copy.points}
+          {gameCopy("sep.colon", props.session.language)}
+          {view.points}. {props.copy.insideOnly}
         </p>
       ) : null}
     </main>
@@ -313,65 +348,3 @@ function GamePlay(props: {
 function note(colors: { border: string }): CSSProperties {
   return { margin: 0, padding: "0.75rem", borderLeft: `4px solid ${colors.border}` };
 }
-
-const en = {
-  games: "Games",
-  daily: "Three games for today",
-  replay: "Replay today's three",
-  replayNote: "Same three games for this date. Play any of them again.",
-  streak: "Streak",
-  streakCount: "Days in a row",
-  graceLeft: "Grace days remaining",
-  resetStreak: "Reset the streak on this device",
-  search: "Search games",
-  filters: "Filters",
-  surprise: "Surprise me",
-  play: "Play",
-  practice: "Practice",
-  namesStayEnglish: "Game names stay in English in this prototype.",
-  switchHelp: "Switch: Next, then Choose. Single tap and the keyboard work on every button. There is no running scan.",
-  settings: "Settings",
-  hideStreak: "Hide the streak",
-  text: "Text size",
-  textDefault: "Default",
-  textLarge: "Large",
-  textExtra: "Extra large",
-  next: "Next",
-  choose: "Choose",
-  pause: "Pause",
-  resume: "Resume",
-  back: "Back to games",
-  points: "Points inside this exercise",
-  insideOnly: "These numbers measure this exercise only.",
-};
-
-const fr: typeof en = {
-  games: "Jeux",
-  daily: "Trois jeux pour aujourd'hui",
-  replay: "Rejouer les trois d'aujourd'hui",
-  replayNote: "Les trois mêmes jeux pour cette date. Vous pouvez les rejouer.",
-  streak: "Série",
-  streakCount: "Jours de suite",
-  graceLeft: "Jours de grâce restants",
-  resetStreak: "Remettre la série à zéro sur cet appareil",
-  search: "Chercher un jeu",
-  filters: "Filtres",
-  surprise: "Surprenez-moi",
-  play: "Jouer",
-  practice: "Pratiquer",
-  namesStayEnglish: "Les noms des jeux restent en anglais dans cette version.",
-  switchHelp: "Contacteur : Suivant, puis Choisir. Un seul toucher et le clavier fonctionnent sur chaque bouton. Aucun balayage automatique.",
-  settings: "Réglages",
-  hideStreak: "Masquer la série",
-  text: "Taille du texte",
-  textDefault: "Par défaut",
-  textLarge: "Grand",
-  textExtra: "Très grand",
-  next: "Suivant",
-  choose: "Choisir",
-  pause: "Pause",
-  resume: "Reprendre",
-  back: "Retour aux jeux",
-  points: "Points dans cet exercice",
-  insideOnly: "Ces nombres mesurent seulement cet exercice.",
-};

@@ -86,7 +86,7 @@ export const DIRECTORY: readonly DirectoryRecord[] = [
     phone: "tel:+18889991142",
     phoneNote: {
       en: "Social Assistance Support Line, published on the Ontario Works page: 1-888-999-1142, TTY 1-800-387-5559.",
-      fr: "Ligne de soutien de l'aide sociale, publiée sur la page d'Ontario au travail : 1-888-999-1142, ATS 1-800-387-5559.",
+      fr: "Ligne de soutien de l'aide sociale, publiée sur la page d'Ontario au travail\u00A0: 1-888-999-1142, ATS 1-800-387-5559.",
     },
     sourceName: "Ontario.ca Ontario Works page",
     summary: {
@@ -434,7 +434,7 @@ export const DIRECTORY: readonly DirectoryRecord[] = [
     phone: "tel:+18003549950",
     phoneNote: {
       en: "Published on the Direct Funding site: CILT toll-free 1-800-354-9950, Toronto 416-599-2458, TTY 416-599-5077.",
-      fr: "Publié sur le site du financement direct : CILT sans frais 1-800-354-9950, Toronto 416-599-2458, ATS 416-599-5077.",
+      fr: "Publié sur le site du financement direct\u00A0: CILT sans frais 1-800-354-9950, Toronto 416-599-2458, ATS 416-599-5077.",
     },
     sourceName: "Direct Funding site, dfontario.ca",
     summary: {
@@ -575,7 +575,7 @@ export const DIRECTORY: readonly DirectoryRecord[] = [
     phone: "tel:+18665312600",
     phoneNote: {
       en: "Published on the site: 1-866-531-2600, and text CONNEX to 247247.",
-      fr: "Publié sur le site : 1-866-531-2600, et le texto CONNEX au 247247.",
+      fr: "Publié sur le site\u00A0: 1-866-531-2600, et le texto CONNEX au 247247.",
     },
     sourceName: "ConnexOntario homepage",
     summary: {

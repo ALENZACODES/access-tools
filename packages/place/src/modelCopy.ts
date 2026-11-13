@@ -4,6 +4,7 @@
  */
 export const MODEL_COPY = {
   "sep.colon": { en: ": ", fr: "\u00A0: " },
+  "sep.semicolon": { en: "; ", fr: "\u202F; " },
   "value.unknown": { en: "Unknown", fr: "Inconnu" },
   "value.not-applicable": { en: "Not applicable", fr: "Sans objet" },
   "value.yes": { en: "Yes", fr: "Oui" },
@@ -394,7 +395,6 @@ export const MODEL_COPY = {
   "trail.width-mm": { en: "Trail width", fr: "Largeur du sentier" },
   "trail.obstacles": { en: "Trail obstacles", fr: "Obstacles du sentier" },
   "trail.rest": { en: "Trail rest", fr: "Repos sur le sentier" },
-  "geo.province": { en: "Ontario", fr: "Ontario" },
   "moderation.note": {
     en: "Saved on this device as pending. This prototype does not moderate or publish reports. The displayed record does not change.",
     fr: "Enregistré sur cet appareil comme en attente. Ce prototype ne modère ni ne publie les signalements. La fiche affichée ne change pas.",

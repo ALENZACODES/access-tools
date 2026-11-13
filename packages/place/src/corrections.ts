@@ -1,4 +1,3 @@
-import { copy } from "./i18n.js";
 import type { ChangeProblem, ChangeReport, Correction, ReportLog } from "./types.js";
 
 export interface CorrectionInput {
@@ -85,8 +84,3 @@ export function readLog(storage: StorageLike, key = REPORT_STORAGE_KEY): ReportL
 export function writeLog(storage: StorageLike, log: ReportLog, key = REPORT_STORAGE_KEY): void {
   storage.setItem(key, JSON.stringify(log));
 }
-
-export const MODERATION_NOTE = {
-  en: copy("moderation.note", "en"),
-  fr: copy("moderation.note", "fr"),
-} as const;

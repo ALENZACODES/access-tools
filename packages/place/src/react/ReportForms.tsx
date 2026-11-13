@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { MODERATION_NOTE } from "../corrections.js";
 import { copy, labelOf } from "../i18n.js";
 import { correctableFields } from "../project.js";
 import { CHANGE_PROBLEMS, type ChangeProblem, type Lang, type PlaceRecord } from "../types.js";
@@ -109,7 +108,7 @@ export function ChangeReportForm({
       <label htmlFor="change-note">{copy("form.note-optional", lang)}</label>
       <textarea id="change-note" value={note} onChange={(event) => setNote(event.target.value)} />
       <button type="submit">{copy("form.change.save", lang)}</button>
-      <p>{lang === "fr" ? MODERATION_NOTE.fr : MODERATION_NOTE.en}</p>
+      <p>{copy("moderation.note", lang)}</p>
     </form>
   );
 }

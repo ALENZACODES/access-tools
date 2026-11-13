@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { a11yCss, EnglishOnlyNote, EnglishText, RecordText, type Lang, type PlacePack } from "@access-tools/place";
+import { a11yCss, copy, EnglishOnlyNote, EnglishText, RecordText, type Lang, type PlacePack } from "@access-tools/place";
 import { finderCopy, finderFill } from "../i18n.js";
 import { findCharging, type ChargingQuery } from "../charging.js";
 import { findParking, type ParkingQuery } from "../parking.js";
@@ -11,15 +11,26 @@ function PlaceName({ lang, name, english }: { lang: Lang; name: string; english:
   return <RecordText lang={lang} text={name} />;
 }
 
-function HiddenList({ title, items }: { title: string; items: Array<{ id: string; name: ReactNode; reasons: string[] }> }) {
+function HiddenList({
+  lang,
+  title,
+  items,
+}: {
+  lang: Lang;
+  title: string;
+  items: Array<{ id: string; name: ReactNode; reasons: string[] }>;
+}) {
   if (items.length === 0) return null;
+  const colon = copy("sep.colon", lang);
   return (
     <section aria-labelledby={`hidden-${title}`}>
       <h3 id={`hidden-${title}`}>{title}</h3>
       <ul>
         {items.map((item) => (
           <li key={item.id}>
-            {item.name}: {item.reasons.join(" ")}
+            {item.name}
+            {colon}
+            {item.reasons.join(" ")}
           </li>
         ))}
       </ul>
@@ -85,6 +96,7 @@ export function WashroomFinder({ pack, query }: { pack: PlacePack; query: Washro
       </ul>
       {query.showHidden ? (
         <HiddenList
+          lang={lang}
           title={finderCopy("finder.hidden-records", lang)}
           items={result.hidden.map((hit) => ({
             id: hit.washroomId,
@@ -150,6 +162,7 @@ export function ParkingFinder({ pack, query }: { pack: PlacePack; query: Parking
       ) : null}
       {query.showHidden ? (
         <HiddenList
+          lang={lang}
           title={finderCopy("finder.hidden-bays", lang)}
           items={result.hidden.map((hit) => ({
             id: hit.bayId,
@@ -273,6 +286,7 @@ export function RepairSupplyFinder({ pack, query }: { pack: PlacePack; query: Re
       ) : null}
       {query.showHidden ? (
         <HiddenList
+          lang={lang}
           title={finderCopy("finder.hidden-records", lang)}
           items={result.hidden.map((hit) => ({
             id: hit.id,

@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import axe from "axe-core";
 import { useState } from "react";
 import { describe, expect, it } from "vitest";
+import { GAME_COPY, frenchColonViolations } from "../src/i18n.js";
 import {
   CATALOG,
   GAMES_BOUNDARY,
@@ -146,6 +147,12 @@ function Harness() {
     />
   );
 }
+
+describe("games catalogue", () => {
+  it("puts a no-break space before every French colon", () => {
+    expect(frenchColonViolations(GAME_COPY)).toEqual([]);
+  });
+});
 
 describe("games screen", () => {
   it("supports keyboard, switch, practice, and a screen-reader prompt", async () => {

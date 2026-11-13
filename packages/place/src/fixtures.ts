@@ -82,7 +82,7 @@ communityWashroomMeasured.turningDiameterMm = f(1600, ["ph-turn-empty"]);
 communityWashroomMeasured.transfer = f({ side: "left", clearFloorBesideMm: 900 });
 communityWashroomMeasured.seatHeightMm = f(430);
 communityWashroomMeasured.grabBars = f({
-  configuration: "Fixture text: bars recorded on the left. Not a real room.",
+  configuration: "Fixture text: bars recorded on the left. Not a real room",
   side: "left",
   heightMm: null,
   lengthMm: null,
@@ -107,7 +107,7 @@ communityWashroomMeasured.hoist = f({
 });
 communityWashroomMeasured.accessPolicy = f({ method: "open", howToObtain: null, phone: null });
 communityWashroomMeasured.hoursReliability = f({
-  hoursText: "Fixture hours: weekdays 09:00–17:00.",
+  hoursText: "Fixture hours: weekdays 09:00–17:00",
   outOfOrderNote: null,
   lastReportNote: null,
 });
@@ -133,18 +133,18 @@ hoistWashroom.hoist = f({
   present: "yes",
   type: "Ceiling track, fixture text",
   working: null,
-  slingPolicy: "Fixture policy text: a sling is not provided.",
+  slingPolicy: "Fixture policy text: a sling is not provided",
   slingProvided: "no",
   operatorAvailability: null,
   weightCapacityKg: null,
 });
 hoistWashroom.accessPolicy = f({
   method: "staff-assisted",
-  howToObtain: "Fixture note: ask at the synthetic desk.",
+  howToObtain: "Fixture note: ask at the synthetic desk",
   phone: "555-0102",
 });
 hoistWashroom.hoursReliability = f({
-  hoursText: "Fixture hours follow the building, weekdays 09:00–17:00.",
+  hoursText: "Fixture hours follow the building, weekdays 09:00–17:00",
   outOfOrderNote: null,
   lastReportNote: null,
 });
@@ -187,7 +187,7 @@ typeA.widthMm = f(3400);
 typeA.aisleWidthMm = f(2000);
 typeA.aisleSide = f("left");
 typeA.distanceToEntranceM = f(40);
-typeA.surface = f("Fixture surface text: paved.");
+typeA.surface = f("Fixture surface text: paved");
 
 const typeB = blankBay("fix-cc-bay-b", "Fixture bay B", "type-b-standard");
 typeB.widthMm = f(2400);
@@ -303,7 +303,7 @@ const places: PlaceRecord[] = [
   shell({
     id: "fix-change-hoist",
     honestyNote: "Labelled fixture. Not a real place. Change-table and hoist figures are synthetic.",
-    honestyNoteFr: "Jeu d'essai étiqueté. Pas un lieu réel. Les chiffres de la table de change et du lève-personne sont synthétiques.",
+    honestyNoteFr: "Jeu d'essai étiqueté. Pas un lieu réel. Les chiffres de la table à langer pour adultes et du lève-personne sont synthétiques.",
     nameFr: "Salle de change (jeu d'essai)",
     identity: {
       name: "Fixture: Change Table and Hoist Room",

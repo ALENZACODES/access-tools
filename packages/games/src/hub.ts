@@ -2,6 +2,8 @@ import { CATALOG } from "./engine.js";
 import { mulberry32, pick } from "./rng.js";
 import type { GameMeta, GamesRound, HubFilter } from "./types.js";
 
+export const HUB_FILTERS: readonly HubFilter[] = ["all", "favourites", "short"];
+
 export function filterGames(filter: HubFilter, favourites: readonly string[]): GameMeta[] {
   if (filter === "favourites") return CATALOG.filter((game) => favourites.includes(game.id));
   if (filter === "short") return CATALOG.filter((game) => game.estimatedMinutes <= 3);
