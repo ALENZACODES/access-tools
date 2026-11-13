@@ -8,10 +8,9 @@ export const EQUIPMENT_PROFILE_KEY = "access-tools.equipment-profile";
 export const CHAIR_TYPES = ["manual", "power", "scooter", "other"] as const;
 export type ChairType = (typeof CHAIR_TYPES)[number];
 
-/** Equipment and access preferences. No health or timing fields. */
+/** Equipment and access preferences. Every field is optional. No health or timing fields. */
 export interface EquipmentProfile {
   schemaVersion: typeof EQUIPMENT_PROFILE_VERSION;
-  name: string;
   chairType: ChairType | null;
   /** Millimetres of clear width the chair needs. Null means the width is not used. */
   widthMm: number | null;
@@ -19,7 +18,9 @@ export interface EquipmentProfile {
   adultChangeTable: boolean;
 }
 
-export type ProfileSaveResult = { ok: true; profile: EquipmentProfile } | { ok: false; error: "name" | "width" | "storage" };
+export type ProfileSaveResult = { ok: true; profile: EquipmentProfile } | { ok: false; error: "width" | "storage" };
+
+export type DoorWidthJudgement = "unused" | "clears" | "narrower" | "missing";
 
 const MAX_WIDTH_MM = 3000;
 
@@ -36,14 +37,11 @@ function isChairType(value: unknown): value is ChairType {
   return typeof value === "string" && (CHAIR_TYPES as readonly string[]).includes(value);
 }
 
-/** Returns a profile built only from the allowed fields. Extra keys are dropped. */
+/** Returns a profile built only from the allowed fields. A stored name and any other extra key are ignored. */
 export function parseProfile(value: unknown): EquipmentProfile | null {
   if (!value || typeof value !== "object") return null;
   const record = value as Record<string, unknown>;
   if (record.schemaVersion !== EQUIPMENT_PROFILE_VERSION) return null;
-  if (typeof record.name !== "string") return null;
-  const name = record.name.trim();
-  if (name.length < 1 || name.length > 80) return null;
   const chairType = record.chairType === null ? null : isChairType(record.chairType) ? record.chairType : undefined;
   if (chairType === undefined) return null;
   const widthMm =
@@ -56,7 +54,6 @@ export function parseProfile(value: unknown): EquipmentProfile | null {
   if (typeof record.stepFreeRequired !== "boolean" || typeof record.adultChangeTable !== "boolean") return null;
   return {
     schemaVersion: EQUIPMENT_PROFILE_VERSION,
-    name,
     chairType,
     widthMm,
     stepFreeRequired: record.stepFreeRequired,
@@ -77,21 +74,17 @@ export function readProfile(storage: Storage): EquipmentProfile | null {
 export function saveProfile(
   storage: Storage,
   input: {
-    name: string;
     chairType: ChairType | null;
     widthMm: number | null;
     stepFreeRequired: boolean;
     adultChangeTable: boolean;
   },
 ): ProfileSaveResult {
-  const name = input.name.trim();
-  if (name.length < 1 || name.length > 80) return { ok: false, error: "name" };
   if (input.widthMm !== null && (!Number.isInteger(input.widthMm) || input.widthMm < 1 || input.widthMm > MAX_WIDTH_MM)) {
     return { ok: false, error: "width" };
   }
   const profile: EquipmentProfile = {
     schemaVersion: EQUIPMENT_PROFILE_VERSION,
-    name,
     chairType: input.chairType,
     widthMm: input.widthMm,
     stepFreeRequired: input.stepFreeRequired,
@@ -111,7 +104,21 @@ export function deleteProfile(storage: Storage): void {
 }
 
 export function doorClears(recordedMm: number | null, neededMm: number): boolean {
-  return recordedMm !== null && Number.isFinite(recordedMm) && recordedMm >= neededMm;
+  return judgeDoorWidth(recordedMm, neededMm) === "clears";
+}
+
+/** A missing measurement is not a match and is not treated as narrower. */
+export function judgeDoorWidth(recordedMm: number | null, neededMm: number | null): DoorWidthJudgement {
+  if (neededMm === null) return "unused";
+  if (typeof recordedMm !== "number" || !Number.isFinite(recordedMm)) return "missing";
+  return recordedMm >= neededMm ? "clears" : "narrower";
+}
+
+function doorSentences(recordedMm: number | null, neededMm: number | null, lang: Lang): { reason: string | null; note: string | null } {
+  const judgement = judgeDoorWidth(recordedMm, neededMm);
+  if (judgement === "narrower") return { reason: copy("profile.reason.narrower", lang), note: null };
+  if (judgement === "missing") return { reason: null, note: copy("profile.reason.missing", lang) };
+  return { reason: null, note: null };
 }
 
 export function profilePlaceReasons(place: PlaceRecord, profile: EquipmentProfile | null, lang: Lang): string[] {
@@ -119,10 +126,16 @@ export function profilePlaceReasons(place: PlaceRecord, profile: EquipmentProfil
   const reasons: string[] = [];
   if (profile.stepFreeRequired && place.entrance.stepFree.value !== "yes") reasons.push(copy("profile.reason.step-free", lang));
   if (profile.adultChangeTable && !placeHasAdultChangeTable(place)) reasons.push(copy("profile.reason.change-table", lang));
-  if (profile.widthMm !== null && !doorClears(place.entrance.doorClearWidthMm.value, profile.widthMm)) {
-    reasons.push(copy("profile.reason.door", lang));
-  }
+  const door = doorSentences(place.entrance.doorClearWidthMm.value, profile.widthMm, lang).reason;
+  if (door) reasons.push(door);
   return reasons;
+}
+
+/** Shown on a record that stays visible because the door width was not measured. */
+export function profilePlaceNotes(place: PlaceRecord, profile: EquipmentProfile | null, lang: Lang): string[] {
+  if (!profile) return [];
+  const note = doorSentences(place.entrance.doorClearWidthMm.value, profile.widthMm, lang).note;
+  return note ? [note] : [];
 }
 
 export function profileWashroomReasons(place: PlaceRecord, washroom: Washroom, profile: EquipmentProfile | null, lang: Lang): string[] {
@@ -130,8 +143,15 @@ export function profileWashroomReasons(place: PlaceRecord, washroom: Washroom, p
   const reasons: string[] = [];
   if (profile.stepFreeRequired && place.entrance.stepFree.value !== "yes") reasons.push(copy("profile.reason.step-free", lang));
   if (profile.adultChangeTable && washroom.changeTable.value?.present !== "yes") reasons.push(copy("profile.reason.change-table", lang));
-  if (profile.widthMm !== null && !doorClears(washroom.doorClearWidthMm.value, profile.widthMm)) reasons.push(copy("profile.reason.door", lang));
+  const door = doorSentences(washroom.doorClearWidthMm.value, profile.widthMm, lang).reason;
+  if (door) reasons.push(door);
   return reasons;
+}
+
+export function profileWashroomNotes(washroom: Washroom, profile: EquipmentProfile | null, lang: Lang): string[] {
+  if (!profile) return [];
+  const note = doorSentences(washroom.doorClearWidthMm.value, profile.widthMm, lang).note;
+  return note ? [note] : [];
 }
 
 export function profileStepFreeReason(recorded: YesNo | null, profile: EquipmentProfile | null, lang: Lang): string | null {

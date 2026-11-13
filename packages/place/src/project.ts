@@ -779,6 +779,8 @@ function projectCharging(place: PlaceRecord, point: ChargingPoint, lang: Lang, t
     built.label = spec[0];
     return built;
   });
+  const stepFree = rows.find((row) => row.label === copy("bay.step-free", lang));
+  if (stepFree) stepFree.id = `${point.id}.step-free-route`;
   return { id: point.id, heading: point.name, rows };
 }
 

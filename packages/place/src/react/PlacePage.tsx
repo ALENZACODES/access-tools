@@ -1,5 +1,5 @@
 import { copy, fill, labelOf } from "../i18n.js";
-import { appendProfileNote, doorClears, type EquipmentProfile } from "../profile.js";
+import { appendProfileNote, judgeDoorWidth, type EquipmentProfile } from "../profile.js";
 import type { ChangeReport, Correction, Lang, PlacePack, PlaceRecord, Washroom, YesNo } from "../types.js";
 import type { ChangeProblem } from "../types.js";
 import { correctableFields, projectPlace, type FieldRowView } from "../project.js";
@@ -114,7 +114,6 @@ export function PlacePage({
                         place.chargingPoints.find((item) => item.id === point.id)?.stepFreeRoute.value ?? null,
                         profile,
                         lang,
-                        copy("bay.step-free", lang),
                       )}
                       caption={point.heading}
                       lang={lang}
@@ -206,13 +205,18 @@ function markRow(row: FieldRowView, fails: boolean, lang: Lang): FieldRowView {
   return { ...row, valueText: appendProfileNote(row.valueText, true, lang) };
 }
 
+function doorNote(row: FieldRowView, recordedMm: number | null, neededMm: number | null, lang: Lang): FieldRowView {
+  const judgement = judgeDoorWidth(recordedMm, neededMm);
+  if (judgement === "missing") return { ...row, valueText: `${row.valueText} ${copy("profile.reason.missing", lang)}` };
+  if (judgement === "narrower") return { ...row, valueText: `${row.valueText} ${copy("profile.reason.narrower", lang)}` };
+  return row;
+}
+
 function annotateEntrance(rows: FieldRowView[], place: PlaceRecord, profile: EquipmentProfile | null, lang: Lang): FieldRowView[] {
   if (!profile) return rows;
   return rows.map((row) => {
     if (row.id === "entrance.step-free") return markRow(row, profile.stepFreeRequired && place.entrance.stepFree.value !== "yes", lang);
-    if (row.id === "entrance.door-clear-width-mm") {
-      return markRow(row, profile.widthMm !== null && !doorClears(place.entrance.doorClearWidthMm.value, profile.widthMm), lang);
-    }
+    if (row.id === "entrance.door-clear-width-mm") return doorNote(row, place.entrance.doorClearWidthMm.value, profile.widthMm, lang);
     return row;
   });
 }
@@ -221,21 +225,12 @@ function annotateWashroom(rows: FieldRowView[], washroom: Washroom | undefined, 
   if (!profile || !washroom) return rows;
   return rows.map((row) => {
     if (row.id === "washroom.change-table") return markRow(row, profile.adultChangeTable && washroom.changeTable.value?.present !== "yes", lang);
-    if (row.id === "washroom.door") return markRow(row, profile.widthMm !== null && !doorClears(washroom.doorClearWidthMm.value, profile.widthMm), lang);
+    if (row.id === "washroom.door") return doorNote(row, washroom.doorClearWidthMm.value, profile.widthMm, lang);
     return row;
   });
 }
 
-function annotateRoute(
-  rows: FieldRowView[],
-  recorded: YesNo | null,
-  profile: EquipmentProfile | null,
-  lang: Lang,
-  label?: string,
-): FieldRowView[] {
+function annotateRoute(rows: FieldRowView[], recorded: YesNo | null, profile: EquipmentProfile | null, lang: Lang): FieldRowView[] {
   if (!profile?.stepFreeRequired || recorded === "yes") return rows;
-  return rows.map((row) => {
-    const matches = label ? row.label === label : row.id.endsWith(".step-free-route");
-    return matches ? markRow(row, true, lang) : row;
-  });
+  return rows.map((row) => (row.id.endsWith(".step-free-route") ? markRow(row, true, lang) : row));
 }

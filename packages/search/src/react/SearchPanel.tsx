@@ -249,6 +249,7 @@ export function SearchPanel({
                 ? searchCopy("search.distance.unknown", lang)
                 : searchFill("search.distance.known", lang, { metres: hit.distanceMetres })}
             </p>
+            {hit.profileNotes.length > 0 ? <p>{hit.profileNotes.join(" ")}</p> : null}
           </li>
         ))}
       </ul>
@@ -259,6 +260,7 @@ export function SearchPanel({
             {result.hidden.map((hit) => (
               <li key={hit.placeId}>
                 {hit.nameIsEnglish ? <RecordText lang={lang} text={hit.name} /> : hit.name}: {hit.hiddenReasons.join(" ")}
+                {hit.profileNotes.length > 0 ? <p>{hit.profileNotes.join(" ")}</p> : null}
               </li>
             ))}
           </ul>

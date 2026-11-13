@@ -91,6 +91,7 @@ export function WashroomFinder({ pack, query }: { pack: PlacePack; query: Washro
                 <a href={`tel:${hit.phone}`}>{finderFill("finder.call", lang, { phone: hit.phone })}</a>
               </p>
             ) : null}
+            {hit.profileNotes.length > 0 ? <p>{hit.profileNotes.join(" ")}</p> : null}
           </li>
         ))}
       </ul>
@@ -101,7 +102,7 @@ export function WashroomFinder({ pack, query }: { pack: PlacePack; query: Washro
           items={result.hidden.map((hit) => ({
             id: hit.washroomId,
             name: <PlaceName lang={lang} name={hit.placeName} english={hit.placeNameIsEnglish} />,
-            reasons: hit.hiddenReasons,
+            reasons: [...hit.hiddenReasons, ...hit.profileNotes],
           }))}
         />
       ) : null}

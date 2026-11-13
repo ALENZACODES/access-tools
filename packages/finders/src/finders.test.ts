@@ -48,7 +48,6 @@ describe("washroom finder", () => {
       showHidden: true,
       profile: {
         schemaVersion: "equipment-profile-1.0.0",
-        name: "Day chair",
         chairType: "power",
         widthMm: 900,
         stepFreeRequired: false,
@@ -56,7 +55,31 @@ describe("washroom finder", () => {
       },
     });
     expect(fitted.hits.map((hit) => hit.washroomId)).toEqual(["fix-hoist-wash"]);
-    expect(fitted.hidden.find((hit) => hit.washroomId === "fix-cc-wash-2")?.hiddenReasons.join(" ")).toMatch(/unknown or narrower/);
+    const missing = fitted.hidden.find((hit) => hit.washroomId === "fix-cc-wash-2");
+    expect(missing?.hiddenReasons.join(" ")).not.toMatch(/narrower/);
+    expect(missing?.profileNotes.join(" ")).toMatch(/Cannot judge, measurement missing/);
+    const narrow = findWashrooms(fixturePack, {
+      text: "",
+      lang: "en",
+      origin: null,
+      transferSide: "any",
+      changeTable: false,
+      hoist: false,
+      registerOnly: false,
+      openAt: null,
+      showHidden: true,
+      profile: {
+        schemaVersion: "equipment-profile-1.0.0",
+        chairType: null,
+        widthMm: 900,
+        stepFreeRequired: false,
+        adultChangeTable: false,
+      },
+    });
+    expect(narrow.hits.map((hit) => hit.washroomId)).toContain("fix-cc-wash-2");
+    expect(narrow.hits.find((hit) => hit.washroomId === "fix-cc-wash-2")?.profileNotes.join(" ")).toMatch(/Cannot judge, measurement missing/);
+    expect(narrow.hidden.find((hit) => hit.washroomId === "fix-cc-wash-1")?.hiddenReasons.join(" ")).toMatch(/narrower than the saved chair width/);
+    expect(narrow.hits.some((hit) => hit.washroomId === "fix-cc-wash-1")).toBe(false);
   });
 
   it("does not treat unknown hours as open", () => {
@@ -104,7 +127,6 @@ describe("parking finder", () => {
       month: 11,
       profile: {
         schemaVersion: "equipment-profile-1.0.0",
-        name: "Day chair",
         chairType: "manual",
         widthMm: null,
         stepFreeRequired: true,
