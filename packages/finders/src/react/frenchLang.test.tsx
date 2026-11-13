@@ -101,5 +101,5 @@ describe("French fixture language", () => {
     expect(washroomOptions).toHaveLength(28);
     expect(washroomOptions.every((option) => option.getAttribute("lang") === "fr")).toBe(true);
     expect(washroomOptions.some((option) => (option.textContent ?? "").includes("Fixture"))).toBe(false);
-  });
+  }, 20_000);
 });

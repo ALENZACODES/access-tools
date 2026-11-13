@@ -57,26 +57,29 @@ export function auditFixtureLanguage(root: HTMLElement, samples: readonly string
     const node = walker.currentNode;
     if (node.nodeType === Node.TEXT_NODE) textNodes.push(node as Text);
   }
-  const elements = [...root.querySelectorAll("*")];
+  const chunks: Array<{ text: string; english: boolean; lang: string; where: string }> = [];
+  for (const node of textNodes) {
+    const parent = node.parentElement;
+    const text = node.textContent ?? "";
+    if (!parent || parent.closest("style, script") || !FIXTURE_PROSE.test(text)) continue;
+    const lang = languageOf(parent) ?? "none";
+    chunks.push({ text, english: isEnglish(lang === "none" ? null : lang), lang, where: "text" });
+  }
+  for (const element of root.querySelectorAll("*")) {
+    for (const attr of TEXT_ATTRIBUTES) {
+      const text = element.getAttribute(attr);
+      if (!text || !FIXTURE_PROSE.test(text)) continue;
+      const lang = languageOf(element) ?? "none";
+      chunks.push({ text, english: isEnglish(lang === "none" ? null : lang), lang, where: attr });
+    }
+  }
   return samples.map((sample) => {
     const unmarked: string[] = [];
     let occurrences = 0;
-    for (const node of textNodes) {
-      const parent = node.parentElement;
-      if (!parent || parent.closest("style, script")) continue;
-      if (!node.textContent?.includes(sample)) continue;
+    for (const chunk of chunks) {
+      if (!chunk.text.includes(sample)) continue;
       occurrences += 1;
-      const lang = languageOf(parent);
-      if (!isEnglish(lang)) unmarked.push(`text “${sample}” under lang=${lang ?? "none"}`);
-    }
-    for (const element of elements) {
-      for (const attr of TEXT_ATTRIBUTES) {
-        const value = element.getAttribute(attr);
-        if (!value?.includes(sample)) continue;
-        occurrences += 1;
-        const lang = languageOf(element);
-        if (!isEnglish(lang)) unmarked.push(`${attr} “${sample}” under lang=${lang ?? "none"}`);
-      }
+      if (!chunk.english) unmarked.push(`${chunk.where} “${sample}” under lang=${chunk.lang}`);
     }
     return { sample, occurrences, unmarked };
   });
