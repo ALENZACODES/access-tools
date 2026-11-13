@@ -79,7 +79,37 @@ export const COPY = {
   "side.left": { en: "Left", fr: "Gauche" },
   "side.right": { en: "Right", fr: "Droite" },
   "side.both": { en: "Both", fr: "Les deux" },
+  "provenance.source.labelled-fixture": {
+    en: "access-tools labelled fixture",
+    fr: "jeu d'essai étiqueté access-tools",
+  },
+  "provenance.source.skeleton-seed": {
+    en: "access-tools skeleton seed",
+    fr: "graine squelette access-tools",
+  },
+  "provenance.licence.labelled-fixture": {
+    en: "Labelled fixture. Not a data licence. Not a real-world observation.",
+    fr: "Jeu d'essai étiqueté. Pas une licence de données. Pas une observation du monde réel.",
+  },
+  "provenance.licence.skeleton-seed": {
+    en: "Skeleton seed. Not a data licence. No venue is identified.",
+    fr: "Graine squelette. Pas une licence de données. Aucun lieu n'est identifié.",
+  },
 } as const;
+
+const AUTHORED_KEYS: Record<string, CopyKey> = {
+  "access-tools labelled fixture": "provenance.source.labelled-fixture",
+  "access-tools skeleton seed": "provenance.source.skeleton-seed",
+  "Labelled fixture. Not a data licence. Not a real-world observation.": "provenance.licence.labelled-fixture",
+  "Skeleton seed. Not a data licence. No venue is identified.": "provenance.licence.skeleton-seed",
+};
+
+/** Translates the fixed provenance sentences used by labelled fixtures and skeleton seeds. */
+export function localizeAuthored(text: string, lang: Lang): string {
+  const key = AUTHORED_KEYS[text];
+  if (!key) return text;
+  return copy(key, lang);
+}
 
 export type CopyKey = keyof typeof COPY;
 

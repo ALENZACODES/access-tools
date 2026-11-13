@@ -25,7 +25,7 @@ import {
   formatYesNo,
   unknownLabel,
 } from "./format.js";
-import { labelOf } from "./i18n.js";
+import { labelOf, localizeAuthored } from "./i18n.js";
 import { freshness, tierPhrase, winterClearanceText, type FreshnessLayer } from "./staleness.js";
 import { privilegeText, PROTOTYPE_NOTICE, vanLiftReading, vanLiftText } from "./recommend.js";
 
@@ -328,16 +328,7 @@ function photoViews(photos: PhotoSlot[], ids: string[], lang: Lang): PhotoView[]
 }
 
 function authoredFr(text: string, lang: Lang): string {
-  if (lang !== "fr") return text;
-  const translated: Record<string, string> = {
-    "access-tools labelled fixture": "jeu d'essai étiqueté access-tools",
-    "access-tools skeleton seed": "graine squelette access-tools",
-    "Labelled fixture. Not a data licence. Not a real-world observation.":
-      "Jeu d'essai étiqueté. Pas une licence de données. Pas une observation du monde réel.",
-    "Skeleton seed. Not a data licence. No venue is identified.":
-      "Graine squelette. Pas une licence de données. Aucun lieu n'est identifié.",
-  };
-  return translated[text] ?? text;
+  return localizeAuthored(text, lang);
 }
 
 function rowFrom(place: PlaceRecord, input: RowInput, lang: Lang, today: string): FieldRowView {
@@ -557,7 +548,7 @@ export function projectPlace(place: PlaceRecord, lang: Lang, today: string, pack
     sourcedRow(
       place,
       "trust.source",
-      `${place.recordProvenance.sourceName}. ${place.recordProvenance.licence}`,
+      `${authoredFr(place.recordProvenance.sourceName, lang)}. ${authoredFr(place.recordProvenance.licence, lang)}`,
       false,
       place.recordProvenance,
       [],

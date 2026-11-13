@@ -63,6 +63,8 @@ describe("French place page", () => {
     expect(text).not.toContain("PROTOTYPE and UNVERIFIED");
     expect(text).not.toContain("Not a real place");
     expect(text).not.toContain("Not a data licence");
+    expect(text).not.toContain("access-tools labelled fixture");
+    expect(text).toContain("Pas une licence de données");
     expect(text).not.toContain("open data");
     expect(text).toContain("Pas un lieu réel");
     expect(text).toContain("Largeur libre de la porte");
