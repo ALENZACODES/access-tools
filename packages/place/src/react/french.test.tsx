@@ -147,10 +147,11 @@ describe("French place page", () => {
         expect(caption?.tagName, lang).toBe("CAPTION");
         const name = caption?.textContent?.replace(/\s+/g, " ").trim() ?? "";
         expect(name.length, lang).toBeGreaterThan(0);
-        expect(screen.getAllByRole("group", { name, exact: true }), lang).toContain(scroll);
+        const namePattern = new RegExp(`^${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`);
+        expect(screen.getAllByRole("group", { name: namePattern }), lang).toContain(scroll);
       }
-      const expected = lang === "fr" ? "Champs d'identité" : "Identity fields";
-      expect(screen.getByRole("group", { name: expected, exact: true }).classList.contains("table-scroll")).toBe(true);
+      const expected = lang === "fr" ? /^Champs d'identité$/ : /^Identity fields$/;
+      expect(screen.getByRole("group", { name: expected }).classList.contains("table-scroll")).toBe(true);
       expect(document.querySelectorAll(".table-scroll[role='region']")).toHaveLength(0);
     }
     const css = document.querySelector("style")?.textContent ?? "";
