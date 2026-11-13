@@ -39,12 +39,11 @@ describe("directory records", () => {
     }
     for (const record of DIRECTORY) {
       expect(record.notEligibilityAdvice).toBe(true);
+      expect(record.schemaVersion).toBe("directory-record-1.0.0");
+      expect(record.verificationTier).toBe("administrator_page");
       expect(record.retrievedOn).toBe("2026-11-13");
-      expect(record.prototypeLabel).toBe("PROTOTYPE-UNVERIFIED");
-      expect(record.tier === "E" || record.tier === undefined).toBe(true);
-      expect(record.pageBodyRead).toBe(record.tier === "E");
       expect(record.placeFacts).toBe("none");
-      expect(record.officialUrl.startsWith("https://") || record.officialUrl.startsWith("tel:")).toBe(true);
+      expect(record.officialUrl.startsWith("https://")).toBe(true);
       const blob = JSON.stringify(record);
       for (const pattern of ADVICE) expect(blob).not.toMatch(pattern);
     }
@@ -54,10 +53,9 @@ describe("directory records", () => {
     expect(odsp?.figure?.statement.en).toMatch(/not a general shelter amount/);
     expect(odsp?.figure?.qualifier.en).toMatch(/not your payment/i);
     expect(DIRECTORY.find((record) => record.id === "home-vehicle-modification")?.summary.en).toMatch(/\$38,000/);
-    const providence = DIRECTORY.find((record) => record.id === "providence-care");
-    expect(providence?.pageBodyRead).toBe(false);
-    expect(providence?.tier).toBeUndefined();
-    expect(providence?.verificationPlain.en).toMatch(/Unchecked/);
+    expect(DIRECTORY.find((record) => record.id === "providence-care")).toBeUndefined();
+    expect(DIRECTORY.find((record) => record.id === "march-of-dimes-hvmp")).toBeUndefined();
+    expect(DIRECTORY.find((record) => record.id === "call-911")).toBeUndefined();
     expect(DIRECTORY.find((record) => record.id === "health-sciences-north")?.summary.en).toMatch(/does not classify/i);
     expect(DIRECTORY.find((record) => record.id === "scio-public-site")?.summary.en).toMatch(/not an endorsement/i);
   });

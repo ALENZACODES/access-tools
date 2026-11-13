@@ -115,10 +115,6 @@ export function DirectoryView(props: DirectoryViewProps) {
                 {record.figure.statement[language]} {record.figure.qualifier[language]} {copy.checked} {record.figure.retrievedOn}.
               </p>
             ) : null}
-            <p style={{ margin: 0 }}>
-              {record.prototypeLabel}
-              {record.tier ? ` · ${copy.tier} ${record.tier}` : ` · ${copy.noTier}`}
-            </p>
             <p style={{ margin: 0 }}>{record.verificationPlain[language]}</p>
             <p style={{ margin: 0 }}>{record.licenceNote[language]}</p>
             <p style={{ margin: 0 }}>{record.neverMeans[language]}</p>
@@ -145,8 +141,17 @@ export function DirectoryView(props: DirectoryViewProps) {
               <p style={{ margin: 0 }}>
                 <a href={record.phone} style={linkStyle}>
                   {copy.call} {record.name[language]}
-                  {record.phoneNote ? `, ${record.phoneNote[language]}` : ""}
+                  {record.phone === "tel:988" || !record.phoneNote ? "" : `, ${record.phoneNote[language]}`}
                 </a>
+                {record.phone === "tel:988" ? (
+                  <>
+                    {" "}
+                    <a href="sms:988" style={linkStyle}>
+                      {copy.text988}
+                    </a>
+                    {record.phoneNote ? <span> {record.phoneNote[language]}</span> : null}
+                  </>
+                ) : null}
               </p>
             ) : null}
             <button type="button" style={button} onClick={() => props.onToggle(record.id)} aria-pressed={props.note.programIds.includes(record.id)}>
@@ -195,9 +200,8 @@ const en = {
   open: "Official page:",
   frenchPage: "Official French page",
   call: "Call",
+  text988: "Text 9-8-8",
   englishOnly: "English only",
-  tier: "Tier",
-  noTier: "Unchecked. No tier.",
   save: "Save this title on this device",
   clear: "Delete the on-device list",
   confirmClear: "Confirm delete of the on-device list",
@@ -213,9 +217,8 @@ const fr: typeof en = {
   open: "Page officielle :",
   frenchPage: "Page officielle en français",
   call: "Appeler",
+  text988: "Texter le 9-8-8",
   englishOnly: "En anglais seulement",
-  tier: "Niveau",
-  noTier: "Non vérifié. Aucun niveau.",
   save: "Garder ce titre sur cet appareil",
   clear: "Effacer la liste sur l'appareil",
   confirmClear: "Confirmer l'effacement de la liste sur l'appareil",

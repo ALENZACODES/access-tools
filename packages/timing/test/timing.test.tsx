@@ -151,6 +151,8 @@ describe("timing panel", () => {
     expect(HEALTH_AWARE_TIMING_ENABLED).toBe(false);
     const { container } = render(<Harness />);
     expect(screen.getByRole("link", { name: "Call 911 now" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Call 9-8-8" })).toHaveAttribute("href", "tel:988");
+    expect(screen.getByRole("link", { name: "Text 9-8-8" })).toHaveAttribute("href", "sms:988");
     expect(screen.queryByLabelText(/washroom|toilettes|continuous travel/i)).not.toBeInTheDocument();
     expect(screen.getByText(/not in the prototype/i)).toBeInTheDocument();
     expect(screen.getByRole("note").textContent).toBe(TIMING_BOUNDARY.en);

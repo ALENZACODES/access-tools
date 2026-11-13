@@ -120,6 +120,11 @@ export function TimingPanel(props: TimingPanelProps): JSX.Element {
             <a href={pathway.href} style={linkStyle}>
               {pathway.action[language]}
             </a>
+            {pathway.textHref && pathway.textAction ? (
+              <a href={pathway.textHref} style={linkStyle}>
+                {pathway.textAction[language]}
+              </a>
+            ) : null}
             {pathway.sourceUrl ? (
               <a href={pathway.sourceUrl} style={{ color: "#102a43" }}>
                 {copy.source}

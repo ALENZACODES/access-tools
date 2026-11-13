@@ -261,13 +261,15 @@ function GamePlay(props: {
       <p role="note">{GAMES_BOUNDARY[props.session.language]}</p>
       {props.session.practice ? <p role="status">{PRACTICE_BANNER[props.session.language]}</p> : null}
       <p aria-live="polite">{view.announcement}</p>
-      <p>{view.prompt}</p>
+      <p aria-hidden={view.announcement === view.prompt ? true : undefined}>{view.prompt}</p>
       <p>{view.detail}</p>
       <div role="group" aria-labelledby={titleId} style={{ display: "grid", gap: "0.5rem" }}>
         {choices.map((choice, index) => (
           <button
             key={choice.id}
             type="button"
+            disabled={props.session.paused}
+            aria-disabled={props.session.paused}
             style={{ ...props.button, outline: index === safeScan ? `4px solid ${props.colors.accent}` : undefined }}
             onClick={() => pickChoice(choice.id)}
             onKeyDown={(event) => {
@@ -286,10 +288,10 @@ function GamePlay(props: {
         ))}
       </div>
       <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-        <button type="button" style={props.button} onClick={() => setScan(stepScan(safeScan, choices.length, 1))}>
+        <button type="button" style={props.button} disabled={props.session.paused} aria-disabled={props.session.paused} onClick={() => setScan(stepScan(safeScan, choices.length, 1))}>
           {props.copy.next}
         </button>
-        <button type="button" style={props.button} onClick={() => focused && pickChoice(focused.id)}>
+        <button type="button" style={props.button} disabled={props.session.paused} aria-disabled={props.session.paused} onClick={() => focused && pickChoice(focused.id)}>
           {props.copy.choose}
         </button>
         <button type="button" style={props.button} onClick={() => props.onSession(pauseSession(props.session))}>

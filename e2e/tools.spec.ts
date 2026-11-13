@@ -36,7 +36,7 @@ test("directory, timing, and a game are usable without advice or a timer", async
   const violations = await page.evaluate(async () => {
     const axeRuntime = (window as unknown as { axe: typeof axe }).axe;
     const results = await axeRuntime.run(document, {
-      rules: { region: { enabled: false } },
+      rules: {},
     });
     return results.violations.map((violation) => `${violation.id}: ${violation.help}`);
   });

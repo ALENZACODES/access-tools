@@ -6,7 +6,6 @@ import {
   NO_PLACE_FACTS,
   RETRIEVED_ON,
   VERIFICATION_DESK,
-  VERIFICATION_UNCHECKED,
 } from "./boundaries.js";
 import type { DirectoryRecord } from "./types.js";
 
@@ -14,27 +13,22 @@ type Entry = Pick<
   DirectoryRecord,
   "id" | "category" | "topics" | "readingContexts" | "name" | "administrator" | "geography" | "summary" | "officialUrl" | "sourceName"
 > &
-  Partial<Pick<DirectoryRecord, "doesNot" | "frenchOfficialUrl" | "phone" | "phoneNote" | "figure" | "placeFacts" | "pageBodyRead">>;
+  Partial<Pick<DirectoryRecord, "doesNot" | "frenchOfficialUrl" | "phone" | "phoneNote" | "figure" | "placeFacts">>;
 
 function entry(partial: Entry): DirectoryRecord {
-  const pageBodyRead = partial.pageBodyRead !== false;
-  const record: DirectoryRecord = {
-    schemaVersion: "directory-record-1.1.0",
+  return {
+    schemaVersion: "directory-record-1.0.0",
     notEligibilityAdvice: true,
     framing: DIRECTORY_FRAMING,
     retrievedOn: RETRIEVED_ON,
     nextReviewOn: NEXT_REVIEW_ON,
-    prototypeLabel: "PROTOTYPE-UNVERIFIED",
-    deskVerifiedDate: pageBodyRead ? RETRIEVED_ON : null,
-    verificationPlain: pageBodyRead ? VERIFICATION_DESK : VERIFICATION_UNCHECKED,
+    verificationTier: "administrator_page",
+    verificationPlain: VERIFICATION_DESK,
     neverMeans: NEVER_MEANS,
     licenceNote: LICENCE_NOTE,
     placeFacts: "none",
     ...partial,
-    pageBodyRead,
   };
-  if (pageBodyRead) record.tier = "E";
-  return record;
 }
 
 const ontario = { en: "Government of Ontario", fr: "Gouvernement de l'Ontario" };
@@ -407,26 +401,6 @@ export const DIRECTORY: readonly DirectoryRecord[] = [
     },
   }),
   entry({
-    id: "march-of-dimes-hvmp",
-    category: "funding",
-    topics: ["home-modification", "vehicle-modification"],
-    readingContexts: ["early_community", "long_term"],
-    name: { en: "March of Dimes HVMP application page", fr: "Page de demande du PAHV de la Marche des dix sous" },
-    administrator: { en: "March of Dimes Canada", fr: "Marche des dix sous du Canada" },
-    geography: "ontario",
-    officialUrl: "https://www.marchofdimes.ca/en-ca/programs/hvmp",
-    pageBodyRead: false,
-    sourceName: "March of Dimes HVMP page linked from Ontario.ca",
-    summary: {
-      en: "The application site named by the Ontario Home and Vehicle Modification Program page. Read that site for the steps the coordinator uses.",
-      fr: "Le site de demande nommé par la page ontarienne du Programme d'adaptation des habitations et des véhicules. Lisez ce site pour les étapes utilisées par le coordonnateur.",
-    },
-    doesNot: {
-      en: "Listing this page is not an endorsement, and the App does not decide an application.",
-      fr: "Inscrire cette page n'est pas un appui, et l'application ne décide pas d'une demande.",
-    },
-  }),
-  entry({
     id: "enabling-accessibility-fund",
     category: "funding",
     topics: ["grants"],
@@ -638,26 +612,6 @@ export const DIRECTORY: readonly DirectoryRecord[] = [
     },
   }),
   entry({
-    id: "call-911",
-    category: "services",
-    topics: ["crisis"],
-    readingContexts: ["any"],
-    name: { en: "Call 911", fr: "Composer le 911" },
-    administrator: { en: "Public emergency number", fr: "Numéro d'urgence public" },
-    geography: "ontario",
-    officialUrl: "tel:911",
-    phone: "tel:911",
-    sourceName: "Public emergency telephone number",
-    summary: {
-      en: "For immediate danger or any situation you treat as an emergency. The call is not screened by the App.",
-      fr: "Pour un danger immédiat ou toute situation que vous traitez comme une urgence. L'appel n'est pas filtré par l'application.",
-    },
-    doesNot: {
-      en: "The App does not ask questions before showing this number and does not interpret symptoms.",
-      fr: "L'application ne pose pas de questions avant d'afficher ce numéro et n'interprète pas les symptômes.",
-    },
-  }),
-  entry({
     id: "health-care-connect",
     category: "services",
     topics: ["primary-care"],
@@ -753,23 +707,6 @@ export const DIRECTORY: readonly DirectoryRecord[] = [
     summary: {
       en: "Health Sciences North in Sudbury. This directory does not classify the hospital as a specialist spinal-cord rehabilitation centre. Program and building details are only on the hospital's own pages.",
       fr: "Health Sciences North à Sudbury. Ce répertoire ne classe pas l'hôpital comme un centre spécialisé en réadaptation pour lésion médullaire. Les détails des programmes et des bâtiments sont seulement sur les pages de l'hôpital.",
-    },
-    doesNot: NO_PLACE_FACTS,
-  }),
-  entry({
-    id: "providence-care",
-    category: "services",
-    topics: ["rehabilitation"],
-    readingContexts: ["rehabilitation", "any"],
-    name: { en: "Providence Care", fr: "Providence Care" },
-    administrator: { en: "Providence Care", fr: "Providence Care" },
-    geography: "ontario",
-    officialUrl: "https://providencecare.ca/",
-    pageBodyRead: false,
-    sourceName: "Providence Care homepage",
-    summary: {
-      en: "Unchecked link. The page body was not read on 13 November 2026, so no city, program, referral rule, or building fact is stated.",
-      fr: "Lien non vérifié. Le corps de la page n'a pas été lu le 13 novembre 2026, donc aucune ville, aucun programme, aucune règle d'aiguillage et aucun fait sur le bâtiment n'est indiqué.",
     },
     doesNot: NO_PLACE_FACTS,
   }),

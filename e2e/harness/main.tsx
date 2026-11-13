@@ -26,6 +26,7 @@ function Harness() {
 
   return (
     <div>
+      <header>
       <p>Test harness for directory, timing, and games. It is not the product shell.</p>
       <nav aria-label="Sections" style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
         <button type="button" style={tabStyle} aria-current={tab === "directory" ? "page" : undefined} onClick={() => setTab("directory")}>
@@ -38,6 +39,7 @@ function Harness() {
           Games
         </button>
       </nav>
+      </header>
       {tab === "directory" ? (
         <DirectoryView
           records={DIRECTORY}
