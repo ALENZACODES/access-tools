@@ -1,0 +1,86 @@
+import { useMemo, useState } from "react";
+import { createRoot } from "react-dom/client";
+import { appendChange, appendCorrection, correctionsFor, changesFor, emptyLog, readLog, writeLog } from "../corrections.js";
+import { fixturePack, FIXTURE_DAY } from "../fixtures.js";
+import { PlacePage } from "../react/PlacePage.js";
+import { a11yCss } from "../react/a11yCss.js";
+import type { Lang, ReportLog } from "../types.js";
+
+function Demo() {
+  const [lang, setLang] = useState<Lang>("en");
+  const [placeId, setPlaceId] = useState(fixturePack.places[0]?.id ?? "");
+  const [log, setLog] = useState<ReportLog>(() => {
+    try {
+      return readLog(window.localStorage);
+    } catch {
+      return emptyLog();
+    }
+  });
+  const place = useMemo(() => fixturePack.places.find((item) => item.id === placeId) ?? fixturePack.places[0], [placeId]);
+  if (!place) return null;
+  const save = (next: ReportLog) => {
+    setLog(next);
+    try {
+      writeLog(window.localStorage, next);
+    } catch {
+      /* in-memory only when storage is blocked */
+    }
+  };
+  return (
+    <div className="app-ui" lang={lang}>
+      <style>{a11yCss}</style>
+      <a href="#demo-main">{lang === "fr" ? "Aller au contenu" : "Skip to content"}</a>
+      <header>
+        <p>{lang === "fr" ? "l'application — pages de lieux" : "the App — place pages"}</p>
+        <button
+          type="button"
+          onClick={() => {
+            const next = lang === "en" ? "fr" : "en";
+            setLang(next);
+            document.documentElement.lang = next;
+          }}
+        >
+          {lang === "en" ? "Français" : "English"}
+        </button>
+      </header>
+      <nav id="demo-main" aria-label={lang === "fr" ? "Lieux du jeu d'essai" : "Fixture places"}>
+        <h2>{lang === "fr" ? "Lieux étiquetés" : "Labelled places"}</h2>
+        <ul>
+          {fixturePack.places.map((item) => (
+            <li key={item.id}>
+              <a
+                href={`#${item.id}`}
+                aria-current={item.id === place.id ? "page" : undefined}
+                onClick={(event) => {
+                  event.preventDefault();
+                  setPlaceId(item.id);
+                }}
+              >
+                {lang === "fr" && item.nameFr ? item.nameFr : item.identity.name} — {item.recordProvenance.tier}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <PlacePage
+        place={place}
+        pack={fixturePack}
+        lang={lang}
+        today={FIXTURE_DAY}
+        corrections={correctionsFor(log, place.id)}
+        changes={changesFor(log, place.id)}
+        onCorrection={(input) => {
+          const id = typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `c-${Date.now()}`;
+          save(appendCorrection(log, { ...input, placeId: place.id }, new Date().toISOString(), id));
+        }}
+        onChange={(input) => {
+          const id = typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `r-${Date.now()}`;
+          save(appendChange(log, { ...input, placeId: place.id }, new Date().toISOString(), id));
+        }}
+      />
+    </div>
+  );
+}
+
+const root = document.getElementById("root");
+if (root) createRoot(root).render(<Demo />);

@@ -1,0 +1,147 @@
+import {
+  distanceMetres,
+  formatChangeTable,
+  formatHoist,
+  formatTransfer,
+  isGeoPoint,
+  isOpenAt,
+  tierPhrase,
+  transferSideMatches,
+  unknownLabel,
+  useLabelText,
+  washroomUseLabel,
+  type CivilClock,
+  type GeoPoint,
+  type Lang,
+  type PlacePack,
+  type Washroom,
+} from "@access-tools/place";
+import { coverageSentence } from "./coverage.js";
+
+export interface WashroomQuery {
+  text: string;
+  lang: Lang;
+  origin: GeoPoint | null;
+  transferSide: "left" | "right" | "both" | "any";
+  changeTable: boolean;
+  hoist: boolean;
+  registerOnly: boolean;
+  openAt: CivilClock | null;
+  showHidden: boolean;
+}
+
+export interface WashroomHit {
+  placeId: string;
+  washroomId: string;
+  placeName: string;
+  washroomName: string;
+  municipality: string;
+  distanceMetres: number | null;
+  transferText: string;
+  changeTableText: string;
+  hoistText: string;
+  accessText: string;
+  hoursText: string;
+  verificationDate: string;
+  tierText: string;
+  recommendation: string;
+  phone: string | null;
+  hiddenReasons: string[];
+}
+
+export interface WashroomResult {
+  hits: WashroomHit[];
+  hidden: WashroomHit[];
+  coverage: string;
+  empty: boolean;
+}
+
+function reasons(washroom: Washroom, query: WashroomQuery): string[] {
+  const list: string[] = [];
+  const say = (en: string, fr: string) => list.push(query.lang === "fr" ? fr : en);
+  const side = washroom.transfer.value?.side ?? null;
+  if (query.transferSide !== "any" && !transferSideMatches(side, query.transferSide)) {
+    say(
+      "Transfer side does not match. Unknown is not a match.",
+      "Le côté de transfert ne correspond pas. Inconnu n'est pas une correspondance.",
+    );
+  }
+  if (query.changeTable && washroom.changeTable.value?.present !== "yes") {
+    say("No adult change table is recorded as present.", "Aucune table de change adulte n'est enregistrée comme présente.");
+  }
+  if (query.hoist && washroom.hoist.value?.present !== "yes") {
+    say("No hoist is recorded as present.", "Aucun lève-personne n'est enregistré comme présent.");
+  }
+  const inRegister = washroom.changeTable.value?.present === "yes" || washroom.hoist.value?.present === "yes";
+  if (query.registerOnly && !inRegister) {
+    say(
+      "No adult change table or hoist is recorded as present.",
+      "Aucune table de change adulte ni lève-personne n'est enregistré comme présent.",
+    );
+  }
+  if (query.openAt) {
+    const open = isOpenAt(washroom.hours, query.openAt);
+    if (open === "unknown") {
+      say("Hours are unknown, so this record is not shown as open.", "Les heures sont inconnues, donc cette fiche n'est pas affichée comme ouverte.");
+    } else if (open === "closed") {
+      say("Closed at the time you entered.", "Fermé à l'heure que vous avez saisie.");
+    }
+  }
+  return list;
+}
+
+export function findWashrooms(pack: PlacePack, query: WashroomQuery): WashroomResult {
+  const needle = query.text.trim().toLowerCase();
+  const hits: WashroomHit[] = [];
+  for (const place of pack.places) {
+    for (const washroom of place.washrooms) {
+      const name = query.lang === "fr" && place.nameFr ? place.nameFr : place.identity.name;
+      const blob = `${name} ${place.identity.municipality} ${washroom.name} ${place.identity.address ?? ""}`.toLowerCase();
+      if (needle && !blob.includes(needle)) continue;
+      const point = isGeoPoint(place.identity.latitude, place.identity.longitude);
+      const provenance = washroom.turningDiameterMm.provenance ?? washroom.transfer.provenance ?? place.recordProvenance;
+      const phone = washroom.accessPolicy.value?.phone ?? place.identity.phone;
+      hits.push({
+        placeId: place.id,
+        washroomId: washroom.id,
+        placeName: name,
+        washroomName: washroom.name,
+        municipality: place.identity.municipality,
+        distanceMetres: query.origin && point ? distanceMetres(query.origin, point) : null,
+        transferText: formatTransfer(washroom.transfer.value, query.lang),
+        changeTableText: formatChangeTable(washroom.changeTable.value, query.lang),
+        hoistText: formatHoist(washroom.hoist.value, query.lang),
+        accessText: washroom.accessPolicy.value
+          ? `${washroom.accessPolicy.value.method}. ${washroom.accessPolicy.value.howToObtain ?? unknownLabel(query.lang)}`
+          : unknownLabel(query.lang),
+        hoursText: washroom.hoursReliability.value?.hoursText ?? unknownLabel(query.lang),
+        verificationDate: provenance?.sourceDate ?? unknownLabel(query.lang),
+        tierText: provenance ? tierPhrase(provenance.tier, place.datasetStatus, query.lang) : unknownLabel(query.lang),
+        recommendation: useLabelText(washroomUseLabel(place.datasetStatus, washroom), query.lang),
+        phone,
+        hiddenReasons: reasons(washroom, query),
+      });
+    }
+  }
+  const hidden = hits.filter((hit) => hit.hiddenReasons.length > 0);
+  const shown = hits.filter((hit) => hit.hiddenReasons.length === 0);
+  const byDistance = (a: WashroomHit, b: WashroomHit) => {
+    if (a.distanceMetres === null && b.distanceMetres !== null) return 1;
+    if (a.distanceMetres !== null && b.distanceMetres === null) return -1;
+    if (a.distanceMetres !== null && b.distanceMetres !== null && a.distanceMetres !== b.distanceMetres) {
+      return a.distanceMetres - b.distanceMetres;
+    }
+    return a.placeName.localeCompare(b.placeName, query.lang);
+  };
+  shown.sort(byDistance);
+  hidden.sort(byDistance);
+  return {
+    hits: shown,
+    hidden,
+    coverage: coverageSentence(
+      pack.places.filter((place) => place.washrooms.length > 0).map((place) => place.identity.municipality),
+      query.lang,
+    ),
+    empty: shown.length === 0,
+  };
+}
