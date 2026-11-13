@@ -8,13 +8,16 @@ import {
   labelOf,
   tierPhrase,
   transferSideMatches,
+  profileWashroomReasons,
   unknownLabel,
   useLabelText,
+  type EquipmentProfile,
   washroomUseLabel,
   type CivilClock,
   type GeoPoint,
   type Lang,
   type PlacePack,
+  type PlaceRecord,
   type Washroom,
 } from "@access-tools/place";
 import { coverageSentence } from "./coverage.js";
@@ -30,6 +33,8 @@ export interface WashroomQuery {
   registerOnly: boolean;
   openAt: CivilClock | null;
   showHidden: boolean;
+  /** On-device equipment profile. Unknown record values are not matches. */
+  profile?: EquipmentProfile | null;
 }
 
 export interface WashroomHit {
@@ -60,7 +65,7 @@ export interface WashroomResult {
   empty: boolean;
 }
 
-function reasons(washroom: Washroom, query: WashroomQuery): string[] {
+function reasons(place: PlaceRecord, washroom: Washroom, query: WashroomQuery): string[] {
   const list: string[] = [];
   const side = washroom.transfer.value?.side ?? null;
   if (query.transferSide !== "any" && !transferSideMatches(side, query.transferSide)) {
@@ -79,6 +84,7 @@ function reasons(washroom: Washroom, query: WashroomQuery): string[] {
     if (open === "unknown") list.push(finderCopy("finder.reason.hours-unknown", query.lang));
     else if (open === "closed") list.push(finderCopy("finder.closed", query.lang));
   }
+  list.push(...profileWashroomReasons(place, washroom, query.profile ?? null, query.lang));
   return list;
 }
 
@@ -121,7 +127,7 @@ export function findWashrooms(pack: PlacePack, query: WashroomQuery): WashroomRe
         tierText: provenance ? tierPhrase(provenance, place.datasetStatus, query.lang, place.publicationContext) : unknownLabel(query.lang),
         recommendation: useLabelText(washroomUseLabel(place.datasetStatus, washroom), query.lang),
         phone,
-        hiddenReasons: reasons(washroom, query),
+        hiddenReasons: reasons(place, washroom, query),
       });
     }
   }

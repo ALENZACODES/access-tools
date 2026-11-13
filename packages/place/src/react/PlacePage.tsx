@@ -1,7 +1,8 @@
 import { copy, fill, labelOf } from "../i18n.js";
-import type { ChangeReport, Correction, Lang, PlacePack, PlaceRecord } from "../types.js";
+import { appendProfileNote, doorClears, type EquipmentProfile } from "../profile.js";
+import type { ChangeReport, Correction, Lang, PlacePack, PlaceRecord, Washroom, YesNo } from "../types.js";
 import type { ChangeProblem } from "../types.js";
-import { correctableFields, projectPlace } from "../project.js";
+import { correctableFields, projectPlace, type FieldRowView } from "../project.js";
 import { a11yCss } from "./a11yCss.js";
 import { EnglishOnlyNote, EnglishText, RecordText } from "./EnglishText.js";
 import { FieldTable } from "./FieldTable.js";
@@ -16,6 +17,7 @@ export function PlacePage({
   changes,
   onCorrection,
   onChange,
+  profile = null,
   headingLevel = 1,
 }: {
   place: PlaceRecord;
@@ -26,6 +28,8 @@ export function PlacePage({
   changes: ChangeReport[];
   onCorrection: (input: { fieldId: string; suggestedCorrection: string; note: string }) => void;
   onChange: (input: { targetId: string; problem: ChangeProblem; note: string }) => void;
+  /** Saved on this device. Unknown record values are not treated as matches. */
+  profile?: EquipmentProfile | null;
   /** Use 2 when this page is embedded under another page heading. */
   headingLevel?: 1 | 2;
 }) {
@@ -60,7 +64,7 @@ export function PlacePage({
           <section key={section.id} aria-labelledby={`h-${section.id}`}>
             <h2 id={`h-${section.id}`}>{section.heading}</h2>
             {section.intro ? <p>{section.intro}</p> : null}
-            <FieldTable rows={section.rows} caption={section.heading} lang={lang} />
+            <FieldTable rows={annotateEntrance(section.rows, place, profile, lang)} caption={section.heading} lang={lang} />
             {section.id === "washrooms"
               ? view.washrooms.map((washroom) => (
                   <article key={washroom.id} className="card" aria-labelledby={`w-${washroom.id}`}>
@@ -71,7 +75,12 @@ export function PlacePage({
                     <p>
                       <EnglishText lang={lang} text={washroom.attendantText} fragments={washroom.englishFragments} />
                     </p>
-                    <FieldTable rows={washroom.rows} caption={washroom.heading} lang={lang} captionEnglish={lang === "fr"} />
+                    <FieldTable
+                      rows={annotateWashroom(washroom.rows, place.washrooms.find((item) => item.id === washroom.id), profile, lang)}
+                      caption={washroom.heading}
+                      lang={lang}
+                      captionEnglish={lang === "fr"}
+                    />
                   </article>
                 ))
               : null}
@@ -84,7 +93,12 @@ export function PlacePage({
                     <p>{bay.kindText}</p>
                     <p>{bay.vanLiftText}</p>
                     <p>{bay.privilegeText}</p>
-                    <FieldTable rows={bay.rows} caption={bay.heading} lang={lang} captionEnglish={lang === "fr"} />
+                    <FieldTable
+                      rows={annotateRoute(bay.rows, place.parking.bays.find((item) => item.id === bay.id)?.stepFreeRoute.value ?? null, profile, lang)}
+                      caption={bay.heading}
+                      lang={lang}
+                      captionEnglish={lang === "fr"}
+                    />
                   </article>
                 ))
               : null}
@@ -94,7 +108,18 @@ export function PlacePage({
                     <h3 id={`c-${point.id}`}>
                       <RecordText lang={lang} text={point.heading} />
                     </h3>
-                    <FieldTable rows={point.rows} caption={point.heading} lang={lang} captionEnglish={lang === "fr"} />
+                    <FieldTable
+                      rows={annotateRoute(
+                        point.rows,
+                        place.chargingPoints.find((item) => item.id === point.id)?.stepFreeRoute.value ?? null,
+                        profile,
+                        lang,
+                        copy("bay.step-free", lang),
+                      )}
+                      caption={point.heading}
+                      lang={lang}
+                      captionEnglish={lang === "fr"}
+                    />
                   </article>
                 ))
               : null}
@@ -174,4 +199,43 @@ export function PlacePage({
       </div>
     </article>
   );
+}
+
+function markRow(row: FieldRowView, fails: boolean, lang: Lang): FieldRowView {
+  if (!fails) return row;
+  return { ...row, valueText: appendProfileNote(row.valueText, true, lang) };
+}
+
+function annotateEntrance(rows: FieldRowView[], place: PlaceRecord, profile: EquipmentProfile | null, lang: Lang): FieldRowView[] {
+  if (!profile) return rows;
+  return rows.map((row) => {
+    if (row.id === "entrance.step-free") return markRow(row, profile.stepFreeRequired && place.entrance.stepFree.value !== "yes", lang);
+    if (row.id === "entrance.door-clear-width-mm") {
+      return markRow(row, profile.widthMm !== null && !doorClears(place.entrance.doorClearWidthMm.value, profile.widthMm), lang);
+    }
+    return row;
+  });
+}
+
+function annotateWashroom(rows: FieldRowView[], washroom: Washroom | undefined, profile: EquipmentProfile | null, lang: Lang): FieldRowView[] {
+  if (!profile || !washroom) return rows;
+  return rows.map((row) => {
+    if (row.id === "washroom.change-table") return markRow(row, profile.adultChangeTable && washroom.changeTable.value?.present !== "yes", lang);
+    if (row.id === "washroom.door") return markRow(row, profile.widthMm !== null && !doorClears(washroom.doorClearWidthMm.value, profile.widthMm), lang);
+    return row;
+  });
+}
+
+function annotateRoute(
+  rows: FieldRowView[],
+  recorded: YesNo | null,
+  profile: EquipmentProfile | null,
+  lang: Lang,
+  label?: string,
+): FieldRowView[] {
+  if (!profile?.stepFreeRequired || recorded === "yes") return rows;
+  return rows.map((row) => {
+    const matches = label ? row.label === label : row.id.endsWith(".step-free-route");
+    return matches ? markRow(row, true, lang) : row;
+  });
 }

@@ -8,7 +8,9 @@ import {
   placeHasHoist,
   placeHasStepFreeEntrance,
   placeHasVanBay,
+  profilePlaceReasons,
   transferSideMatches,
+  type EquipmentProfile,
   type GeoPoint,
   type Lang,
   type PlacePack,
@@ -37,6 +39,8 @@ export interface SearchQuery {
   category?: string;
   placeType?: PlaceType;
   sci: SciFilters;
+  /** On-device equipment profile. Unknown record values are not matches. */
+  profile?: EquipmentProfile | null;
   showHidden: boolean;
   sort: "name" | "source-date" | "distance";
   origin: GeoPoint | null;
@@ -87,7 +91,7 @@ function documentText(place: PlaceRecord): string {
   return JSON.stringify(place);
 }
 
-function reasons(place: PlaceRecord, pack: PlacePack, sci: SciFilters, lang: Lang): string[] {
+function reasons(place: PlaceRecord, pack: PlacePack, sci: SciFilters, lang: Lang, profile: EquipmentProfile | null): string[] {
   const list: string[] = [];
   if (sci.stepFreeEntrance && !placeHasStepFreeEntrance(place)) list.push(searchCopy("search.reason.step-free", lang));
   if (sci.transferSide) {
@@ -106,6 +110,7 @@ function reasons(place: PlaceRecord, pack: PlacePack, sci: SciFilters, lang: Lan
     const ok = stores.some((store) => store.categoriesPublished.includes(wanted));
     if (!ok) list.push(searchCopy("search.reason.supply", lang));
   }
+  list.push(...profilePlaceReasons(place, profile, lang));
   return list;
 }
 
@@ -150,7 +155,7 @@ export function searchPack(pack: PlacePack, query: SearchQuery): SearchResponse 
       recordDate: place.recordProvenance.recordDate,
       datasetStatus: place.datasetStatus,
       distanceMetres: distance,
-      hiddenReasons: reasons(place, pack, query.sci, query.lang),
+      hiddenReasons: reasons(place, pack, query.sci, query.lang, query.profile ?? null),
     });
   }
   const hidden = prepared.filter((hit) => hit.hiddenReasons.length > 0);

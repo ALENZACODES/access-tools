@@ -32,6 +32,21 @@ describe("search", () => {
     expect(result.hidden.find((hit) => hit.placeId === "fix-cafe")?.hiddenReasons[0]).toContain("not recorded as yes");
   });
 
+  it("applies an equipment profile and does not treat an unknown door as wide enough", () => {
+    const query = emptySearchQuery("en");
+    query.profile = {
+      schemaVersion: "equipment-profile-1.0.0",
+      name: "Day chair",
+      chairType: "power",
+      widthMm: 900,
+      stepFreeRequired: false,
+      adultChangeTable: false,
+    };
+    const result = searchPack(fixturePack, query);
+    expect(result.hits.map((hit) => hit.placeId)).not.toContain("fix-community-centre");
+    expect(result.hidden.find((hit) => hit.placeId === "fix-cafe")?.hiddenReasons.join(" ")).toMatch(/unknown or narrower/);
+  });
+
   it("filters adult change tables and van bays without a quality score", () => {
     const change = emptySearchQuery("en");
     change.sci = { adultChangeTable: true };

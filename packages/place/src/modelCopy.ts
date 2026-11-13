@@ -399,4 +399,52 @@ export const MODEL_COPY = {
     en: "Saved on this device as pending. This prototype does not moderate or publish reports. The displayed record does not change.",
     fr: "Enregistré sur cet appareil comme en attente. Ce prototype ne modère ni ne publie les signalements. La fiche affichée ne change pas.",
   },
+  "profile.title": { en: "Equipment profile", fr: "Profil d'équipement" },
+  "profile.intro": {
+    en: "Saved on this device only. It filters records in the App. It is not medical advice and it does not decide eligibility.",
+    fr: "Enregistré seulement sur cet appareil. Il filtre les fiches dans l'application. Ce n'est pas un avis médical et ce n'est pas une décision d'admissibilité.",
+  },
+  "profile.name": { en: "Profile name", fr: "Nom du profil" },
+  "profile.chair": { en: "Chair type", fr: "Type de fauteuil" },
+  "profile.chair.unset": { en: "Not set", fr: "Non précisé" },
+  "profile.chair.manual": { en: "Manual wheelchair", fr: "Fauteuil roulant manuel" },
+  "profile.chair.power": { en: "Power wheelchair", fr: "Fauteuil roulant motorisé" },
+  "profile.chair.scooter": { en: "Mobility scooter", fr: "Quadriporteur" },
+  "profile.chair.other": { en: "Other wheelchair or scooter", fr: "Autre fauteuil ou scooter" },
+  "profile.width": { en: "Chair width for door clearance (mm)", fr: "Largeur du fauteuil pour le passage de porte (mm)" },
+  "profile.width-hint": {
+    en: "Used only when a door clear width is recorded as a number. An unknown width is not a match.",
+    fr: "Utilisée seulement quand une largeur libre de porte est enregistrée comme un nombre. Une largeur inconnue n'est pas une correspondance.",
+  },
+  "profile.step-free": { en: "Step-free required", fr: "Sans marche exigé" },
+  "profile.change-table": { en: "Adult change table needed", fr: "Table à langer pour adultes nécessaire" },
+  "profile.save": { en: "Save profile", fr: "Enregistrer le profil" },
+  "profile.saved": { en: "Profile saved on this device.", fr: "Profil enregistré sur cet appareil." },
+  "profile.delete": { en: "Delete my profile", fr: "Supprimer mon profil" },
+  "profile.deleted": { en: "Profile deleted from this device.", fr: "Profil supprimé de cet appareil." },
+  "profile.name-required": { en: "Enter a profile name before saving.", fr: "Entrez un nom de profil avant d'enregistrer." },
+  "profile.width-invalid": {
+    en: "Chair width must be a whole number of millimetres, or leave it blank.",
+    fr: "La largeur du fauteuil doit être un nombre entier de millimètres, ou rester vide.",
+  },
+  "profile.storage-failed": {
+    en: "This browser did not store the profile.",
+    fr: "Ce navigateur n'a pas enregistré le profil.",
+  },
+  "profile.highlight": {
+    en: "Does not meet the saved profile. Unknown is not a match.",
+    fr: "Ne correspond pas au profil enregistré. Inconnu n'est pas une correspondance.",
+  },
+  "profile.reason.step-free": {
+    en: "Step-free is not recorded as yes, so this record is not shown as a match.",
+    fr: "Sans marche n'est pas enregistré comme oui, donc cette fiche n'est pas un résultat.",
+  },
+  "profile.reason.change-table": {
+    en: "An adult change table is not recorded as present, so this record is not shown as a match.",
+    fr: "Aucune table à langer pour adultes n'est enregistrée comme présente, donc cette fiche n'est pas un résultat.",
+  },
+  "profile.reason.door": {
+    en: "Door clear width is unknown or narrower than the saved chair width, so this record is not shown as a match.",
+    fr: "La largeur libre de la porte est inconnue ou plus étroite que la largeur enregistrée, donc cette fiche n'est pas un résultat.",
+  },
 } as const;

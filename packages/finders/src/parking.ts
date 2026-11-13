@@ -7,8 +7,10 @@ import {
   labelOf,
   privilegeText,
   tierPhrase,
+  profileStepFreeReason,
   unknownLabel,
   vanLiftReading,
+  type EquipmentProfile,
   vanLiftText,
   winterClearanceText,
   type GeoPoint,
@@ -25,6 +27,8 @@ export interface ParkingQuery {
   vanLift: boolean;
   showHidden: boolean;
   month: number;
+  /** On-device equipment profile. An unknown step-free route is not a match. */
+  profile?: EquipmentProfile | null;
 }
 
 export interface ParkingHit {
@@ -107,8 +111,14 @@ export function findParking(pack: PlacePack, query: ParkingQuery): ParkingResult
 }
 
 function parkingReasons(bay: ParkingBay, query: ParkingQuery): string[] {
-  if (!query.vanLift) return [];
-  const reading = vanLiftReading(bay);
-  if (reading === "aisle-recorded") return [];
-  return [reading === "no-deployment-space" ? copy("lift.type-b", query.lang) : finderCopy("finder.lift-hidden", query.lang)];
+  const list: string[] = [];
+  if (query.vanLift) {
+    const reading = vanLiftReading(bay);
+    if (reading !== "aisle-recorded") {
+      list.push(reading === "no-deployment-space" ? copy("lift.type-b", query.lang) : finderCopy("finder.lift-hidden", query.lang));
+    }
+  }
+  const stepFree = profileStepFreeReason(bay.stepFreeRoute.value, query.profile ?? null, query.lang);
+  if (stepFree) list.push(stepFree);
+  return list;
 }

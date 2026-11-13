@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { a11yCss, fixturePack, type Lang } from "@access-tools/place";
+import { a11yCss, EquipmentProfileForm, fixturePack, readProfile, type EquipmentProfile, type Lang } from "@access-tools/place";
 import { finderCopy } from "../i18n.js";
 import { ChargingFinder, ParkingFinder, RepairSupplyFinder, WashroomFinder } from "../react/Finders.js";
 
@@ -9,6 +9,13 @@ export function FinderDemo() {
   const [registerOnly, setRegisterOnly] = useState(false);
   const [vanLift, setVanLift] = useState(false);
   const [showHidden, setShowHidden] = useState(true);
+  const [profile, setProfile] = useState<EquipmentProfile | null>(() => {
+    try {
+      return readProfile(window.localStorage);
+    } catch {
+      return null;
+    }
+  });
   const [range, setRange] = useState("");
   const parsedRange = range.trim() === "" ? null : Number(range);
   const userTestedRangeMetres = parsedRange !== null && Number.isFinite(parsedRange) ? parsedRange : null;
@@ -34,6 +41,7 @@ export function FinderDemo() {
         </button>
       </header>
       <main id="finder-main" className="stack">
+        <EquipmentProfileForm lang={lang} storage={window.localStorage} onChange={setProfile} />
         <fieldset>
           <legend>{finderCopy("demo.filters", lang)}</legend>
           <label>
@@ -66,6 +74,7 @@ export function FinderDemo() {
             registerOnly,
             openAt: null,
             showHidden,
+            profile,
           }}
         />
         <ParkingFinder
@@ -77,6 +86,7 @@ export function FinderDemo() {
             vanLift,
             showHidden,
             month: 11,
+            profile,
           }}
         />
         <ChargingFinder
@@ -88,6 +98,7 @@ export function FinderDemo() {
             openAt: null,
             showHidden,
             userTestedRangeMetres,
+            profile,
           }}
         />
         <RepairSupplyFinder
