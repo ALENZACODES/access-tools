@@ -27,8 +27,8 @@ function entry(partial: Omit<ParatransitEntry, "schemaVersion" | "retrievedOn" |
 }
 
 /**
- * Read from each agency's own site on 14 November 2026.
- * OC Transpo Para Transpo is omitted: the official page returned 403 during this check.
+ * Read from each agency's own site on 14 November 2026 (UTC).
+ * OC Transpo Para Transpo stays out. A retry of https://www.octranspo.com/en/para-transpo/ on that UTC date returned HTTP 403, so the phone and booking link were not read.
  * No booking window is stored.
  */
 export const PARATRANSIT: readonly ParatransitEntry[] = [

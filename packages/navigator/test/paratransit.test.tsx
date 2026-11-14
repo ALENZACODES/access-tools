@@ -1,8 +1,10 @@
+import { readFileSync } from "node:fs";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import axe from "axe-core";
 import { describe, expect, it } from "vitest";
 import { PARATRANSIT, ParatransitDirectory, paratransitErrors, publishedPhoneHref } from "../src/index.js";
+import schema from "../src/paratransit/schema/paratransit-entry.schema.json";
 
 const FORBIDDEN = [
   /you qualify/i,
@@ -112,6 +114,10 @@ describe("paratransit directory", () => {
   it("links each agency in English and French without eligibility copy", async () => {
     const { container } = render(<ParatransitDirectory />);
     expect(screen.getByRole("note").textContent).toMatch(/not eligibility advice/i);
+    expect(screen.getAllByText(/Desk check, tier administrator_page\. Unverified by the App\./)).toHaveLength(PARATRANSIT.length);
+    expect(schema.properties.retrievedOn.description).toMatch(/UTC calendar date/);
+    const readme = readFileSync("README.md", "utf8");
+    expect(readme).toMatch(/retrievedOn` is a UTC calendar date/);
     expect(screen.getByRole("link", { name: "Wheel-Trans website" })).toHaveAttribute("href", "https://www.ttc.ca/wheel-trans");
     expect(screen.getByRole("link", { name: "Wheel-Trans booking page" })).toHaveAttribute("href", "https://mywheel-trans.ttc.ca");
     expect(screen.getByRole("link", { name: "Call 416-393-4222" })).toHaveAttribute("href", "tel:+14163934222");
@@ -123,6 +129,7 @@ describe("paratransit directory", () => {
     expect(screen.queryByRole("link", { name: "Wheel-Trans website" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Français" }));
     expect(screen.getByRole("note").textContent).toMatch(/avis d'admissibilité/);
+    expect(screen.getByText(/Vérification au bureau, niveau administrator_page\. Non vérifié par l'application\./)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Site web de DARTS" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Appeler le 905-529-1717" })).toHaveAttribute("href", "tel:+19055291717");
     const results = await axe.run(container, {

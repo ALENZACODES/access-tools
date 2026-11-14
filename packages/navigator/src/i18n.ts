@@ -41,6 +41,7 @@ export const DIRECTORY_COPY = {
   "para.source": { en: "Source page for {name}", fr: "Page source pour {name}" },
   "para.retrieved": { en: "Retrieved {date}.", fr: "Consulté le {date}." },
   "para.tier": { en: "Desk check, tier administrator_page.", fr: "Vérification au bureau, niveau administrator_page." },
+  "para.unverified": { en: "Unverified by the App.", fr: "Non vérifié par l'application." },
   "para.not-ride": { en: "The App does not decide who can ride.", fr: "L'application ne décide pas qui peut monter à bord." },
   "para.empty": { en: "No agencies match.", fr: "Aucun organisme ne correspond." },
   "para.switch-help": {

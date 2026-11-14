@@ -17,6 +17,7 @@ export interface ParatransitEntry {
   phone: string;
   sourceUrl: string;
   sourceName: string;
+  /** UTC calendar date (YYYY-MM-DD) when the official page was read. */
   retrievedOn: string;
   verificationTier: "administrator_page";
   licenceNote: BilingualText;
