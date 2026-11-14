@@ -70,7 +70,7 @@ describe("equipment profile form", () => {
     const user = userEvent.setup();
     render(<Harness storage={storage} />);
     expect(screen.queryByLabelText("Profile name")).not.toBeInTheDocument();
-    expect(screen.getByText("Stored on this device. This does not filter records yet.")).toBeInTheDocument();
+    expect(screen.getByText("Stored on this device. A power wheelchair adds a note when an entrance is not recorded as step-free. It does not hide records.")).toBeInTheDocument();
     const width = screen.getByLabelText("Chair width for door clearance (mm)");
     await user.type(width, "nope");
     await user.click(screen.getByRole("button", { name: "Save profile" }));

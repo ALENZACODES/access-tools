@@ -1,0 +1,13 @@
+{
+  "name": "@access-tools/acceptance",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Master-plan Day 1 to 6 acceptance tests for the code in this repository. Each test title starts with its check id, for example D06-2.",
+  "dependencies": {
+    "@access-tools/finders": "*",
+    "@access-tools/games": "*",
+    "@access-tools/place": "*",
+    "@access-tools/search": "*"
+  }
+}
