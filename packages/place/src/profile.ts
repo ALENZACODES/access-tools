@@ -131,11 +131,26 @@ export function profilePlaceReasons(place: PlaceRecord, profile: EquipmentProfil
   return reasons;
 }
 
-/** Shown on a record that stays visible because the door width was not measured. */
+/**
+ * A power wheelchair flags an entrance that is not recorded as step-free.
+ * It is a note, not a filter: the record stays visible and Unknown stays Unknown.
+ * When "Step-free required" is also set, that setting already hides the record, so no second note is added.
+ */
+export function powerChairStepFreeNote(place: PlaceRecord, profile: EquipmentProfile | null, lang: Lang): string | null {
+  if (!profile || profile.chairType !== "power" || profile.stepFreeRequired) return null;
+  if (place.entrance.stepFree.value === "yes") return null;
+  return copy("profile.note.power-step-free", lang);
+}
+
+/** Notes on a record that stays visible: a missing door width, or a power-chair step-free flag. */
 export function profilePlaceNotes(place: PlaceRecord, profile: EquipmentProfile | null, lang: Lang): string[] {
   if (!profile) return [];
-  const note = doorSentences(place.entrance.doorClearWidthMm.value, profile.widthMm, lang).note;
-  return note ? [note] : [];
+  const notes: string[] = [];
+  const door = doorSentences(place.entrance.doorClearWidthMm.value, profile.widthMm, lang).note;
+  if (door) notes.push(door);
+  const power = powerChairStepFreeNote(place, profile, lang);
+  if (power) notes.push(power);
+  return notes;
 }
 
 export function profileWashroomReasons(place: PlaceRecord, washroom: Washroom, profile: EquipmentProfile | null, lang: Lang): string[] {
@@ -148,10 +163,20 @@ export function profileWashroomReasons(place: PlaceRecord, washroom: Washroom, p
   return reasons;
 }
 
-export function profileWashroomNotes(washroom: Washroom, profile: EquipmentProfile | null, lang: Lang): string[] {
+/** Pass the place to add the power-chair entrance flag. */
+export function profileWashroomNotes(
+  washroom: Washroom,
+  profile: EquipmentProfile | null,
+  lang: Lang,
+  place?: PlaceRecord,
+): string[] {
   if (!profile) return [];
-  const note = doorSentences(washroom.doorClearWidthMm.value, profile.widthMm, lang).note;
-  return note ? [note] : [];
+  const notes: string[] = [];
+  const door = doorSentences(washroom.doorClearWidthMm.value, profile.widthMm, lang).note;
+  if (door) notes.push(door);
+  const power = place ? powerChairStepFreeNote(place, profile, lang) : null;
+  if (power) notes.push(power);
+  return notes;
 }
 
 export function profileStepFreeReason(recorded: YesNo | null, profile: EquipmentProfile | null, lang: Lang): string | null {
