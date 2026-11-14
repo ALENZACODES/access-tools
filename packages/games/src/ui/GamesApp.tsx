@@ -1,9 +1,9 @@
 import { useEffect, useId, useRef, useState, type CSSProperties } from "react";
 import { SwitchBar } from "../../../place/src/react/SwitchBar.js";
 import { DAILY_NOTE, GAMES_BOUNDARY, GRACE_RULE, PRACTICE_BANNER } from "../boundaries.js";
-import { TASK_FAMILY_LABEL, choose, createSession, pauseSession, viewSession } from "../engine.js";
+import { OPTIONAL_TIMER_GAME_ID, TASK_FAMILY_LABEL, choose, createSession, pauseSession, viewSession } from "../engine.js";
 import { HUB_FILTERS, buildDailySet, filterGames, searchGames, streakFromRounds, surpriseGame } from "../hub.js";
-import { gameCopy, type GameCopyKey } from "../i18n.js";
+import { gameCopy, gamePhrase, type GameCopyKey } from "../i18n.js";
 import type { GameSession, GamesRound, GamesSettings, HubFilter, Language } from "../types.js";
 
 const FILTER_LABEL: Record<HubFilter, GameCopyKey> = {
@@ -43,6 +43,11 @@ function uiCopy(language: Language) {
     back: text("ui.back"),
     points: text("ui.points"),
     insideOnly: text("ui.inside-only"),
+    deviceOnly: text("ui.device-only"),
+    reduceMotion: text("ui.reduce-motion"),
+    reduceMotionNote: text("ui.reduce-motion-note"),
+    timedOptional: text("ui.timed-optional"),
+    timedOptionalNote: text("ui.timed-optional-note"),
   };
 }
 
@@ -93,7 +98,7 @@ export function GamesApp(props: GamesAppProps) {
         seed: props.seed ?? 1,
         pace: "relaxed",
         language,
-        timerEnabled: false,
+        timerEnabled: props.settings.timerEnabled,
         practice,
       }),
     );
@@ -109,7 +114,7 @@ export function GamesApp(props: GamesAppProps) {
       playerId: props.settings.playerId,
       gameId: session.metaId,
       pace: "relaxed",
-      timerEnabled: false,
+      timerEnabled: session.timerEnabled,
       startedAt,
       endedAt: new Date().toISOString(),
       completed: true,
@@ -130,6 +135,7 @@ export function GamesApp(props: GamesAppProps) {
     color: colors.color,
     display: "grid",
     gap: "1rem",
+    ["--games-focus" as string]: colors.accent,
   };
   const button: CSSProperties = {
     boxSizing: "border-box",
@@ -153,6 +159,7 @@ export function GamesApp(props: GamesAppProps) {
         button={button}
         colors={colors}
         copy={copy}
+        reduceMotion={props.settings.reduceMotion}
         onSession={(session) => {
           setActive(session);
           finishIfNeeded(session);
@@ -167,7 +174,8 @@ export function GamesApp(props: GamesAppProps) {
   const daily = buildDailySet(today);
 
   return (
-    <main lang={language} style={frame} ref={rootRef} data-switch-root>
+    <main lang={language} style={frame} ref={rootRef} data-switch-root data-games-root data-reduce-motion={props.settings.reduceMotion ? "true" : "false"}>
+      <style>{MOTION_CSS}</style>
       <SwitchBar rootRef={rootRef} nextLabel={copy.next} chooseLabel={copy.choose} help={copy.switchHelp} />
       <header style={{ display: "flex", justifyContent: "space-between", gap: "0.75rem", flexWrap: "wrap" }}>
         <h1 style={{ margin: 0 }}>{copy.games}</h1>
@@ -226,6 +234,23 @@ export function GamesApp(props: GamesAppProps) {
             <p style={{ margin: 0 }}>{TASK_FAMILY_LABEL[game.taskFamily][language]}</p>
             <p style={{ margin: 0 }}>{game.timingNote[language]}</p>
             <p style={{ margin: 0 }}>{game.inputNote[language]}</p>
+            {game.id === OPTIONAL_TIMER_GAME_ID ? (
+              <div>
+                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", minHeight: "48px" }}>
+                  <input
+                    type="checkbox"
+                    style={{ width: "2.75rem", height: "2.75rem", flex: "none" }}
+                    aria-describedby="timed-optional-note"
+                    checked={props.settings.timerEnabled}
+                    onChange={(event) => props.onSettings({ ...props.settings, timerEnabled: event.target.checked })}
+                  />
+                  {copy.timedOptional}
+                </label>
+                <p id="timed-optional-note" style={{ margin: 0 }}>
+                  {copy.timedOptionalNote}
+                </p>
+              </div>
+            ) : null}
             <button id={`play-${game.id}`} type="button" style={button} onClick={() => openGame(game.id, false)}>
               {copy.play} {game.name}
             </button>
@@ -246,6 +271,19 @@ export function GamesApp(props: GamesAppProps) {
           />
           {copy.hideStreak}
         </label>
+        <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", minHeight: "48px" }}>
+          <input
+            type="checkbox"
+            style={{ width: "2.75rem", height: "2.75rem", flex: "none" }}
+            aria-describedby="reduce-motion-note"
+            checked={props.settings.reduceMotion}
+            onChange={(event) => props.onSettings({ ...props.settings, reduceMotion: event.target.checked })}
+          />
+          {copy.reduceMotion}
+        </label>
+        <p id="reduce-motion-note" style={{ margin: 0 }}>
+          {copy.reduceMotionNote}
+        </p>
         <label style={{ display: "grid", gap: "0.35rem" }}>
           {copy.text}
           <select
@@ -269,6 +307,7 @@ function GamePlay(props: {
   button: CSSProperties;
   colors: { background: string; color: string; accent: string; border: string };
   copy: ReturnType<typeof uiCopy>;
+  reduceMotion: boolean;
   onSession: (session: GameSession) => void;
   onExit: () => void;
 }) {
@@ -277,6 +316,14 @@ function GamePlay(props: {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const rootRef = useRef<HTMLElement>(null);
   const choices = view.choices;
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const clockRunning = view.timerVisible && view.status === "playing" && !view.paused;
+
+  useEffect(() => {
+    if (!clockRunning) return;
+    const id = window.setInterval(() => setElapsedSeconds((seconds) => seconds + 1), 1000);
+    return () => window.clearInterval(id);
+  }, [clockRunning]);
 
   useEffect(() => {
     headingRef.current?.focus();
@@ -288,13 +335,24 @@ function GamePlay(props: {
   }
 
   return (
-    <main lang={props.session.language} style={props.frame} ref={rootRef} data-switch-root>
+    <main
+      lang={props.session.language}
+      style={props.frame}
+      ref={rootRef}
+      data-switch-root
+      data-games-root
+      data-game={view.gameId}
+      data-reduce-motion={props.reduceMotion ? "true" : "false"}
+    >
+      <style>{MOTION_CSS}</style>
       <SwitchBar rootRef={rootRef} nextLabel={props.copy.next} chooseLabel={props.copy.choose} help={props.copy.switchHelp} />
       <h1 id={titleId} ref={headingRef} tabIndex={-1}>
         {view.title}
       </h1>
       <p role="note">{GAMES_BOUNDARY[props.session.language]}</p>
+      <p data-device-only>{props.copy.deviceOnly}</p>
       {props.session.practice ? <p role="status">{PRACTICE_BANNER[props.session.language]}</p> : null}
+      {view.timerVisible ? <p data-optional-clock>{gamePhrase("ui.clock", props.session.language, { seconds: elapsedSeconds })}</p> : null}
       <p aria-live="polite">{view.announcement}</p>
       <p aria-hidden={view.announcement === view.prompt ? true : undefined}>{view.prompt}</p>
       <p>{view.detail}</p>
@@ -340,6 +398,31 @@ function GamePlay(props: {
     </main>
   );
 }
+
+/**
+ * Focus ring: 3px in the theme's accent colour, so it is not left to the
+ * browser default. The games have no animation. This guard keeps it that way for anything
+ * added later: the setting, or the device's own reduced-motion request,
+ * switches off animation, transition, and smooth scrolling inside the games.
+ */
+export const MOTION_CSS = `
+[data-games-root] :focus-visible {
+  outline: 3px solid var(--games-focus, #102a43);
+  outline-offset: 2px;
+}
+[data-games-root][data-reduce-motion="true"], [data-games-root][data-reduce-motion="true"] * {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-games-root], [data-games-root] * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+`;
 
 function note(colors: { border: string }): CSSProperties {
   return { margin: 0, padding: "0.75rem", borderLeft: `4px solid ${colors.border}` };

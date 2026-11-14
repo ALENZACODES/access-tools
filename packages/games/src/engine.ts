@@ -8,6 +8,10 @@ function pair(key: GameCopyKey): Record<Language, string> {
 }
 
 const UNTIMED = pair("note.untimed");
+const UNTIMED_OPTIONAL_CLOCK = pair("note.untimed-optional");
+
+/** The only game with an optional clock. Every other game ignores a timer request. */
+export const OPTIONAL_TIMER_GAME_ID = "focus-flankers";
 const INPUT = pair("note.input");
 const COLOUR = pair("note.colour");
 
@@ -44,7 +48,7 @@ export const CATALOG: readonly GameMeta[] = [
   named("pattern-rules", "name.pattern-rules", "rule_discovery", "summary.pattern-rules"),
   named("word-roots-builder", "name.word-roots-builder", "word_roots", "summary.word-roots-builder"),
   named("number-compare", "name.number-compare", "quantity", "summary.number-compare"),
-  named("focus-flankers", "name.focus-flankers", "selective_attention", "summary.focus-flankers"),
+  { ...named("focus-flankers", "name.focus-flankers", "selective_attention", "summary.focus-flankers"), timingNote: UNTIMED_OPTIONAL_CLOCK },
   named("switch-rules", "name.switch-rules", "task_switching", "summary.switch-rules"),
   named("shape-assembly", "name.shape-assembly", "spatial_assembly", "summary.shape-assembly"),
   named("order-keeper", "name.order-keeper", "running_inventory", "summary.order-keeper"),
@@ -129,7 +133,7 @@ export function createSession(id: string, options: CreateOptions): GameSession {
     metaId: id,
     language: options.language,
     pace: options.pace,
-    timerEnabled: false,
+    timerEnabled: options.timerEnabled === true && id === OPTIONAL_TIMER_GAME_ID,
     practice: options.practice === true,
     paused: false,
     correct: 0,
@@ -178,7 +182,10 @@ export function choose(session: GameSession, choiceId: string): GameSession {
   return apply(session, choiceId);
 }
 
-/** No clock is wired. Calling this does not change the round. */
+/**
+ * No game has a time limit. The optional Focus Flankers clock only counts up
+ * on the screen, so there is nothing to expire. Calling this does not change the round.
+ */
 export function expireTrial(session: GameSession): GameSession {
   return session;
 }
@@ -202,7 +209,7 @@ export function viewSession(session: GameSession): GameView {
     points: session.practice ? 0 : session.correct,
     practice: session.practice,
     scoreVisible: session.done && !session.practice,
-    timerVisible: false,
+    timerVisible: session.timerEnabled,
   };
 }
 
