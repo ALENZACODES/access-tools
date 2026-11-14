@@ -7,6 +7,7 @@
     "packages/*/test/**/*.tsx",
     "e2e/harness/**/*.ts",
     "e2e/harness/**/*.tsx",
+    "e2e/regression/**/*.ts",
     "vitest.setup.ts"
   ],
   "exclude": ["node_modules", "dist"]

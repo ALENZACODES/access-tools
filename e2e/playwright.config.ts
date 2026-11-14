@@ -5,6 +5,7 @@ export default defineConfig({
   testMatch: "*.spec.ts",
   fullyParallel: false,
   retries: 0,
+  reporter: [["list"], ["./regression/reporter.ts"]],
   use: {
     ...devices["Desktop Chrome"],
     ...(process.env.CI ? {} : { channel: "chrome" as const }),
