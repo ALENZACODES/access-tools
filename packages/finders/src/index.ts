@@ -2,9 +2,19 @@ export { coverageSentence } from "./coverage.js";
 export { findWashrooms } from "./washrooms.js";
 export type { WashroomHit, WashroomQuery, WashroomResult } from "./washrooms.js";
 export { findParking } from "./parking.js";
-export type { ParkingHit, ParkingQuery, ParkingResult } from "./parking.js";
+export type { ParkingCluster, ParkingHit, ParkingQuery, ParkingResult } from "./parking.js";
+export {
+  broadenParkingQuery,
+  broadenWashroomQuery,
+  destinationMatches,
+  destinationText,
+  parkingFilters,
+  washroomFilters,
+} from "./filters.js";
+export type { FinderField, FinderFilter, SeededCount } from "./filters.js";
 export { findCharging } from "./charging.js";
 export type { ChargingHit, ChargingQuery, ChargingResult } from "./charging.js";
 export { findRepairAndSupply, publishedServices } from "./repair.js";
 export type { DirectoryHit, RepairQuery, RepairResult } from "./repair.js";
 export { ChargingFinder, ParkingFinder, RepairSupplyFinder, WashroomFinder } from "./react/Finders.js";
+export type { FinderEntry } from "./react/Finders.js";

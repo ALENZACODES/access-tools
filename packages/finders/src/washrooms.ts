@@ -6,6 +6,7 @@ import {
   isGeoPoint,
   isOpenAt,
   labelOf,
+  projectWashroom,
   tierPhrase,
   transferSideMatches,
   profileWashroomNotes,
@@ -22,6 +23,7 @@ import {
   type Washroom,
 } from "@access-tools/place";
 import { coverageSentence } from "./coverage.js";
+import { destinationMatches, washroomFilters, type FinderField, type FinderFilter, type SeededCount } from "./filters.js";
 import { finderCopy } from "./i18n.js";
 
 export interface WashroomQuery {
@@ -36,6 +38,8 @@ export interface WashroomQuery {
   showHidden: boolean;
   /** On-device equipment profile. A missing door width stays visible. Unknown step-free and change-table values are not matches. */
   profile?: EquipmentProfile | null;
+  /** Calendar date (YYYY-MM-DD) used for the record projection. Defaults to the pack's generation date. */
+  today?: string;
 }
 
 export interface WashroomHit {
@@ -59,6 +63,12 @@ export interface WashroomHit {
   hiddenReasons: string[];
   /** Missing door-width notes. These do not hide the record. */
   profileNotes: string[];
+  genderText: string;
+  attendantText: string;
+  /** The attendant note is authored English shown on a French screen. */
+  attendantIsEnglish: boolean;
+  /** Every washroom field on the record, each with its tier, source and record date. A null value reads Unknown. */
+  fields: FinderField[];
 }
 
 export interface WashroomResult {
@@ -66,6 +76,12 @@ export interface WashroomResult {
   hidden: WashroomHit[];
   coverage: string;
   empty: boolean;
+  /** Filters that are on, each with the rule it applies. */
+  filters: FinderFilter[];
+  /** Washroom records in the pack, before the destination and the filters. */
+  seeded: SeededCount;
+  /** Records at the searched destination, before the filters. */
+  destinationCount: number;
 }
 
 function reasons(place: PlaceRecord, washroom: Washroom, query: WashroomQuery): string[] {
@@ -92,13 +108,13 @@ function reasons(place: PlaceRecord, washroom: Washroom, query: WashroomQuery): 
 }
 
 export function findWashrooms(pack: PlacePack, query: WashroomQuery): WashroomResult {
-  const needle = query.text.trim().toLowerCase();
   const hits: WashroomHit[] = [];
+  const today = query.today ?? pack.generatedOn;
   for (const place of pack.places) {
     for (const washroom of place.washrooms) {
       const name = query.lang === "fr" && place.nameFr ? place.nameFr : place.identity.name;
-      const blob = `${name} ${place.identity.municipality} ${washroom.name} ${place.identity.address ?? ""}`.toLowerCase();
-      if (needle && !blob.includes(needle)) continue;
+      if (!destinationMatches(place, query.text, [washroom.name])) continue;
+      const card = projectWashroom(place, washroom, query.lang, today);
       const point = isGeoPoint(place.identity.latitude, place.identity.longitude);
       const provenance = washroom.turningDiameterMm.provenance ?? washroom.transfer.provenance ?? place.recordProvenance;
       const phone = washroom.accessPolicy.value?.phone ?? place.identity.phone;
@@ -132,6 +148,19 @@ export function findWashrooms(pack: PlacePack, query: WashroomQuery): WashroomRe
         phone,
         hiddenReasons: reasons(place, washroom, query),
         profileNotes: profileWashroomNotes(washroom, query.profile ?? null, query.lang),
+        genderText: card.genderText,
+        attendantText: card.attendantText,
+        attendantIsEnglish: query.lang === "fr" && washroom.attendantAccessNote !== null,
+        fields: card.rows.map((row) => ({
+          id: row.id,
+          label: row.label,
+          valueText: row.valueText,
+          unknown: row.unknown,
+          tierText: row.tierText,
+          sourceName: row.sourceName,
+          recordDate: row.recordDate,
+          englishFragments: row.englishFragments,
+        })),
       });
     }
   }
@@ -155,5 +184,11 @@ export function findWashrooms(pack: PlacePack, query: WashroomQuery): WashroomRe
       query.lang,
     ),
     empty: shown.length === 0,
+    filters: washroomFilters(query),
+    seeded: {
+      records: pack.places.reduce((sum, place) => sum + place.washrooms.length, 0),
+      places: pack.places.filter((place) => place.washrooms.length > 0).length,
+    },
+    destinationCount: hits.length,
   };
 }
