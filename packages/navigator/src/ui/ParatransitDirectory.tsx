@@ -123,7 +123,9 @@ export function ParatransitDirectory() {
               </a>
             </p>
             <p style={{ margin: 0 }}>{directoryFill("para.retrieved", language, { date: entry.retrievedOn })}</p>
-            <p style={{ margin: 0 }}>{directoryCopy("para.tier", language)}</p>
+            <p style={{ margin: 0 }}>
+              {directoryCopy("para.tier", language)} {directoryCopy("para.unverified", language)}
+            </p>
             <p style={{ margin: 0 }}>{entry.licenceNote[language]}</p>
           </li>
         ))}

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://access-tools.local/schema/paratransit-entry-1.0.0.json",
   "title": "Paratransit directory entry",
-  "description": "Links-only record for one specialized transit agency. It stores no booking window and no eligibility rule.",
+  "description": "Links-only record for one specialized transit agency. It stores no booking window and no eligibility rule. retrievedOn is a UTC calendar date.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -32,7 +32,11 @@
     "phone": { "type": "string", "minLength": 10 },
     "sourceUrl": { "type": "string", "pattern": "^https://" },
     "sourceName": { "type": "string", "minLength": 3 },
-    "retrievedOn": { "type": "string", "format": "date" },
+    "retrievedOn": {
+      "type": "string",
+      "format": "date",
+      "description": "UTC calendar date (YYYY-MM-DD) when the official page was read. It is not a local clock time."
+    },
     "verificationTier": { "const": "administrator_page" },
     "licenceNote": { "$ref": "#/$defs/bilingual" },
     "notEligibilityAdvice": { "const": true }
