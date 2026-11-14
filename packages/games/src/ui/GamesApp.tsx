@@ -1,9 +1,9 @@
 import { useEffect, useId, useRef, useState, type CSSProperties } from "react";
+import { SwitchBar } from "../../../place/src/react/SwitchBar.js";
 import { DAILY_NOTE, GAMES_BOUNDARY, GRACE_RULE, PRACTICE_BANNER } from "../boundaries.js";
 import { TASK_FAMILY_LABEL, choose, createSession, pauseSession, viewSession } from "../engine.js";
 import { HUB_FILTERS, buildDailySet, filterGames, searchGames, streakFromRounds, surpriseGame } from "../hub.js";
 import { gameCopy, type GameCopyKey } from "../i18n.js";
-import { stepScan } from "../scan.js";
 import type { GameSession, GamesRound, GamesSettings, HubFilter, Language } from "../types.js";
 
 const FILTER_LABEL: Record<HubFilter, GameCopyKey> = {
@@ -63,6 +63,7 @@ export function GamesApp(props: GamesAppProps) {
   const [startedAt, setStartedAt] = useState<string | null>(null);
   const [replayNote, setReplayNote] = useState(false);
   const returnFocusId = useRef<string | null>(null);
+  const rootRef = useRef<HTMLElement>(null);
   const language = props.settings.language;
   const copy = uiCopy(language);
   const scale = props.settings.textScale === "extra_large" ? "1.5rem" : props.settings.textScale === "large" ? "1.25rem" : "1.125rem";
@@ -133,6 +134,7 @@ export function GamesApp(props: GamesAppProps) {
   const button: CSSProperties = {
     boxSizing: "border-box",
     minHeight: "48px",
+    minWidth: "2.75rem",
     maxWidth: "100%",
     padding: "0.6rem 0.9rem",
     fontSize: "1rem",
@@ -165,7 +167,8 @@ export function GamesApp(props: GamesAppProps) {
   const daily = buildDailySet(today);
 
   return (
-    <main lang={language} style={frame}>
+    <main lang={language} style={frame} ref={rootRef} data-switch-root>
+      <SwitchBar rootRef={rootRef} nextLabel={copy.next} chooseLabel={copy.choose} help={copy.switchHelp} />
       <header style={{ display: "flex", justifyContent: "space-between", gap: "0.75rem", flexWrap: "wrap" }}>
         <h1 style={{ margin: 0 }}>{copy.games}</h1>
         <button type="button" style={button} onClick={() => props.onSettings({ ...props.settings, language: language === "en" ? "fr" : "en" })}>
@@ -175,7 +178,6 @@ export function GamesApp(props: GamesAppProps) {
       <p role="note" style={note(colors)}>
         {GAMES_BOUNDARY[language]}
       </p>
-      <p>{copy.switchHelp}</p>
       <p>{copy.namesStayEnglish}</p>
       <section aria-labelledby="daily-title">
         <h2 id="daily-title">{copy.daily}</h2>
@@ -238,6 +240,7 @@ export function GamesApp(props: GamesAppProps) {
         <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", minHeight: "48px" }}>
           <input
             type="checkbox"
+            style={{ width: "2.75rem", height: "2.75rem" }}
             checked={props.settings.streakOptOut}
             onChange={(event) => props.onSettings({ ...props.settings, streakOptOut: event.target.checked })}
           />
@@ -272,10 +275,8 @@ function GamePlay(props: {
   const view = viewSession(props.session);
   const titleId = useId();
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const [scan, setScan] = useState(0);
+  const rootRef = useRef<HTMLElement>(null);
   const choices = view.choices;
-  const safeScan = choices.length === 0 ? 0 : scan % choices.length;
-  const focused = choices[safeScan];
 
   useEffect(() => {
     headingRef.current?.focus();
@@ -287,7 +288,8 @@ function GamePlay(props: {
   }
 
   return (
-    <main lang={props.session.language} style={props.frame}>
+    <main lang={props.session.language} style={props.frame} ref={rootRef} data-switch-root>
+      <SwitchBar rootRef={rootRef} nextLabel={props.copy.next} chooseLabel={props.copy.choose} help={props.copy.switchHelp} />
       <h1 id={titleId} ref={headingRef} tabIndex={-1}>
         {view.title}
       </h1>
@@ -297,13 +299,13 @@ function GamePlay(props: {
       <p aria-hidden={view.announcement === view.prompt ? true : undefined}>{view.prompt}</p>
       <p>{view.detail}</p>
       <div role="group" aria-labelledby={titleId} style={{ display: "grid", gap: "0.5rem" }}>
-        {choices.map((choice, index) => (
+        {choices.map((choice) => (
           <button
             key={choice.id}
             type="button"
             disabled={props.session.paused}
             aria-disabled={props.session.paused}
-            style={{ ...props.button, outline: index === safeScan ? `4px solid ${props.colors.accent}` : undefined }}
+            style={props.button}
             onClick={() => pickChoice(choice.id)}
             onKeyDown={(event) => {
               if (event.key === "ArrowLeft" && choices.some((item) => item.id === "left")) {
@@ -321,12 +323,6 @@ function GamePlay(props: {
         ))}
       </div>
       <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-        <button type="button" style={props.button} disabled={props.session.paused} aria-disabled={props.session.paused} onClick={() => setScan(stepScan(safeScan, choices.length, 1))}>
-          {props.copy.next}
-        </button>
-        <button type="button" style={props.button} disabled={props.session.paused} aria-disabled={props.session.paused} onClick={() => focused && pickChoice(focused.id)}>
-          {props.copy.choose}
-        </button>
         <button type="button" style={props.button} onClick={() => props.onSession(pauseSession(props.session))}>
           {props.session.paused ? props.copy.resume : props.copy.pause}
         </button>

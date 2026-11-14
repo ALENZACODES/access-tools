@@ -775,12 +775,11 @@ function projectCharging(place: PlaceRecord, point: ChargingPoint, lang: Lang, t
     null,
   ];
   const rows = specs.map((spec, index) => {
-    const built = sourcedRow(place, `${point.id}.${index}`, spec[1], spec[2], spec[3], spec[4], "charging", lang, today, keptEnglish([authored[index]], lang));
+    const id = index === specs.length - 1 ? `${point.id}.step-free-route` : `${point.id}.${index}`;
+    const built = sourcedRow(place, id, spec[1], spec[2], spec[3], spec[4], "charging", lang, today, keptEnglish([authored[index]], lang));
     built.label = spec[0];
     return built;
   });
-  const stepFree = rows.find((row) => row.label === copy("bay.step-free", lang));
-  if (stepFree) stepFree.id = `${point.id}.step-free-route`;
   return { id: point.id, heading: point.name, rows };
 }
 

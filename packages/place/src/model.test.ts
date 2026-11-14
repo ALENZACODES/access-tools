@@ -383,6 +383,19 @@ describe("French catalogue", () => {
   });
 });
 
+describe("charging rows", () => {
+  it("gives the step-free row a stable id when the row is built", () => {
+    const place = placeById("fix-library-charging");
+    expect(place).toBeTruthy();
+    const view = projectPlace(place!, "en", FIXTURE_DAY, fixturePack);
+    const point = view.charging[0];
+    expect(point).toBeTruthy();
+    const stepFree = point!.rows.find((row) => row.id.endsWith(".step-free-route"));
+    expect(stepFree?.label).toBe("Step-free route");
+    expect(point!.rows.some((row) => row.label === "Step-free route" && !row.id.endsWith(".step-free-route"))).toBe(false);
+  });
+});
+
 describe("unknown helper", () => {
   it("starts empty", () => {
     expect(unknown<number>()).toEqual({ value: null, provenance: null, photoSlotIds: [] });

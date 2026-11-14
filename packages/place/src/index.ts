@@ -10,6 +10,7 @@ export * from "./recommend.js";
 export * from "./corrections.js";
 export * from "./profile.js";
 export { EquipmentProfileForm } from "./react/EquipmentProfileForm.js";
+export { SwitchBar, switchTargets } from "./react/SwitchBar.js";
 export * from "./lint.js";
 export * from "./schema.js";
 export * from "./project.js";

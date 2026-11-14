@@ -35,8 +35,8 @@ describe("search panel", () => {
     const box = screen.getAllByRole("checkbox")[0];
     if (!box) throw new Error("missing checkbox");
     expect(a11yCss).toContain('input[type="checkbox"]');
-    expect(a11yCss).toContain("min-width: 24px");
-    expect(a11yCss).toContain("min-height: 24px");
+    expect(a11yCss).toContain("min-width: 2.75rem");
+    expect(a11yCss).toContain("min-height: 2.75rem");
     expect(box).toBeInstanceOf(HTMLInputElement);
   });
 

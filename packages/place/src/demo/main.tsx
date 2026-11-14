@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { appendChange, appendCorrection, correctionsFor, changesFor, emptyLog, readLog, writeLog } from "../corrections.js";
 import { fixturePack, FIXTURE_DAY } from "../fixtures.js";
 import { copy } from "../i18n.js";
 import { readProfile, type EquipmentProfile } from "../profile.js";
 import { EquipmentProfileForm } from "../react/EquipmentProfileForm.js";
+import { SwitchBar } from "../react/SwitchBar.js";
 import { FixturePlaceNav } from "../react/FixturePlaceNav.js";
 import { PlacePage } from "../react/PlacePage.js";
 import { a11yCss } from "../react/a11yCss.js";
@@ -27,6 +28,7 @@ export function PlaceDemo() {
       return emptyLog();
     }
   });
+  const rootRef = useRef<HTMLDivElement>(null);
   const place = useMemo(() => fixturePack.places.find((item) => item.id === placeId) ?? fixturePack.places[0], [placeId]);
   useEffect(() => {
     document.documentElement.lang = lang;
@@ -41,9 +43,10 @@ export function PlaceDemo() {
     }
   };
   return (
-    <div className="app-ui" lang={lang}>
+    <div className="app-ui" lang={lang} ref={rootRef} data-switch-root>
       <style>{a11yCss}</style>
       <a href="#demo-main">{copy("nav.skip", lang)}</a>
+      <SwitchBar rootRef={rootRef} nextLabel={copy("switch.next", lang)} chooseLabel={copy("switch.choose", lang)} help={copy("switch.help", lang)} />
       <header>
         <p>{copy("demo.place-title", lang)}</p>
         <button

@@ -1,4 +1,5 @@
-import { useEffect, useId, useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type CSSProperties } from "react";
+import { SwitchBar } from "../../../place/src/react/SwitchBar.js";
 import { DIRECTORY_FRAMING, READING_CONTEXT_NOTE, TIER_MAPPING_NOTE } from "../boundaries.js";
 import { directoryCopy } from "../i18n.js";
 import { CATEGORY_LABEL, searchDirectory } from "../search.js";
@@ -18,6 +19,7 @@ export interface DirectoryViewProps {
 const button: CSSProperties = {
   boxSizing: "border-box",
   minHeight: "48px",
+  minWidth: "2.75rem",
   maxWidth: "100%",
   padding: "0.55rem 0.8rem",
   font: "inherit",
@@ -57,6 +59,9 @@ export function DirectoryView(props: DirectoryViewProps) {
     englishOnly: directoryCopy("dir.english-only", language),
     save: directoryCopy("dir.save", language),
     clear: directoryCopy("dir.clear", language),
+    switchHelp: directoryCopy("dir.switch-help", language),
+    next: directoryCopy("dir.next", language),
+    choose: directoryCopy("dir.choose", language),
     confirmClear: directoryCopy("dir.confirm-clear", language),
     noteMeaning: directoryCopy("dir.note", language),
   };
@@ -67,13 +72,15 @@ export function DirectoryView(props: DirectoryViewProps) {
     [props.records, text, categories],
   );
   const [confirmClear, setConfirmClear] = useState(false);
+  const rootRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     document.documentElement.lang = language;
   }, [language]);
 
   return (
-    <main lang={language} style={frame}>
+    <main lang={language} style={frame} ref={rootRef} data-switch-root>
+      <SwitchBar rootRef={rootRef} nextLabel={copy.next} chooseLabel={copy.choose} help={copy.switchHelp} />
       <header style={{ display: "flex", justifyContent: "space-between", gap: "0.75rem", flexWrap: "wrap" }}>
         <h1 id={titleId} style={{ margin: 0 }}>
           {copy.title}
@@ -103,6 +110,7 @@ export function DirectoryView(props: DirectoryViewProps) {
             <label key={category} style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem", marginRight: "0.8rem", minHeight: "48px" }}>
               <input
                 type="checkbox"
+                style={{ width: "2.75rem", height: "2.75rem", minWidth: "2.75rem", minHeight: "2.75rem" }}
                 checked={categories.includes(category)}
                 onChange={() =>
                   setCategories((current) =>
@@ -215,6 +223,7 @@ const linkStyle: CSSProperties = {
   display: "inline-flex",
   alignItems: "center",
   minHeight: "44px",
+  minWidth: "2.75rem",
   maxWidth: "100%",
   color: "#102a43",
   overflowWrap: "anywhere",

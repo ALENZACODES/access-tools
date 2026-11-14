@@ -19,6 +19,12 @@ export const DIRECTORY_COPY = {
     en: "The on-device list is only titles you marked. It is not an application and it is not sent anywhere.",
     fr: "La liste sur l'appareil ne contient que les titres que vous avez marqués. Ce n'est pas une demande et elle n'est envoyée nulle part.",
   },
+  "dir.switch-help": {
+    en: "Switch uses Next, then Choose. Space activates the focused button. Tab moves in order. There is no running scan.",
+    fr: "Le contacteur utilise Suivant, puis Choisir. Espace active le bouton qui a le focus. La tabulation avance dans l'ordre. Il n'y a pas de balayage automatique.",
+  },
+  "dir.next": { en: "Next", fr: "Suivant" },
+  "dir.choose": { en: "Choose", fr: "Choisir" },
   "lang.show-french": { en: "Français", fr: "Français" },
   "lang.show-english": { en: "English", fr: "English" },
 } as const;
