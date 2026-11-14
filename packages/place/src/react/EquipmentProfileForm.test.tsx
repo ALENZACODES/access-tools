@@ -92,7 +92,9 @@ describe("equipment profile form", () => {
     await user.click(screen.getByRole("button", { name: "Save profile" }));
     expect(readProfile(storage)?.chairType).toBe("scooter");
     await user.click(screen.getByRole("button", { name: "Delete my profile" }));
-    expect(screen.getByRole("group", { name: "This deletes the profile saved on this device." })).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "This deletes the profile saved on this device." })).toBeInTheDocument();
+    await user.tab();
+    expect(screen.getByRole("button", { name: "Keep my profile" })).toHaveFocus();
     await user.keyboard("{Escape}");
     expect(readProfile(storage)?.chairType).toBe("scooter");
     await user.click(screen.getByRole("button", { name: "Delete my profile" }));

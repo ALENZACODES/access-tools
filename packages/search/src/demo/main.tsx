@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   a11yCss,
@@ -7,7 +7,9 @@ import {
   changesFor,
   correctionsFor,
   emptyLog,
+  copy,
   EquipmentProfileForm,
+  SwitchBar,
   fixturePack,
   FIXTURE_DAY,
   PlacePage,
@@ -40,6 +42,7 @@ export function SearchDemo() {
       return emptyLog();
     }
   });
+  const rootRef = useRef<HTMLDivElement>(null);
   const place = fixturePack.places.find((item) => item.id === placeId) ?? null;
   useEffect(() => {
     document.documentElement.lang = lang;
@@ -53,9 +56,10 @@ export function SearchDemo() {
     }
   };
   return (
-    <div className="app-ui" lang={lang}>
+    <div className="app-ui" lang={lang} ref={rootRef} data-switch-root>
       <style>{a11yCss}</style>
       <a href="#search-main">{searchCopy("nav.skip", lang)}</a>
+      <SwitchBar rootRef={rootRef} nextLabel={copy("switch.next", lang)} chooseLabel={copy("switch.choose", lang)} help={copy("switch.help", lang)} />
       <header>
         <h1>{searchCopy("demo.title", lang)}</h1>
         <p>{searchCopy("demo.intro", lang)}</p>

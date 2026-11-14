@@ -7,7 +7,15 @@ export const a11yCss = `
   line-height: 1.5;
 }
 :where(.app-ui) * { box-sizing: border-box; }
-:where(.app-ui) a { color: #0b3a82; }
+:where(.app-ui) a {
+  color: #0b3a82;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
 :where(.app-ui) a:focus-visible,
 :where(.app-ui) button:focus-visible,
 :where(.app-ui) input:focus-visible,
@@ -35,12 +43,20 @@ export const a11yCss = `
 }
 :where(.app-ui) input[type="checkbox"],
 :where(.app-ui) input[type="radio"] {
-  width: 24px;
-  height: 24px;
-  min-width: 24px;
-  min-height: 24px;
+  width: 2.75rem;
+  height: 2.75rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
   accent-color: #0b3a82;
 }
+:where(.app-ui) dialog {
+  color: #1b1b1b;
+  background: #ffffff;
+  border: 3px solid #0b3a82;
+  max-width: min(28rem, 100%);
+  padding: 1rem;
+}
+:where(.app-ui) dialog::backdrop { background: rgba(0, 0, 0, 0.45); }
 :where(.app-ui) .prototype-notice {
   background: #fff4d6;
   border: 2px solid #8a5a00;
@@ -89,5 +105,19 @@ export const a11yCss = `
 :where(.app-ui) .error { color: #7a1020; font-weight: 700; }
 @media (prefers-reduced-motion: reduce) {
   :where(.app-ui) * { scroll-behavior: auto; }
+}
+`;
+
+/** Focus ring and hit size for the switch bar, including screens that do not use .app-ui. */
+export const switchCss = `
+:where([data-switch-bar]) button {
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  font: inherit;
+}
+:where([data-switch-bar]) button:focus-visible,
+:where([data-switch-current]) {
+  outline: 3px solid #0b3a82;
+  outline-offset: 2px;
 }
 `;

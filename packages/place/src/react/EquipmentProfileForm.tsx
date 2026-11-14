@@ -40,15 +40,26 @@ export function EquipmentProfileForm({
   const confirmId = useId();
   const deleteButtonRef = useRef<HTMLButtonElement>(null);
   const confirmButtonRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const openedConfirm = useRef(false);
   const widthInvalid = errorKey === "profile.width-invalid";
 
   useEffect(() => {
-    if (confirming) {
+    const dialog = dialogRef.current;
+    if (confirming && dialog) {
       openedConfirm.current = true;
+      if (!dialog.open) {
+        try {
+          if (typeof dialog.showModal === "function") dialog.showModal();
+          else dialog.setAttribute("open", "");
+        } catch {
+          dialog.setAttribute("open", "");
+        }
+      }
       confirmButtonRef.current?.focus();
       return;
     }
+    if (dialog?.open) dialog.close();
     if (openedConfirm.current) deleteButtonRef.current?.focus();
   }, [confirming]);
 
@@ -59,9 +70,7 @@ export function EquipmentProfileForm({
     setAdultChangeTable(false);
   }
 
-  function cancelDeleteOnEscape(event: KeyboardEvent<HTMLButtonElement>): void {
-    if (event.key !== "Escape") return;
-    event.preventDefault();
+  function cancelDelete(): void {
     setConfirming(false);
   }
 
@@ -156,15 +165,28 @@ export function EquipmentProfileForm({
         <p id={tableHintId}>{copy("profile.change-table-hint", lang)}</p>
         <button type="submit">{copy("profile.save", lang)}</button>{" "}
         {confirming ? (
-          <div role="group" aria-labelledby={confirmId}>
+          <dialog
+            ref={dialogRef}
+            aria-labelledby={confirmId}
+            onKeyDown={(event: KeyboardEvent<HTMLDialogElement>) => {
+              if (event.key !== "Escape") return;
+              event.preventDefault();
+              event.stopPropagation();
+              cancelDelete();
+            }}
+            onCancel={(event) => {
+              event.preventDefault();
+              cancelDelete();
+            }}
+          >
             <p id={confirmId}>{copy("profile.delete-confirm", lang)}</p>
-            <button ref={confirmButtonRef} type="button" onClick={removeProfile} onKeyDown={cancelDeleteOnEscape}>
+            <button ref={confirmButtonRef} type="button" onClick={removeProfile}>
               {copy("profile.delete-yes", lang)}
             </button>{" "}
-            <button type="button" onClick={() => setConfirming(false)} onKeyDown={cancelDeleteOnEscape}>
+            <button type="button" onClick={cancelDelete}>
               {copy("profile.delete-cancel", lang)}
             </button>
-          </div>
+          </dialog>
         ) : (
           <button ref={deleteButtonRef} type="button" onClick={() => setConfirming(true)}>
             {copy("profile.delete", lang)}

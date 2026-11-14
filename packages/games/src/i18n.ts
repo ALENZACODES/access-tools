@@ -247,8 +247,8 @@ export const GAME_COPY = {
   "ui.practice": { en: "Practice", fr: "Pratiquer" },
   "ui.names-english": { en: "Game names stay in English in this prototype.", fr: "Les noms des jeux restent en anglais dans cette version." },
   "ui.switch-help": {
-    en: "Switch: Next, then Choose. Single tap and the keyboard work on every button. There is no running scan.",
-    fr: "Contacteur\u00A0: Suivant, puis Choisir. Un seul toucher et le clavier fonctionnent sur chaque bouton. Aucun balayage automatique.",
+    en: "Switch uses Next, then Choose. Space activates the focused button. Tab moves in order. There is no running scan.",
+    fr: "Le contacteur utilise Suivant, puis Choisir. Espace active le bouton qui a le focus. La tabulation avance dans l'ordre. Il n'y a pas de balayage automatique.",
   },
   "ui.settings": { en: "Settings", fr: "Réglages" },
   "ui.hide-streak": { en: "Hide the streak", fr: "Masquer la série" },

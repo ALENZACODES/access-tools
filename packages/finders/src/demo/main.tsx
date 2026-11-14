@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { a11yCss, EquipmentProfileForm, fixturePack, readProfile, type EquipmentProfile, type Lang } from "@access-tools/place";
+import { a11yCss, copy, EquipmentProfileForm, fixturePack, readProfile, SwitchBar, type EquipmentProfile, type Lang } from "@access-tools/place";
 import { finderCopy } from "../i18n.js";
 import { ChargingFinder, ParkingFinder, RepairSupplyFinder, WashroomFinder } from "../react/Finders.js";
 
@@ -17,15 +17,17 @@ export function FinderDemo() {
     }
   });
   const [range, setRange] = useState("");
+  const rootRef = useRef<HTMLDivElement>(null);
   const parsedRange = range.trim() === "" ? null : Number(range);
   const userTestedRangeMetres = parsedRange !== null && Number.isFinite(parsedRange) ? parsedRange : null;
   useEffect(() => {
     document.documentElement.lang = lang;
   }, [lang]);
   return (
-    <div className="app-ui" lang={lang}>
+    <div className="app-ui" lang={lang} ref={rootRef} data-switch-root>
       <style>{a11yCss}</style>
       <a href="#finder-main">{finderCopy("nav.skip", lang)}</a>
+      <SwitchBar rootRef={rootRef} nextLabel={copy("switch.next", lang)} chooseLabel={copy("switch.choose", lang)} help={copy("switch.help", lang)} />
       <header>
         <h1>{finderCopy("demo.title", lang)}</h1>
         <p>{finderCopy("demo.intro", lang)}</p>

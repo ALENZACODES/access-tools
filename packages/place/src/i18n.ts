@@ -86,6 +86,12 @@ export const COPY = {
   "note.english-only-label": { en: "English only.", fr: "English only." },
   "status.prototype-unverified": { en: "PROTOTYPE-UNVERIFIED", fr: "PROTOTYPE-UNVERIFIED" },
   "nav.skip": { en: "Skip to content", fr: "Aller au contenu" },
+  "switch.help": {
+    en: "Switch uses Next, then Choose. Space activates the focused button. Tab moves in order. There is no running scan.",
+    fr: "Le contacteur utilise Suivant, puis Choisir. Espace active le bouton qui a le focus. La tabulation avance dans l'ordre. Il n'y a pas de balayage automatique.",
+  },
+  "switch.next": { en: "Next", fr: "Suivant" },
+  "switch.choose": { en: "Choose", fr: "Choisir" },
   "lang.show-french": { en: "Français", fr: "Français" },
   "lang.show-english": { en: "English", fr: "English" },
   "demo.place-title": { en: "the application — place pages", fr: "l'application — pages de lieux" },
