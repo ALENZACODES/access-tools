@@ -75,6 +75,7 @@ describe("Day 24 endorsement sweep", () => {
       "Application officielle de SCIO",
       "Verified accessible washroom",
       "Fiches vérifiées",
+      "Lieu vérifié",
       "Fully accessible entrance",
       "Real-time elevator status",
       "This game improves memory",

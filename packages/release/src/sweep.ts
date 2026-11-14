@@ -13,7 +13,7 @@ export const OVERCLAIM_RULES: readonly OverclaimRule[] = [
   { id: "endorsement", pattern: /\b(endorsed by|approved by|in partnership with|official (partner|app)|partnered with)\b/i },
   { id: "endorsement-fr", pattern: /\b(approuvée? par|en partenariat avec|partenaire officiel|application officielle)\b/i },
   { id: "verified-claim", pattern: /(?<!un)(?<!not )\bverified (place|places|data|record|records|accessible|entrance|washroom)\b/i },
-  { id: "verified-claim-fr", pattern: /(?<!non )\b(lieu|lieux|données|fiche|fiches|enregistrement)s? vérifiée?s?\b/i },
+  { id: "verified-claim-fr", pattern: /(?<!non )\b(lieu|lieux|données|fiche|fiches|enregistrement)s? vérifiée?s?(?![a-zà-ÿ])/i },
   {
     id: "guarantee",
     pattern: /(?<!not )(?<!no )\b(guaranteed|always accessible|fully accessible|100% accessible)\b|\b(est garantie?|sont garantie?s|accès garanti|entièrement accessible)\b/i,
