@@ -110,6 +110,13 @@ export const a11yCss = `
 
 /** Focus ring and hit size for the switch bar, including screens that do not use .app-ui. */
 export const switchCss = `
+:where([data-switch-bar]) {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: inherit;
+  padding-bottom: 0.5rem;
+}
 :where([data-switch-bar]) button {
   min-height: 2.75rem;
   min-width: 2.75rem;
@@ -119,5 +126,9 @@ export const switchCss = `
 :where([data-switch-current]) {
   outline: 3px solid #0b3a82;
   outline-offset: 2px;
+}
+:where([data-switch-current]) {
+  scroll-margin-top: 16rem;
+  scroll-margin-bottom: 1rem;
 }
 `;
