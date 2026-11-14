@@ -3,12 +3,19 @@ import { switchCss } from "./a11yCss.js";
 
 const FOCUSABLE = "a[href], button:not([disabled]), input:not([disabled]):not([type='hidden']), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])";
 
-/** Interactive controls in DOM order, excluding the switch bar and a closed dialog. */
+function openDialog(root: ParentNode): HTMLElement | null {
+  const dialogs = [...root.querySelectorAll<HTMLDialogElement>("dialog")].filter((dialog) => dialog.open);
+  return dialogs.at(-1) ?? null;
+}
+
+/** Interactive controls in DOM order. An open dialog is the whole scan; otherwise closed dialogs are skipped. */
 export function switchTargets(root: ParentNode): HTMLElement[] {
-  return [...root.querySelectorAll<HTMLElement>(FOCUSABLE)].filter((el) => {
+  const modal = openDialog(root);
+  const scope = modal ?? root;
+  return [...scope.querySelectorAll<HTMLElement>(FOCUSABLE)].filter((el) => {
     if (el.closest("[data-switch-bar]")) return false;
     const dialog = el.closest("dialog");
-    if (dialog && !dialog.open) return false;
+    if (!modal && dialog) return false;
     if (el.getAttribute("aria-hidden") === "true") return false;
     return true;
   });

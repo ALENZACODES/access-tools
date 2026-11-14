@@ -41,9 +41,11 @@ describe("emergency pathways", () => {
     expect(screen.queryByLabelText(/washroom|toilettes|continuous travel/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/not in the prototype/i)).not.toBeInTheDocument();
     expect(screen.getByRole("note").textContent).toBe(TIMING_BOUNDARY.en);
+    expect(screen.getByRole("group", { name: "Emergency pathways" })).toBeInTheDocument();
     const user = userEvent.setup();
     await user.click(screen.getByRole("button", { name: "Français" }));
     expect(document.documentElement.lang).toBe("fr");
+    expect(screen.getByRole("group", { name: "Voies d'urgence" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Composer le 911 maintenant" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Texter le 9-8-8 Ligne d'aide en cas de crise de suicide" })).toHaveAttribute("href", "sms:988");
     expect(screen.getByRole("link", { name: "Texter CONNEX au 247247" })).toHaveAttribute("href", "sms:247247?&body=CONNEX");

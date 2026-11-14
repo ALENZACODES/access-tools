@@ -56,7 +56,7 @@ export function TimingPanel(props: TimingPanelProps): JSX.Element {
       <p role="note" style={noteStyle}>
         {TIMING_BOUNDARY[language]}
       </p>
-      <div aria-labelledby={`${baseId}-title`} style={{ display: "grid", gap: "0.75rem" }}>
+      <div role="group" aria-label={copy.emergencyLabel} style={{ display: "grid", gap: "0.75rem" }}>
         {EMERGENCY_PATHWAYS.map((pathway) => (
           <article key={pathway.id} style={{ border: "3px solid #102a43", padding: "0.75rem", display: "grid", gap: "0.4rem" }}>
             <h2 style={{ margin: 0 }}>{pathway.name[language]}</h2>
