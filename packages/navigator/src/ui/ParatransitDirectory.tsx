@@ -87,7 +87,21 @@ export function ParatransitDirectory() {
       <p role="status">
         {results.length} {directoryCopy("para.results", language)}
       </p>
-      {results.length === 0 ? <p>{directoryCopy("para.empty", language)}</p> : null}
+      {results.length === 0 ? (
+        <div style={{ display: "grid", gap: "0.5rem", justifyItems: "start" }}>
+          <p style={{ margin: 0 }}>{directoryCopy("para.empty", language)}</p>
+          <button
+            type="button"
+            style={button}
+            onClick={() => {
+              setText("");
+              document.getElementById(searchId)?.focus();
+            }}
+          >
+            {directoryCopy("para.clear", language)}
+          </button>
+        </div>
+      ) : null}
       <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: "0.8rem" }}>
         {results.map((entry) => (
           <li key={entry.id} style={{ border: "2px solid #1a1a1a", padding: "0.8rem", display: "grid", gap: "0.45rem", minWidth: 0 }}>

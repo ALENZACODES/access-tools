@@ -43,7 +43,11 @@ export const DIRECTORY_COPY = {
   "para.tier": { en: "Desk check, tier administrator_page.", fr: "Vérification au bureau, niveau administrator_page." },
   "para.unverified": { en: "Unverified by the App.", fr: "Non vérifié par l'application." },
   "para.not-ride": { en: "The App does not decide who can ride.", fr: "L'application ne décide pas qui peut monter à bord." },
-  "para.empty": { en: "No agencies match.", fr: "Aucun organisme ne correspond." },
+  "para.empty": {
+    en: "No agency in this list matches. Try a shorter word or a municipality name, or clear the search.",
+    fr: "Aucun organisme de cette liste ne correspond. Essayez un mot plus court ou le nom d'une municipalité, ou effacez la recherche.",
+  },
+  "para.clear": { en: "Clear the search", fr: "Effacer la recherche" },
   "para.switch-help": {
     en: "Switch uses Next, then Choose. Space activates the focused button. Tab moves in order. There is no running scan.",
     fr: "Le contacteur utilise Suivant, puis Choisir. Espace active le bouton qui a le focus. La tabulation avance dans l'ordre. Il n'y a pas de balayage automatique.",
