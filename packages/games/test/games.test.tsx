@@ -67,14 +67,15 @@ describe("games catalog", () => {
     }
   });
 
-  it("plays Pair Sequence in French with a text label, and ignores a timer call", () => {
+  it("plays Pair Sequence in French with a text label, and has no time limit to expire", () => {
     const session = createSession("pair-sequence", { seed: 3, pace: "relaxed", language: "fr", timerEnabled: true });
     expect(viewSession(session).prompt).toMatch(/Maintenant/);
     expect(viewSession(session).detail).toMatch(/couleur/i);
     expect(expireTrial(session)).toBe(session);
     const finished = playPerfect(createSession("focus-flankers", { seed: 2, pace: "brisk", language: "en", timerEnabled: true }));
     expect(viewSession(finished).status).toBe("complete");
-    expect(viewSession(finished).timerVisible).toBe(false);
+    expect(viewSession(finished).timerVisible).toBe(true);
+    expect(expireTrial(finished)).toBe(finished);
   });
 
   it("keeps Route Planner going after a wrong direction and can undo", () => {
