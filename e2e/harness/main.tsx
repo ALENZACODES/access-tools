@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { DIRECTORY, DirectoryView, emptyNote, toggleProgram, type Language as DirectoryLanguage, type NavigatorNote } from "../../packages/navigator/src/index.js";
+import { DIRECTORY, DirectoryView, ParatransitDirectory, emptyNote, toggleProgram, type Language as DirectoryLanguage, type NavigatorNote } from "../../packages/navigator/src/index.js";
 import { TimingPanel } from "../../packages/timing/src/index.js";
 import { GamesApp, defaultSettings, type GamesRound, type GamesSettings } from "../../packages/games/src/index.js";
 import { PlaceDemo } from "../../packages/place/src/demo/main.js";
 import { SearchDemo } from "../../packages/search/src/demo/main.js";
 import { FinderDemo } from "../../packages/finders/src/demo/main.js";
 
-type Tab = "directory" | "timing" | "games" | "place" | "search" | "finders";
+type Tab = "directory" | "timing" | "games" | "place" | "search" | "finders" | "paratransit";
 
 function Harness() {
   const [tab, setTab] = useState<Tab>("directory");
@@ -24,7 +24,7 @@ function Harness() {
   return (
     <div>
       <section aria-label="Test harness">
-      <p>Test harness for directory, timing, games, place pages, search, and finders. It is not the product shell.</p>
+      <p>Test harness for directory, timing, games, place pages, search, finders, and paratransit. It is not the product shell.</p>
       <nav aria-label="Sections" style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
         <button type="button" style={tabStyle} aria-current={tab === "directory" ? "page" : undefined} onClick={() => setTab("directory")}>
           Directory
@@ -44,6 +44,9 @@ function Harness() {
         <button type="button" style={tabStyle} aria-current={tab === "finders" ? "page" : undefined} onClick={() => setTab("finders")}>
           Finders
         </button>
+        <button type="button" style={tabStyle} aria-current={tab === "paratransit" ? "page" : undefined} onClick={() => setTab("paratransit")}>
+          Paratransit
+        </button>
       </nav>
       </section>
       {tab === "directory" ? (
@@ -62,6 +65,7 @@ function Harness() {
       {tab === "place" ? <div data-screen="place"><PlaceDemo /></div> : null}
       {tab === "search" ? <div data-screen="search"><SearchDemo /></div> : null}
       {tab === "finders" ? <div data-screen="finders"><FinderDemo /></div> : null}
+      {tab === "paratransit" ? <div data-screen="paratransit"><ParatransitDirectory /></div> : null}
       {tab === "games" ? (
         <GamesApp
           settings={{ ...settings, language }}

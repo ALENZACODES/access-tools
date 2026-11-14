@@ -43,14 +43,14 @@ test("directory, timing, and a game are usable without advice or a timer", async
   expect(violations).toEqual([]);
 });
 
-test("place, search, and finders pass axe in English and French", async ({ page }) => {
+test("place, search, finders, and paratransit pass axe in English and French", async ({ page }) => {
   await page.goto("/");
   await page.addScriptTag({ content: axe.source });
   const viewports = [
     { width: 1280, height: 800 },
     { width: 320, height: 700 },
   ];
-  for (const screen of ["Place", "Search", "Finders"]) {
+  for (const screen of ["Place", "Search", "Finders", "Paratransit"]) {
     await page.getByRole("button", { name: screen, exact: true }).click();
     await expect.poll(() => page.evaluate(() => document.documentElement.lang)).toBe("en");
     for (const viewport of viewports) {
