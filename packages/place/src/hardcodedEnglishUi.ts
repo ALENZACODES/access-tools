@@ -19,6 +19,7 @@ const CATALOG_FNS = new Set([
   "gameCopy",
   "gamePhrase",
   "directoryCopy",
+  "directoryFill",
   "timingCopy",
 ]);
 

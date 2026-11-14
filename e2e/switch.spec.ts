@@ -1,7 +1,7 @@
 import { expect, type Page, test } from "playwright/test";
 import { CATALOG, choose, createSession, solutionIds, viewSession } from "../packages/games/src/engine.ts";
 
-const SCREENS = ["Directory", "Timing", "Games", "Place", "Search", "Finders"] as const;
+const SCREENS = ["Directory", "Timing", "Games", "Place", "Search", "Finders", "Paratransit"] as const;
 const VIEWPORTS = [
   { width: 1280, height: 800 },
   { width: 320, height: 700 },
@@ -126,7 +126,7 @@ async function scanChoose(page: Page, label: string): Promise<void> {
   throw new Error(`Switch did not reach ${label}. Saw ${seen.join(" | ")}`);
 }
 
-test("place, search, finders, games, directory, and timing work from the keyboard", async ({ page }) => {
+test("place, search, finders, games, directory, timing, and paratransit work from the keyboard", async ({ page }) => {
   for (const viewport of VIEWPORTS) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     for (const screen of SCREENS) {

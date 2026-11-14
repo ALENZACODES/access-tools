@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://access-tools.local/schema/paratransit-entry-1.0.0.json",
+  "title": "Paratransit directory entry",
+  "description": "Links-only record for one specialized transit agency. It stores no booking window and no eligibility rule.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "agencyName",
+    "publisher",
+    "serviceArea",
+    "websiteUrl",
+    "bookingUrl",
+    "phone",
+    "sourceUrl",
+    "sourceName",
+    "retrievedOn",
+    "verificationTier",
+    "licenceNote",
+    "notEligibilityAdvice"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "paratransit-entry-1.0.0" },
+    "id": { "type": "string", "minLength": 3 },
+    "agencyName": { "type": "string", "minLength": 3 },
+    "publisher": { "type": "string", "minLength": 2 },
+    "serviceArea": { "$ref": "#/$defs/bilingual" },
+    "websiteUrl": { "type": "string", "pattern": "^https://" },
+    "bookingUrl": { "type": "string", "pattern": "^https://" },
+    "phone": { "type": "string", "minLength": 10 },
+    "sourceUrl": { "type": "string", "pattern": "^https://" },
+    "sourceName": { "type": "string", "minLength": 3 },
+    "retrievedOn": { "type": "string", "format": "date" },
+    "verificationTier": { "const": "administrator_page" },
+    "licenceNote": { "$ref": "#/$defs/bilingual" },
+    "notEligibilityAdvice": { "const": true }
+  },
+  "$defs": {
+    "bilingual": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["en", "fr"],
+      "properties": {
+        "en": { "type": "string", "minLength": 2 },
+        "fr": { "type": "string", "minLength": 2 }
+      }
+    }
+  }
+}

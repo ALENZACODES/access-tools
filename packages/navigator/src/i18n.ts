@@ -27,6 +27,26 @@ export const DIRECTORY_COPY = {
   "dir.choose": { en: "Choose", fr: "Choisir" },
   "lang.show-french": { en: "Français", fr: "Français" },
   "lang.show-english": { en: "English", fr: "English" },
+  "para.title": { en: "Paratransit", fr: "Transport adapté" },
+  "para.note": {
+    en: "Directory and linking only. This is not eligibility advice and it does not book a trip.",
+    fr: "Répertoire et liens seulement. Ce n'est pas un avis d'admissibilité et cela ne réserve pas un trajet.",
+  },
+  "para.search": { en: "Search agencies", fr: "Chercher un organisme" },
+  "para.results": { en: "agencies. Each one links out.", fr: "organismes. Chacun mène ailleurs." },
+  "para.area": { en: "Service area", fr: "Territoire desservi" },
+  "para.website": { en: "{name} website", fr: "Site web de {name}" },
+  "para.booking": { en: "{name} booking page", fr: "Page de réservation de {name}" },
+  "para.call": { en: "Call {phone}", fr: "Appeler le {phone}" },
+  "para.source": { en: "Source page for {name}", fr: "Page source pour {name}" },
+  "para.retrieved": { en: "Retrieved {date}.", fr: "Consulté le {date}." },
+  "para.tier": { en: "Desk check, tier administrator_page.", fr: "Vérification au bureau, niveau administrator_page." },
+  "para.not-ride": { en: "The App does not decide who can ride.", fr: "L'application ne décide pas qui peut monter à bord." },
+  "para.empty": { en: "No agencies match.", fr: "Aucun organisme ne correspond." },
+  "para.switch-help": {
+    en: "Switch uses Next, then Choose. Space activates the focused button. Tab moves in order. There is no running scan.",
+    fr: "Le contacteur utilise Suivant, puis Choisir. Espace active le bouton qui a le focus. La tabulation avance dans l'ordre. Il n'y a pas de balayage automatique.",
+  },
 } as const;
 
 export type DirectoryCopyKey = keyof typeof DIRECTORY_COPY;
@@ -34,4 +54,8 @@ export type DirectoryCopyKey = keyof typeof DIRECTORY_COPY;
 export function directoryCopy(key: DirectoryCopyKey, language: Language): string {
   const row = DIRECTORY_COPY[key];
   return language === "fr" ? row.fr : row.en;
+}
+
+export function directoryFill(key: DirectoryCopyKey, language: Language, slots: Record<string, string>): string {
+  return directoryCopy(key, language).replace(/\{([A-Za-z0-9_]+)\}/g, (_match, name: string) => slots[name] ?? "");
 }
