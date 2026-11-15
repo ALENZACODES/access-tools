@@ -2,7 +2,7 @@ import type { OfficialLink } from "./types";
 
 const TBC = "To be confirmed";
 const phEn = "Placeholder. The official address has not been verified yet, so no link is shown.";
-const phFr = "Espace r�serv�. L�adresse officielle n�a pas encore �t� v�rifi�e; aucun lien n�est affich�.";
+const phFr = "Espace réservé. L’adresse officielle n’a pas encore été vérifiée ; aucun lien n’est affiché.";
 
 function placeholder(
   id: string,
@@ -29,7 +29,7 @@ export const catalog: OfficialLink[] = [
     retrieved_at: null,
     licence: "link-out",
     notesEn: "Link-out only. This App does not copy or redistribute 211 data.",
-    notesFr: "Lien externe seulement. L�App ne copie ni ne redistribue les donn�es de 211.",
+    notesFr: "Lien externe seulement. L’App ne copie ni ne redistribue les données de 211.",
   },
   {
     id: "benefits-wayfinder",
@@ -41,16 +41,16 @@ export const catalog: OfficialLink[] = [
     publisher: "Benefits Wayfinder",
     retrieved_at: null,
     licence: "link-out",
-    notesEn: "Link-out only. Opens the publisher�s own site.",
-    notesFr: "Lien externe seulement. Ouvre le site de l��diteur.",
+    notesEn: "Link-out only. Opens the publisher’s own site.",
+    notesFr: "Lien externe seulement. Ouvre le site de l’éditeur.",
   },
-  placeholder("disability-benefits-compass", "benefits", "Disability Benefits Compass", "Boussole des prestations d�invalidit�"),
+  placeholder("disability-benefits-compass", "benefits", "Disability Benefits Compass", "Boussole des prestations d’invalidité"),
   placeholder("canada-benefits-finder", "benefits", "Canada Benefits Finder", "Chercheur de prestations du Canada"),
   placeholder("go-passenger-assistance", "transit", "GO passenger assistance", "Aide aux passagers GO", "GO Transit (Metrolinx)"),
   placeholder("via-assistance", "transit", "VIA assistance", "Assistance VIA", "VIA Rail Canada"),
   placeholder("wheel-trans", "transit", "Wheel-Trans", "Wheel-Trans", "Toronto Transit Commission"),
-  placeholder("wav-official-info", "wav", "Official wheelchair-accessible vehicle information", "Information officielle sur les v�hicules adapt�s aux fauteuils roulants"),
-  placeholder("help-line-official", "help", "Official help-line page", "Page officielle de ligne d�aide"),
+  placeholder("wav-official-info", "wav", "Official wheelchair-accessible vehicle information", "Information officielle sur les véhicules adaptés aux fauteuils roulants"),
+  placeholder("help-line-official", "help", "Official help-line page", "Page officielle de ligne d’aide"),
 ];
 
 /** A link is clickable only when verified and holding an https address. */

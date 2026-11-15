@@ -4,8 +4,16 @@ import { emptyProfile, exportProfileJson, exportProfileText } from "./profile";
 import { strings } from "./strings";
 import type { AssistanceProfile, Attendant, Lang, OfficialLink, WavFact } from "./types";
 
+function typography(lang: Lang) {
+  const colon = lang === "fr" ? "\u202F: " : ": ";
+  const dash = " \u2014 ";
+  return { colon, dash };
+}
+
+
 export function LinkList({ links, lang }: { links: OfficialLink[]; lang: Lang }) {
   const s = strings[lang];
+  const { colon, dash } = typography(lang);
   return (
     <ul>
       {links.map((l) => (
@@ -19,7 +27,7 @@ export function LinkList({ links, lang }: { links: OfficialLink[]; lang: Lang })
           </p>
           <p>{lang === "fr" ? l.notesFr : l.notesEn}</p>
           <p>
-            {s.publisher}: {l.publisher} � {s.licence}: {l.licence} � {s.lastChecked}: {l.retrieved_at ?? s.notRecorded}
+            {s.publisher}{colon}{l.publisher}{dash}{s.licence}{colon}{l.licence}{dash}{s.lastChecked}{colon}{l.retrieved_at ?? s.notRecorded}
           </p>
         </li>
       ))}
@@ -29,17 +37,18 @@ export function LinkList({ links, lang }: { links: OfficialLink[]; lang: Lang })
 
 export function WavSection({ lang, links, wavFact }: { lang: Lang; links: OfficialLink[]; wavFact?: WavFact }) {
   const s = strings[lang];
+  const { colon, dash } = typography(lang);
   // Tier 0 is an unverified draft and is never shown as a fact.
   const shown = wavFact && wavFact.tier > 0 ? wavFact : undefined;
   return (
     <section aria-labelledby="dl-wav">
       <h2 id="dl-wav">{s.wavHeading}</h2>
       <p>
-        {s.wavLabel}: {shown ? shown.text : s.unknown}
+        {s.wavLabel}{colon}{shown ? shown.text : s.unknown}
       </p>
       {shown ? (
         <p>
-          {s.source}: {shown.source_id} � {s.licence}: {shown.licence} � {s.date}: {shown.retrieved_at} � {s.tier}: {shown.tier}
+          {s.source}{colon}{shown.source_id}{dash}{s.licence}{colon}{shown.licence}{dash}{s.date}{colon}{shown.retrieved_at}{dash}{s.tier}{colon}{shown.tier}
         </p>
       ) : (
         <p>{s.wavNone}</p>

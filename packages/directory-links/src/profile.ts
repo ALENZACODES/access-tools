@@ -26,17 +26,18 @@ export function exportProfileJson(p: AssistanceProfile, exportedAt: string): str
 
 export function exportProfileText(p: AssistanceProfile, lang: Lang, exportedAt: string): string {
   const s = strings[lang];
+  const colon = lang === "fr" ? "\u202F: " : ": ";
   const val = (v: string) => (v.trim() === "" ? s.unknown : v.trim());
   const att = p.attendant === "yes" ? s.attendantYes : p.attendant === "no" ? s.attendantNo : s.unknown;
   return [
     s.sheetTitle,
     s.sheetNote,
-    `${s.exportedOn}: ${exportedAt}`,
+    `${s.exportedOn}${colon}${exportedAt}`,
     "",
-    `${s.displayName}: ${val(p.displayName)}`,
-    `${s.attendant}: ${att}`,
-    `${s.mobilityNotes}: ${val(p.mobilityNotes)}`,
-    `${s.transferNotes}: ${val(p.transferNotes)}`,
+    `${s.displayName}${colon}${val(p.displayName)}`,
+    `${s.attendant}${colon}${att}`,
+    `${s.mobilityNotes}${colon}${val(p.mobilityNotes)}`,
+    `${s.transferNotes}${colon}${val(p.transferNotes)}`,
     "",
   ].join("\n");
 }
