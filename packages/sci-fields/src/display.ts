@@ -32,8 +32,11 @@ function valueText(def: FieldDef, v: SciFieldFact["value"], lang: Lang): string 
   if (v === "UNKNOWN") return null;
   if (def.kind === "number") return typeof v === "number" ? `${v} ${def.unit ?? ""}`.trim() : null;
   if (def.kind === "text") return typeof v === "string" ? v : null;
-  if (def.kind === "boolean") return typeof v === "boolean" ? def.values![v ? "yes" : "no"][lang] : null;
-  return typeof v === "string" && def.values?.[v] ? def.values[v][lang] : null;
+  if (def.kind === "boolean") {
+    if (typeof v !== "boolean") return null;
+    return def.values?.[v ? "yes" : "no"]?.[lang] ?? null;
+  }
+  return typeof v === "string" ? (def.values?.[v]?.[lang] ?? null) : null;
 }
 
 /** Renders Unknown/Inconnu unless a valid tier 1+ fact exists. Tier 0 drafts never render as facts. */
