@@ -7,7 +7,7 @@ const date = { type: "string", format: "date" } as const;
 const instant = { type: "string", format: "date-time" } as const;
 const nonempty = { type: "string", minLength: 1 } as const;
 const tier = { enum: [0, 1, 2, 3, 4, "E"] } as const;
-const labels = { enum: ["PROTOTYPE-UNVERIFIED", "SEEDED-OPEN-DATA", "COMMUNITY-REPORTED"] } as const;
+const labels = { enum: ["PROTOTYPE-UNVERIFIED", "SEEDED-OPEN-DATA"] } as const;
 
 export const provenanceSchema = {
   type: "object",

@@ -43,8 +43,8 @@ export const SEARCH_COPY = {
     fr: "Aucun lieu des données initiales ne correspond à «\u202F{query}\u202F». Essayez un mot plus large, une autre catégorie, ou retirez un filtre. Un résultat vide signale une lacune\u202F; il ne prouve pas qu'aucun lieu n'existe.",
   },
   "search.empty.hidden": {
-    en: "{hidden} record(s) hidden by filters. No record is shown.",
-    fr: "{hidden} fiche(s) cachée(s) par les filtres. Aucune fiche affichée.",
+    en: "{hidden} record(s) hidden by filters. No record is shown. Show hidden results to see why, or clear a filter.",
+    fr: "{hidden} fiche(s) cachée(s) par les filtres. Aucune fiche affichée. Affichez les résultats cachés pour voir pourquoi, ou retirez un filtre.",
   },
   "search.summary": {
     en: "{shown} record(s) shown. {hidden} hidden.",
