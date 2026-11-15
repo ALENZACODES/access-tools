@@ -1,4 +1,4 @@
-import type { Source } from "./sources.ts";
+import type { Source } from "./sources.js";
 export type JsonFetch = (url: string) => Promise<unknown>;
 export interface Feature { attributes: Record<string, unknown>; geometry: unknown; id?: unknown }
 const object = (value: unknown): Record<string, unknown> => value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};

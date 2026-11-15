@@ -1,8 +1,8 @@
-import type { Source } from "./sources.ts";
-import { FACT_KEYS } from "./types.ts";
-import type { FactKey, FactValue, ImportedRecord, Provenance, Sourced, SegmentKind } from "./types.ts";
-import type { Feature } from "./readers.ts";
-import { toGeometry } from "./readers.ts";
+import type { Source } from "./sources.js";
+import { FACT_KEYS } from "./types.js";
+import type { FactKey, FactValue, ImportedRecord, Provenance, Sourced, SegmentKind } from "./types.js";
+import type { Feature } from "./readers.js";
+import { toGeometry } from "./readers.js";
 const ALLOWED: Record<string, readonly string[]> = {
   "brampton-sidewalks": ["OBJECTID", "ID", "DESCR"],
   "toronto-pedestrian-network": ["OBJECTID", "ROAD_TYPE", "SIDEWALK_CODE", "SIDEWALK_DESCRIPTION", "CROSSWALK", "CROSSWALK_TYPE", "PX", "PX_TYPE"],

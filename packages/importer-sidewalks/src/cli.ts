@@ -1,13 +1,13 @@
 /// <reference types="node" />
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { arcgisPages, ckanPages } from "./readers.ts";
-import { mapFeature } from "./mapping.ts";
-import { SOURCES, sourceById } from "./sources.ts";
-import { FACT_KEYS } from "./types.ts";
-import type { ImportReport, ImportedRecord, LicenceRecord } from "./types.ts";
-import { validateRecord, validateReport } from "./schema.ts";
-import { writePartitions } from "./io.ts";
+import { arcgisPages, ckanPages } from "./readers.js";
+import { mapFeature } from "./mapping.js";
+import { SOURCES, sourceById } from "./sources.js";
+import { FACT_KEYS } from "./types.js";
+import type { ImportReport, ImportedRecord, LicenceRecord } from "./types.js";
+import { validateRecord, validateReport } from "./schema.js";
+import { writePartitions } from "./io.js";
 
 export async function run(sourceId: string, root: string, licenceRecord?: LicenceRecord): Promise<ImportReport> {
   const source = sourceById(sourceId);

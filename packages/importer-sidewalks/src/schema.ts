@@ -1,6 +1,6 @@
 import Ajv from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
-import { FACT_KEYS } from "./types.ts";
+import { FACT_KEYS } from "./types.js";
 const ajv = new Ajv({ allErrors: true });
 addFormats(ajv);
 const provenance = {
