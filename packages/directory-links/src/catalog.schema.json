@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://access-tools.invalid/schema/directory-links-catalog.json",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["id", "group", "titleEn", "titleFr", "url", "status", "publisher", "retrieved_at", "licence", "notesEn", "notesFr"],
+    "properties": {
+      "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+      "group": { "enum": ["benefits", "directory", "transit", "wav", "help"] },
+      "titleEn": { "type": "string", "minLength": 1 },
+      "titleFr": { "type": "string", "minLength": 1 },
+      "url": { "type": ["string", "null"], "pattern": "^https://" },
+      "status": { "enum": ["listed", "needs-verification"] },
+      "publisher": { "type": "string", "minLength": 1 },
+      "retrieved_at": { "type": ["string", "null"], "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+      "licence": { "const": "link-out" },
+      "notesEn": { "type": "string" },
+      "notesFr": { "type": "string" }
+    },
+    "if": { "properties": { "status": { "const": "needs-verification" } } },
+    "then": { "properties": { "url": { "type": "null" } } },
+    "else": { "properties": { "url": { "type": "string" } } }
+  }
+}
