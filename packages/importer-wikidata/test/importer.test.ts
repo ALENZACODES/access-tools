@@ -94,12 +94,12 @@ describe("EN/FR catalog", () => {
     expect(Object.keys(CATALOG.fr).sort()).toEqual(Object.keys(CATALOG.en).sort());
   });
 
-  it("puts U+00A0 before : ; ? ! in French", () => {
+  it("puts U+202F before : ; ? ! and inside « » in French", () => {
     for (const s of Object.values(CATALOG.fr)) {
-      expect(s).not.toMatch(/[^\u00A0\u202F][:;?!]/);
-      expect(s).not.toMatch(/«(?!\u00A0)|(?<!\u00A0)»/);
+      expect(s).not.toMatch(/[^\u202F][:;?!]/);
+      expect(s).not.toMatch(/«(?!\u202F)|(?<!\u202F)»/);
     }
-    expect(t("fr", "summary", { sourceName: "X", retrievedAt: DATE, read: 1, emitted: 1, rejected: 0 })).toContain("\u00A0:");
+    expect(t("fr", "summary", { sourceName: "X", retrievedAt: DATE, read: 1, emitted: 1, rejected: 0 })).toContain("\u202F:");
   });
 
   it("fills placeholders", () => {

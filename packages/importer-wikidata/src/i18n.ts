@@ -1,8 +1,8 @@
 export type Lang = "en" | "fr";
 
-const NBSP = " ";
+const NNBSP = " ";
 
-/** French typography: U+00A0 before : ; ? ! and inside « ». */
+/** French typography: U+202F before : ; ? ! and inside « ». */
 export const CATALOG = {
   en: {
     summary: "{sourceName} ({retrievedAt}): {read} rows read, {emitted} records written, {rejected} rejected.",
@@ -12,10 +12,10 @@ export const CATALOG = {
     licenceHeld: "Held by the licence gate. A licence record was supplied.",
   },
   fr: {
-    summary: `{sourceName} ({retrievedAt})${NBSP}: {read} lignes lues, {emitted} fiches écrites, {rejected} rejetées.`,
+    summary: `{sourceName} ({retrievedAt})${NNBSP}: {read} lignes lues, {emitted} fiches écrites, {rejected} rejetées.`,
     notCoverage: "Ces totaux décrivent uniquement cet import. Ils ne constituent pas une affirmation de couverture.",
     statementNote: "La valeur d’accessibilité est une déclaration de Wikidata, et non une mesure.",
-    licenceOpen: `Statut de la licence${NBSP}: ouverte.`,
+    licenceOpen: `Statut de la licence${NNBSP}: ouverte.`,
     licenceHeld: "Retenue par la barrière de licence. Un dossier de licence a été fourni.",
   },
 } as const;
