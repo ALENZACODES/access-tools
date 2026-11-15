@@ -1,0 +1,208 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://access-tools.local/schema/employment-listing-1.0.0.json",
+  "title": "Employment demonstration listing",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "kind",
+    "demonstration",
+    "title",
+    "organisation",
+    "officialUrl",
+    "location",
+    "access",
+    "commute",
+    "handoff",
+    "relatedNavigatorIds"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "employment-listing-1.0.0"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]{3,}$"
+    },
+    "kind": {
+      "enum": [
+        "job",
+        "programme"
+      ]
+    },
+    "demonstration": {
+      "const": true
+    },
+    "title": {
+      "$ref": "#/$defs/bilingual"
+    },
+    "organisation": {
+      "$ref": "#/$defs/bilingual"
+    },
+    "officialUrl": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://"
+    },
+    "location": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "city",
+        "province"
+      ],
+      "properties": {
+        "city": {
+          "$ref": "#/$defs/bilingual"
+        },
+        "province": {
+          "const": "ON"
+        }
+      }
+    },
+    "workplacePlaceId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "access": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stepFreeEntry",
+        "accessibleWashroom",
+        "workstation"
+      ],
+      "properties": {
+        "stepFreeEntry": {
+          "$ref": "#/$defs/fact"
+        },
+        "accessibleWashroom": {
+          "$ref": "#/$defs/fact"
+        },
+        "workstation": {
+          "$ref": "#/$defs/fact"
+        }
+      }
+    },
+    "commute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "reason"
+      ],
+      "properties": {
+        "status": {
+          "const": "Unknown"
+        },
+        "reason": {
+          "const": "engine-unavailable"
+        }
+      }
+    },
+    "handoff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "url",
+        "datedOn",
+        "note"
+      ],
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "datedOn": {
+          "type": "string",
+          "format": "date"
+        },
+        "note": {
+          "$ref": "#/$defs/bilingual"
+        }
+      }
+    },
+    "relatedNavigatorIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "employment-ontario",
+          "accessibility-in-ontario",
+          "ohrc-disability-policy"
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "bilingual": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "en",
+        "fr"
+      ],
+      "properties": {
+        "en": {
+          "type": "string",
+          "minLength": 2
+        },
+        "fr": {
+          "type": "string",
+          "minLength": 2
+        }
+      }
+    },
+    "fact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "source",
+        "licence",
+        "date",
+        "tier"
+      ],
+      "properties": {
+        "value": {
+          "oneOf": [
+            {
+              "const": "Unknown"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string",
+              "minLength": 1,
+              "not": {
+                "const": "Unknown"
+              }
+            }
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 3
+        },
+        "licence": {
+          "type": "string",
+          "minLength": 3
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "tier": {
+          "enum": [
+            "PROTOTYPE-UNVERIFIED",
+            "SEEDED-OPEN-DATA"
+          ]
+        }
+      }
+    }
+  }
+}

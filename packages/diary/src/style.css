@@ -1,0 +1,15 @@
+:root { font-family: system-ui, sans-serif; color: #172b38; background: #fff; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { max-width: 56rem; padding: 1rem; margin: auto; }
+section { border-top: 1px solid #536875; padding: 1rem 0; }
+form { display: grid; gap: .7rem; max-width: 32rem; }
+input, select, button { font: inherit; min-height: 44px; padding: .5rem; border: 2px solid #536875; border-radius: .3rem; }
+input[type="checkbox"] { min-width: 44px; min-height: 44px; }
+button { cursor: pointer; background: #073c67; color: #fff; margin: .25rem 0; }
+button:disabled { background: #536875; cursor: not-allowed; }
+:focus-visible { outline: 3px solid #ae4700; outline-offset: 3px; }
+.check { display: flex; align-items: center; gap: .5rem; }
+li { padding: .5rem 0; overflow-wrap: anywhere; }
+li button { margin-left: .75rem; }
+@media (max-width: 360px) { main { padding: .75rem; } input, select, button { max-width: 100%; } }

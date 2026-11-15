@@ -1,0 +1,23 @@
+:root { font-family: system-ui, sans-serif; color: #192631; background: #fff; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { max-width: 76rem; padding: 1rem; margin: 0 auto; }
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; }
+header h1 { flex-basis: 100%; }
+label { display: block; font-weight: 700; margin: .5rem 0; }
+textarea { display: block; width: 100%; max-width: 100%; border: 2px solid #596d7e; border-radius: .25rem; padding: .75rem; }
+button, select { min-height: 44px; min-width: 44px; padding: .65rem 1rem; background: white; color: #192631; border: 2px solid #345a78; border-radius: .25rem; }
+button { background: #153e5b; color: #fff; margin-top: 1rem; cursor: pointer; }
+:focus-visible { outline: 3px solid #b44d00; outline-offset: 3px; }
+section { margin-top: 2rem; }
+.stats { display: flex; gap: 1rem; flex-wrap: wrap; }
+.stats div { border: 1px solid #778895; padding: 1rem; min-width: 9rem; }
+.stats dt { font-weight: 700; }
+.stats dd { font-size: 1.5rem; margin: .25rem 0; }
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; text-align: left; }
+caption { text-align: left; font-weight: 700; margin: .5rem 0; }
+th, td { padding: .7rem; vertical-align: top; border: 1px solid #8e9ca5; overflow-wrap: anywhere; }
+th { background: #edf3f7; }
+article { margin-bottom: 2rem; }
+@media (max-width: 400px) { main { padding: .75rem; } .stats div { min-width: 7rem; flex: 1; } }
