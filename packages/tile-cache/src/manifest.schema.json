@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schemas/tile-cache-manifest.json",
+  "title": "Offline demonstration tile manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["key", "byteLength", "storedAt", "expiresAt", "source", "licence", "attribution", "retrievedOn", "verification"],
+  "properties": {
+    "key": {
+      "type": "object", "additionalProperties": false, "required": ["z", "x", "y"],
+      "properties": {
+        "z": { "type": "integer", "minimum": 0, "maximum": 24 },
+        "x": { "type": "integer", "minimum": 0 },
+        "y": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "byteLength": { "type": "integer", "minimum": 1 },
+    "storedAt": { "type": "string", "format": "date-time" },
+    "expiresAt": { "type": "string", "format": "date-time" },
+    "source": { "type": "string", "minLength": 1 },
+    "licence": { "type": "string", "minLength": 1 },
+    "attribution": { "type": "string", "minLength": 1 },
+    "retrievedOn": { "type": "string", "format": "date" },
+    "verification": { "enum": ["UNKNOWN", "0", "1", "2", "4", "E", "PROTOTYPE-UNVERIFIED", "SEEDED-OPEN-DATA"] }
+  }
+}
