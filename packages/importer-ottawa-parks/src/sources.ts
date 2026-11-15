@@ -9,7 +9,7 @@ export const source = {
   licence: "City of Ottawa Open Data Licence v2.0",
   licenceUrl: "https://open.ottawa.ca/pages/open-data-licence-version-2-0",
   licenceStatus: "verify" as const,
-  attribution: "Source: City of Ottawa / Source : Ville d’Ottawa",
+  attribution: "Source: City of Ottawa / Source : Ville d’Ottawa",
   cadence: "As updated by the city (MODIFIED_DATE per feature)",
 };
 

@@ -43,4 +43,9 @@ describe("rendering", () => {
     const html = renderToStaticMarkup(createElement(DirectoryLinks, { lang: "en" }));
     for (const id of ["dl-name", "dl-mobility", "dl-transfer"]) expect(html).toContain(`for="${id}"`);
   });
+  it("gives interactive targets a 44px minimum size", () => {
+    const html = renderToStaticMarkup(createElement(DirectoryLinks, { lang: "en" }));
+    expect(html).toContain("min-height: 44px");
+    expect(html).toContain("min-width: 44px");
+  });
 });

@@ -5,6 +5,7 @@ export const FINDER_COPY = {
   "finder.unknown": { en: "Unknown", fr: "Inconnu" },
   "finder.hours": { en: "Opening hours", fr: "Heures d'ouverture" },
   "finder.date": { en: "Date", fr: "Date" },
+  "finder.verified": { en: "Verification date", fr: "Date de vérification" },
   "finder.access": { en: "Access", fr: "Accès" },
   "finder.call": { en: "Call {phone}", fr: "Appeler {phone}" },
   "finder.shown": { en: "{count} record(s) shown.", fr: "{count} fiche(s) affichée(s)." },

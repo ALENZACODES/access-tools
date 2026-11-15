@@ -68,7 +68,7 @@ export function EssentialsFinder({ records, registry, locale = 'en', origin, rad
                   <dt>{labelFor(key)}</dt>
                   <dd style={{ marginInlineStart: '1rem' }}>
                     {answer === 'UNKNOWN' ? t.unknown : answer === 'yes' ? t.yes : t.no}
-                    {fact && source ? <> {'\u2014'} {t.source}{locale === 'fr' ? '\u202F: ' : ': '}{source.name}{locale === 'fr' ? '\u202F; ' : '; '}{fact.licence}{locale === 'fr' ? '\u202F; ' : '; '}{t.fetched}{locale === 'fr' ? '\u202F: ' : ': '}{fact.retrieved_at}{locale === 'fr' ? '\u202F; ' : '; '}{t.tier}{locale === 'fr' ? '\u202F: ' : ': '}{fact.tier}</> : null}
+                    {fact && source ? <> {'\u2014'} {t.source}{locale === 'fr' ? '\u00A0: ' : ': '}{source.name}{locale === 'fr' ? '\u202F; ' : '; '}{fact.licence}{locale === 'fr' ? '\u202F; ' : '; '}{t.fetched}{locale === 'fr' ? '\u00A0: ' : ': '}{fact.retrieved_at}{locale === 'fr' ? '\u202F; ' : '; '}{t.tier}{locale === 'fr' ? '\u00A0: ' : ': '}{fact.tier}</> : null}
                   </dd>
                 </div>;
               })}

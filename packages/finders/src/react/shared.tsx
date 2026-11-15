@@ -81,7 +81,7 @@ export function FieldList({ lang, fields }: { lang: Lang; fields: FinderField[] 
               {field.sourceName}
             </span>
             <span>
-              {finderCopy("finder.field.record-date", lang)}
+              {finderCopy("finder.verified", lang)}
               {colon}
               {field.recordDate}
             </span>

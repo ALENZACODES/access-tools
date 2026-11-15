@@ -24,7 +24,7 @@ describe("profile export", () => {
   });
   it("renders empty fields as Unknown / Inconnu in the text sheet", () => {
     expect(exportProfileText(emptyProfile, "en", "2026-11-15")).toContain("Transfer notes: Unknown");
-    expect(exportProfileText(emptyProfile, "fr", "2026-11-15")).toContain("Notes sur les transferts\u202F: Inconnu");
+    expect(exportProfileText(emptyProfile, "fr", "2026-11-15")).toContain("Notes sur les transferts\u00A0: Inconnu");
   });
   it("uses the person's own words in the text sheet", () => {
     expect(exportProfileText(sample, "en", "2026-11-15")).toContain("Synthetic example note");
