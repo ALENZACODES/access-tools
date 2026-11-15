@@ -284,8 +284,8 @@ export const FINDER_COPY = {
   "finder.pack.broaden": { en: "Broaden results", fr: "Élargir les résultats" },
   "finder.pack.count": { en: "Results: {count}", fr: "Résultats\u00A0: {count}" },
   "finder.pack.empty": {
-    en: "No sourced records for this finder in the searched area (0).",
-    fr: "Aucune fiche sourcée pour cette recherche dans la zone (0).",
+    en: "No sourced records for this finder in the searched area (0). Try broadening the area or change the filters.",
+    fr: "Aucune fiche sourcée pour cette recherche dans la zone (0). Essayez d'élargir la zone ou changez les filtres.",
   },
   "finder.pack.contribute": { en: "Contribute information", fr: "Contribuer des renseignements" },
   "finder.pack.source": { en: "Source", fr: "Source" },
@@ -303,7 +303,7 @@ export const FINDER_COPY = {
   },
   "finder.pack.availability": {
     en: "Washroom availability, openness and cleanliness are not shown. Records are not live status.",
-    fr: "La disponibilité, l'ouverture et la propreté des toilettes ne sont pas indiquées. Il ne s'agit pas d'un état en temps réel.",
+    fr: "La disponibilité, l'ouverture et la propreté des toilettes ne sont pas indiquées. Il ne s'agit pas d'une indication instantanée.",
   },
   "finder.pack.parking-notice": {
     en: "Spaces the data says exist, not free now.",
