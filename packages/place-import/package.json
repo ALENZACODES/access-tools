@@ -1,0 +1,33 @@
+{
+  "name": "@access-tools/place-import",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run test",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build": "vite build",
+    "demo": "vite --host 127.0.0.1",
+    "test:e2e": "playwright test -c e2e/playwright.config.ts"
+  },
+  "dependencies": {
+    "@access-tools/place": "0.1.0",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "axe-core": "^4.10.3",
+    "playwright": "^1.49.1",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.11",
+    "vitest": "^3.0.5"
+  }
+}

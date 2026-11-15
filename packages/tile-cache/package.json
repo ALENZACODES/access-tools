@@ -1,0 +1,12 @@
+{
+  "name": "@access-tools/tile-cache",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./src/index.ts", "./panel": "./src/StatusPanel.tsx" },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "build": "tsc --noEmit -p tsconfig.json",
+    "test:e2e": "playwright test -c e2e/playwright.config.ts"
+  }
+}

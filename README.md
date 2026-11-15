@@ -1,6 +1,6 @@
 # access-tools
 
-Libraries for the unbranded Ontario accessibility app (“the App”). It is spinal-cord-injury first. This repository does not claim endorsement by Spinal Cord Injury Ontario, a hospital, a ministry, or any other organization.
+Libraries for the unbranded Ontario accessibility app (“the App”). It is spinal-cord-injury first. This repository does not claim endorsement by any hospital, ministry, or other organization.
 
 ## Directory, timing, and games
 
@@ -53,6 +53,16 @@ npm run demo -w @access-tools/finders
 ```
 
 Each place, search, and finder demo binds Vite's default port. The interface is in English and French.
+
+## Post-demo regression audit
+
+`npm run test:e2e` also runs `e2e/regression.spec.ts`, the Day 28 post-demo regression audit for this repository. Each test title carries a check id from `e2e/regression/catalog.ts`. The reporter writes `test-results/regression-audit.md` and `.json`: one row per check, the build identifier, pass or fail, and the reason for any check that is not run here.
+
+- The build identifier is `REGRESSION_BUILD_ID` when it is set, otherwise the git commit of the checkout, marked when there are uncommitted changes.
+- A console error or an uncaught page error during a check fails that check.
+- A check that was expected here but has no result is listed as not run and blocks the result.
+- Demo journeys, the outage reroute, the offline place pack, and the shell profile belong to access-maps and access-main. They are listed as not run here. Earlier evidence is not reused.
+- "No regression found here" covers only the checks in this repository. It is not a result for the whole App.
 
 ## Third-party notices
 

@@ -1,0 +1,21 @@
+{
+  "records": [
+    {
+      "id": "demo-claimed",
+      "name": "Fictional Claimed Verified",
+      "municipality": "Example Township",
+      "recordProvenance": {
+        "sourceName": "Demonstration fixture author",
+        "sourceId": "fixture-2026-11-15",
+        "licence": "CC0-1.0",
+        "sourceDate": "2026-11-15",
+        "recordDate": "2026-11-15",
+        "retrievedAt": "2026-11-15",
+        "tier": 3,
+        "prototypeLabel": "VERIFIED",
+        "verifierType": "fixture-author"
+      },
+      "fields": {}
+    }
+  ]
+}
