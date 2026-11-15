@@ -18,3 +18,9 @@ export { findRepairAndSupply, publishedServices } from "./repair.js";
 export type { DirectoryHit, RepairQuery, RepairResult } from "./repair.js";
 export { ChargingFinder, ParkingFinder, RepairSupplyFinder, WashroomFinder } from "./react/Finders.js";
 export type { FinderEntry } from "./react/Finders.js";
+
+export { createFindersModule } from "./react/pack-module.js";
+export { PackFindersPage } from "./react/PackFindersPage.js";
+export { queryPackFinders, WASHROOM_KEYS, supportsKind } from "./pack-finders.js";
+export type { FinderKind, FinderRequest, PackFinderRow, PackFinderResult } from "./pack-finders.js";
+export type { PackSource, PackRecord, PackManifest } from "./pack-types.js";
