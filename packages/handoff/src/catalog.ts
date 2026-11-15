@@ -19,7 +19,7 @@ const catalogs = {
     noFigure: "Chiffre masqué en attendant une nouvelle vérification datée de sa source", figure: "Chiffre daté", recheck: "Consigner une nouvelle vérification",
     checkDate: "Date de vérification manuelle", save: "Enregistrer la date", notice: "La vérification d’une fiche ne renouvelle pas la date de la source d’un chiffre.",
     invalid: "Entrez une date valide ne dépassant pas la date de l’audit.", demonstration: "Fiches de démonstration seulement — ni taux officiels ni faits sur les services",
-    nothing: "Aucun passage sélectionné.", reviewed: "Nouvelle vérification consignée", staleFigure: "Chiffre masqué ; date de la source", dateMissing: "Date non consignée", steps: "Liens ou appels",
+    nothing: "Aucun passage sélectionné.", reviewed: "Nouvelle vérification consignée", staleFigure: "Chiffre masqué ; date de la source", dateMissing: "Date non consignée", steps: "Liens ou appels",
   },
 } as const;
 

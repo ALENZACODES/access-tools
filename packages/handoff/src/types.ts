@@ -2,7 +2,7 @@
 export type Language = "en" | "fr";
 export type Bilingual = Record<Language, string>;
 export type Category = "benefits" | "funding" | "equipment" | "employment" | "housing" | "services";
-export type Tier = "PROTOTYPE-UNVERIFIED" | "SEEDED-OPEN-DATA" | "administrator_page";
+export type Tier = "PROTOTYPE-UNVERIFIED" | "SEEDED-OPEN-DATA";
 
 export interface DirectoryLike {
   id: string;

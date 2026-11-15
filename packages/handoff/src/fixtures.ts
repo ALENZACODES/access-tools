@@ -1,6 +1,6 @@
 import type { DirectoryLike, Handoff } from "./types.js";
 
-const licenceNote = { en: "Synthetic demonstration data; no official material reproduced.", fr: "Données de démonstration fictives ; aucun contenu officiel reproduit." };
+const licenceNote = { en: "Synthetic demonstration data; no official material reproduced.", fr: "Données de démonstration fictives ; aucun contenu officiel reproduit." };
 export const demonstrationRecords: DirectoryLike[] = [
   {
     id: "demo-benefit-a", category: "benefits", name: { en: "Demonstration benefit A", fr: "Prestation fictive A" },
