@@ -9,7 +9,7 @@ export const messages = {
     warning: "Unknown does not mean accessible. These venues are fictional.",
   },
   fr: {
-    title: "the App — importation de lieux", language: "Langue", introduction: "Données de démonstration uniquement. Aucune affirmation sur la couverture de l’Ontario.",
+    title: "l’App — importation de lieux", language: "Langue", introduction: "Données de démonstration uniquement. Aucune affirmation sur la couverture de l’Ontario.",
     input: "Document JSON à importer", run: "Lancer l’importation", report: "Rapport d’importation", accepted: "Acceptés", rejected: "Rejetés",
     unknownFields: "Champs inconnus", refused: "Champs en direct refusés", reasons: "Motifs de rejet", refusals: "Données refusées",
     places: "Lieux produits", fields: "Champs", value: "Valeur", unknown: "Inconnu", source: "Source", licence: "Licence",

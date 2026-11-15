@@ -15,6 +15,20 @@ export interface ImportReport {
   refusals: Refusal[];
 }
 export interface ImportResult { places: PlaceRecord[]; report: ImportReport }
+export interface ImportLimits { maxBytes?: number; maxRows?: number }
+
+/** Default cap for a single import document: 5 MiB or 50,000 rows, whichever is hit first. */
+export const DEFAULT_IMPORT_LIMITS = { maxBytes: 5 * 1024 * 1024, maxRows: 50_000 } as const;
+
+function documentByteLength(input: unknown): number {
+  return new TextEncoder().encode(JSON.stringify(input)).length;
+}
+
+function documentRowCount(input: unknown): number | undefined {
+  if (!input || typeof input !== "object" || !("records" in input)) return undefined;
+  const records = (input as { records: unknown }).records;
+  return Array.isArray(records) ? records.length : undefined;
+}
 export type RawFact = { value: unknown; provenance?: unknown } | null;
 export interface RawRecord {
   id: string;
@@ -54,14 +68,21 @@ const unknown = <T>(): Sourced<T> => ({ value: null, provenance: null, photoSlot
 const blank = (names: readonly string[]): Record<string, Sourced<unknown>> =>
   Object.fromEntries(names.map((name) => [name, unknown()]));
 
+function hasEvidence(value: Provenance): boolean {
+  const evidence = value.evidence;
+  return Boolean(evidence && typeof evidence === "object" && evidence.protocolVersion && evidence.method);
+}
+
 function safeProvenance(value: unknown): value is Provenance {
   if (!validateProvenance(value)) return false;
   const p = value as Provenance;
   if (p.prototypeLabel !== "PROTOTYPE-UNVERIFIED" && p.prototypeLabel !== "SEEDED-OPEN-DATA") return false;
-  // This import job only emits prototype data, and cannot certify survey evidence.
+  // This import job only emits prototype data, and cannot certify survey-verified claims.
   if (p.tier === 3 || p.tier === 4) return false;
-  if (p.evidence || p.observedAt || p.expiresAt) return false;
-  return p.tier === 0 || p.tier === 1 || p.tier === 2 || p.tier === "E";
+  if (p.observedAt || p.expiresAt) return false;
+  if (p.tier === 0 || p.tier === 1) return !p.evidence;
+  if (p.tier === 2 || p.tier === "E") return hasEvidence(p);
+  return false;
 }
 
 function checkFact(path: string, raw: RawFact): Sourced<unknown> {
@@ -120,11 +141,34 @@ function createPlace(raw: RawRecord, values: Record<string, Sourced<unknown>>): 
 }
 
 /** Accepts JSON parsed from a labelled demo document; never reaches a network. */
-export function importPlaces(input: unknown): ImportResult {
+export function importPlaces(input: unknown, limits: ImportLimits = {}): ImportResult {
+  const maxBytes = limits.maxBytes ?? DEFAULT_IMPORT_LIMITS.maxBytes;
+  const maxRows = limits.maxRows ?? DEFAULT_IMPORT_LIMITS.maxRows;
   const report: ImportReport = {
     accepted: 0, rejected: 0, unknownFields: 0, refused: 0,
     notice: "Demonstration import counts only; not coverage of Ontario.", rejections: [], refusals: [],
   };
+  if (!Number.isSafeInteger(maxBytes) || maxBytes < 1 || !Number.isSafeInteger(maxRows) || maxRows < 1) {
+    throw new RangeError("Import limits must be positive safe integers");
+  }
+  const bytes = documentByteLength(input);
+  if (bytes > maxBytes) {
+    report.rejected = 1;
+    report.rejections.push({
+      index: 0,
+      reason: `Import exceeds the size cap (${bytes} bytes > ${maxBytes} bytes)`,
+    });
+    return { places: [], report };
+  }
+  const rows = documentRowCount(input);
+  if (rows !== undefined && rows > maxRows) {
+    report.rejected = 1;
+    report.rejections.push({
+      index: 0,
+      reason: `Import exceeds the row cap (${rows} rows > ${maxRows} rows)`,
+    });
+    return { places: [], report };
+  }
   if (!validateRawDocument(input)) {
     report.rejected = 1;
     report.rejections.push({ index: 0, reason: `Document: ${formatErrors(validateRawDocument.errors)}` });

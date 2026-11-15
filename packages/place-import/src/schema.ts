@@ -7,7 +7,7 @@ const date = { type: "string", format: "date" } as const;
 const instant = { type: "string", format: "date-time" } as const;
 const nonempty = { type: "string", minLength: 1 } as const;
 const tier = { enum: [0, 1, 2, 3, 4, "E"] } as const;
-const labels = { enum: ["PROTOTYPE-UNVERIFIED", "SEEDED-OPEN-DATA", "COMMUNITY-REPORTED", "VERIFIED"] } as const;
+const labels = { enum: ["PROTOTYPE-UNVERIFIED", "SEEDED-OPEN-DATA", "COMMUNITY-REPORTED"] } as const;
 
 export const provenanceSchema = {
   type: "object",
@@ -30,6 +30,12 @@ export const provenanceSchema = {
     observedAt: instant, expiresAt: instant,
   },
   additionalProperties: false,
+  allOf: [
+    {
+      if: { properties: { tier: { enum: [2, "E"] } }, required: ["tier"] },
+      then: { required: ["evidence"] },
+    },
+  ],
 } as const;
 
 const sourcedSchema = {

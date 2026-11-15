@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { OSM_CREDIT, TileCache, attributionForDisplay, validateManifest } from "../src/index";
+import { OSM_CREDIT, TileCache, attributionForDisplay, demonstrationTile, seedDemonstrationCache, validateManifest } from "../src/index";
 import type { TileRecord } from "../src/index";
 
 const NOW = Date.parse("2026-11-15T12:00:00.000Z");
@@ -97,5 +97,22 @@ describe("tile cache", () => {
     const expired = tile();
     expired.manifest.expiresAt = "2026-11-15T11:00:00.000Z";
     expect(() => cache.put(expired)).toThrow(/expired/);
+  });
+
+  it("rejects verification values 2 and 4", () => {
+    for (const verification of ["2", "4"]) {
+      const record = tile();
+      record.manifest.verification = verification as TileRecord["manifest"]["verification"];
+      expect(() => validateManifest(record.manifest)).toThrow();
+      expect(() => new TileCache(1, () => NOW).put(record)).toThrow();
+    }
+  });
+
+  it("seeds a demonstration tile so OSM attribution is present", () => {
+    const cache = seedDemonstrationCache();
+    const status = cache.status();
+    expect(status.entries).toBe(1);
+    expect(cache.get(demonstrationTile().manifest.key)?.bytes.byteLength).toBeGreaterThan(0);
+    expect(status.credits).toEqual([{ text: OSM_CREDIT, licence: "ODbL-1.0" }]);
   });
 });
