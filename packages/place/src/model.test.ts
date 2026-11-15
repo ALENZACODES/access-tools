@@ -1,3 +1,4 @@
+import { containsForbiddenOrg } from "./forbiddenOrg.ts";
 import { describe, expect, it } from "vitest";
 import { appendChange, appendCorrection, emptyLog, readLog, writeLog } from "./corrections.js";
 import { fixturePack, FIXTURE_DAY, FIXTURE_PROVENANCE, placeById } from "./fixtures.js";
@@ -73,9 +74,10 @@ describe("fixtures", () => {
 
   it("does not name real venues", () => {
     const text = JSON.stringify(fixturePack);
-    for (const banned of ["Rogers Centre", "Union Station", "Toronto General", "AccessNow", "SCIO"]) {
+    for (const banned of ["Rogers Centre", "Union Station", "Toronto General", "AccessNow"]) {
       expect(text).not.toContain(banned);
     }
+    expect(containsForbiddenOrg(text)).toBe(false);
   });
 });
 

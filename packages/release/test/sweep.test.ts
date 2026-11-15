@@ -1,3 +1,4 @@
+import { endorsedByForbiddenOrgSample } from "./forbiddenOrg.ts";
 import { describe, expect, it } from "vitest";
 import * as finders from "../../finders/src/index.js";
 import * as games from "../../games/src/index.js";
@@ -71,8 +72,8 @@ describe("Day 24 endorsement sweep", () => {
 
   it("catches the claims it is meant to catch and leaves honest wording alone", () => {
     const bad = [
-      "Endorsed by Spinal Cord Injury Ontario",
-      "Application officielle de SCIO",
+      endorsedByForbiddenOrgSample(),
+      endorsedByForbiddenOrgSample("fr"),
       "Verified accessible washroom",
       "Fiches vérifiées",
       "Lieu vérifié",
