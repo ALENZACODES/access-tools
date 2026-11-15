@@ -76,6 +76,8 @@ export function auditMarkdown(audit: Audit): string {
   const lines = [
     "# Post-demo regression audit, access-tools",
     "",
+    "Fixture records used by these checks are Sample data. They are not live places and they are not on the user path as real records.",
+    "",
     `Build: ${cell(audit.build)}`,
     `Run at: ${audit.ranAt}`,
     `Result here: **${audit.verdict}**. Pass ${audit.counts.pass}, fail ${audit.counts.fail}, not run here ${audit.counts["not run here"]}, not run ${audit.counts["not run"]}.`,
