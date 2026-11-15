@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://access-tools.local/auditors/audit-1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "venueId", "label", "facts", "photos", "events"],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "venueId": { "type": "string", "pattern": "^demo-" },
+    "label": { "const": "PROTOTYPE-UNVERIFIED" },
+    "facts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["field", "value", "provenance", "photoIds"],
+        "properties": {
+          "field": { "enum": ["doorClearWidthMm", "stepHeightMm", "thresholdHeightMm", "turningDiameterMm", "transferClearanceMm", "rampWidthMm", "liftDoorWidthMm", "parkingAisleWidthMm"] },
+          "value": { "type": ["number", "null"], "minimum": 0 },
+          "photoIds": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+          "provenance": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["sourceName", "sourceId", "licence", "sourceDate", "recordDate", "retrievedAt", "tier", "prototypeLabel", "verifierType"],
+            "properties": {
+              "sourceName": { "type": "string", "minLength": 1 },
+              "sourceId": { "type": "string", "minLength": 1 },
+              "licence": { "type": "string", "minLength": 1 },
+              "sourceDate": { "type": "string", "format": "date" },
+              "recordDate": { "type": "string", "format": "date" },
+              "retrievedAt": { "type": "string", "format": "date" },
+              "tier": { "const": 0 },
+              "prototypeLabel": { "const": "PROTOTYPE-UNVERIFIED" },
+              "verifierType": { "const": "fixture-author" }
+            }
+          }
+        }
+      }
+    },
+    "photos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "localFilename", "description"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "localFilename": { "type": "string", "minLength": 1, "pattern": "^[^/\\\\]+$" },
+          "description": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "venueId", "actor", "action", "detail", "at"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "venueId": { "type": "string", "pattern": "^demo-" },
+          "actor": { "enum": ["auditor", "venue-owner"] },
+          "action": { "enum": ["measurement", "claim", "fix", "dispute"] },
+          "detail": { "type": "string", "minLength": 1 },
+          "at": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  }
+}

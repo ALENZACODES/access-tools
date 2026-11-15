@@ -1,0 +1,65 @@
+{
+  "features": [
+    {
+      "attributes": {
+        "OBJECTID": 1,
+        "NAME": "Demo Ottawa Lot 1",
+        "ACCESSIBLE_PARKING_CAPACITY": 3,
+        "ACCESSIBLE": "yes"
+      },
+      "geometry": {
+        "x": -79.0,
+        "y": 43.0
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 2,
+        "NAME": "Demo Ottawa Lot 2",
+        "ACCESSIBLE_PARKING_CAPACITY": 0,
+        "ACCESSIBLE": "non"
+      },
+      "geometry": {
+        "x": -78.99,
+        "y": 43.01
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 3,
+        "NAME": "Demo Ottawa Lot 3",
+        "ACCESSIBLE_PARKING_CAPACITY": null,
+        "ACCESSIBLE": null
+      },
+      "geometry": {
+        "x": -78.98,
+        "y": 43.02
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 4,
+        "NAME": "Demo Ottawa Lot 4",
+        "ACCESSIBLE_PARKING_CAPACITY": 2,
+        "ACCESSIBLE": "oui"
+      },
+      "geometry": {
+        "x": -78.97,
+        "y": 43.03
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 5,
+        "NAME": "Demo Ottawa Lot 5",
+        "ACCESSIBLE_PARKING_CAPACITY": 1,
+        "ACCESSIBLE": "no"
+      },
+      "geometry": {
+        "x": -78.96,
+        "y": 43.04
+      }
+    }
+  ],
+  "exceededTransferLimit": false
+}
