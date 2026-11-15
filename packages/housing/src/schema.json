@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://access-tools.local/schema/housing-room-1.json",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "id", "name", "city", "province", "placeType", "datasetStatus", "recordProvenance", "facts"],
+  "properties": {
+    "schemaVersion": {"const":"housing-room-1"},
+    "id": {"type":"string","pattern":"^demo-[a-z0-9-]+$"},
+    "name": {"$ref":"#/$defs/bilingual"},
+    "city": {"type":"string","minLength":2},
+    "province": {"const":"ON"},
+    "placeType": {"enum":["dwelling","hotel-room"]},
+    "datasetStatus": {"const":"labelled-fixture"},
+    "recordProvenance": {"$ref":"#/$defs/provenance"},
+    "facts": {
+      "type":"object", "additionalProperties":false,
+      "required":["entranceStepHeightMm","doorClearWidthMm","turningDiameterMm","bathroomTransferSide","bathroomTransferSpaceMm","showerBathNotes","bedHeightMm","bedClearanceMm","elevator","parking","washroom"],
+      "properties": {
+        "entranceStepHeightMm":{"$ref":"#/$defs/numberFact"},
+        "doorClearWidthMm":{"$ref":"#/$defs/numberFact"},
+        "turningDiameterMm":{"$ref":"#/$defs/numberFact"},
+        "bathroomTransferSide":{"$ref":"#/$defs/sideFact"},
+        "bathroomTransferSpaceMm":{"$ref":"#/$defs/numberFact"},
+        "showerBathNotes":{"$ref":"#/$defs/textFact"},
+        "bedHeightMm":{"$ref":"#/$defs/numberFact"},
+        "bedClearanceMm":{"$ref":"#/$defs/numberFact"},
+        "elevator":{"$ref":"#/$defs/yesNoFact"},
+        "parking":{"$ref":"#/$defs/textFact"},
+        "washroom":{"$ref":"#/$defs/textFact"}
+      }
+    }
+  },
+  "$defs": {
+    "bilingual":{"type":"object","additionalProperties":false,"required":["en","fr"],"properties":{"en":{"type":"string","minLength":1},"fr":{"type":"string","minLength":1}}},
+    "provenance":{
+      "type":"object","additionalProperties":false,
+      "required":["sourceName","sourceId","licence","sourceDate","recordDate","retrievedAt","tier","prototypeLabel","verifierType"],
+      "properties":{
+        "sourceName":{"type":"string","minLength":1},"sourceId":{"type":"string","minLength":1},
+        "sourceUrl":{"type":"string","pattern":"^https://"},
+        "licence":{"type":"string","minLength":1},
+        "sourceDate":{"type":"string","format":"date"},"recordDate":{"type":"string","format":"date"},"retrievedAt":{"type":"string","format":"date"},
+        "tier":{"enum":[0,1,2,"E"]},
+        "prototypeLabel":{"enum":["PROTOTYPE-UNVERIFIED","SEEDED-OPEN-DATA"]},
+        "verifierType":{"enum":["open-data-import","business","peer","surveyor","operator-feed","fixture-author","desk-reviewer"]}
+      }
+    },
+    "numberFact":{"$ref":"#/$defs/numericSourced"},
+    "numericSourced":{"type":"object","additionalProperties":false,"required":["value","provenance","photoSlotIds"],"properties":{"value":{"type":["number","null"],"minimum":0},"provenance":{"anyOf":[{"$ref":"#/$defs/provenance"},{"type":"null"}]},"photoSlotIds":{"type":"array","maxItems":0}},"allOf":[{"if":{"properties":{"value":{"type":"number"}},"required":["value"]},"then":{"properties":{"provenance":{"$ref":"#/$defs/provenance"}}}}]},
+    "textFact":{"$ref":"#/$defs/stringSourced"},
+    "stringSourced":{"type":"object","additionalProperties":false,"required":["value","provenance","photoSlotIds"],"properties":{"value":{"type":["string","null"],"minLength":1},"provenance":{"anyOf":[{"$ref":"#/$defs/provenance"},{"type":"null"}]},"photoSlotIds":{"type":"array","maxItems":0}},"allOf":[{"if":{"properties":{"value":{"type":"string"}},"required":["value"]},"then":{"properties":{"provenance":{"$ref":"#/$defs/provenance"}}}}]},
+    "sideFact":{"$ref":"#/$defs/sideSourced"},
+    "sideSourced":{"type":"object","additionalProperties":false,"required":["value","provenance","photoSlotIds"],"properties":{"value":{"enum":["left","right","both",null]},"provenance":{"anyOf":[{"$ref":"#/$defs/provenance"},{"type":"null"}]},"photoSlotIds":{"type":"array","maxItems":0}},"allOf":[{"if":{"properties":{"value":{"enum":["left","right","both"]}},"required":["value"]},"then":{"properties":{"provenance":{"$ref":"#/$defs/provenance"}}}}]},
+    "yesNoFact":{"$ref":"#/$defs/yesNoSourced"},
+    "yesNoSourced":{"type":"object","additionalProperties":false,"required":["value","provenance","photoSlotIds"],"properties":{"value":{"enum":["yes","no",null]},"provenance":{"anyOf":[{"$ref":"#/$defs/provenance"},{"type":"null"}]},"photoSlotIds":{"type":"array","maxItems":0}},"allOf":[{"if":{"properties":{"value":{"enum":["yes","no"]}},"required":["value"]},"then":{"properties":{"provenance":{"$ref":"#/$defs/provenance"}}}}]}
+  }
+}
