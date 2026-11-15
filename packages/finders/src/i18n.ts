@@ -127,9 +127,9 @@ export const FINDER_COPY = {
   },
   "finder.washroom.empty-title": { en: "No washroom record matches.", fr: "Aucune fiche de toilettes ne correspond." },
   "finder.parking.empty-title": { en: "No parking bay matches.", fr: "Aucune place de stationnement ne correspond." },
-  "finder.empty.filters": { en: "Filters on: {list}. Change or clear a filter to see more records.", fr: "Filtres actifs\u202F: {list}. Changez ou retirez un filtre pour voir plus de fiches." },
+  "finder.empty.filters": { en: "Filters on: {list}. Change or clear a filter to see more records.", fr: "Filtres actifs\u00A0: {list}. Changez ou retirez un filtre pour voir plus de fiches." },
   "finder.empty.no-filters": { en: "No filter is on. Type a destination, or show hidden records to see why each one was left out.", fr: "Aucun filtre n'est actif. Saisissez une destination, ou affichez les fiches cachées pour voir pourquoi chacune a été écartée." },
-  "finder.empty.destination": { en: "Destination searched: {text}. Try a broader destination, or clear it to list every record.", fr: "Destination cherchée\u202F: {text}. Essayez une destination plus large, ou effacez-la pour lister toutes les fiches." },
+  "finder.empty.destination": { en: "Destination searched: {text}. Try a broader destination, or clear it to list every record.", fr: "Destination cherchée\u00A0: {text}. Essayez une destination plus large, ou effacez-la pour lister toutes les fiches." },
   "finder.empty.no-destination": { en: "No destination is typed. Try a place name, or leave the field empty to list every record.", fr: "Aucune destination n'est saisie. Essayez un nom de lieu, ou laissez le champ vide pour lister toutes les fiches." },
   "finder.washroom.seeded": {
     en: "The demonstration data holds {records} washroom record(s) in {places} place(s). {matching} match(es) this destination before the filters.",
