@@ -1,19 +1,12 @@
 /// <reference types="node" />
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-// @ts-ignore Node strip-types uses TypeScript source paths
 import { arcgisPages, ckanPages } from "./readers.ts";
-// @ts-ignore Node strip-types uses TypeScript source paths
 import { mapFeature } from "./mapping.ts";
-// @ts-ignore Node strip-types uses TypeScript source paths
 import { SOURCES, sourceById } from "./sources.ts";
-// @ts-ignore Node strip-types uses TypeScript source paths
 import { FACT_KEYS } from "./types.ts";
-// @ts-ignore Node strip-types uses TypeScript source paths
 import type { ImportReport, ImportedRecord, LicenceRecord } from "./types.ts";
-// @ts-ignore Node strip-types uses TypeScript source paths
 import { validateRecord, validateReport } from "./schema.ts";
-// @ts-ignore Node strip-types uses TypeScript source paths
 import { writePartitions } from "./io.ts";
 
 export async function run(sourceId: string, root: string, licenceRecord?: LicenceRecord): Promise<ImportReport> {
@@ -22,7 +15,7 @@ export async function run(sourceId: string, root: string, licenceRecord?: Licenc
   const approved = source.licenceStatus === "open" || Boolean(licenceRecord?.result === "approved" && /^\d{4}-\d{2}-\d{2}$/.test(licenceRecord.checkedOn) && /^https:\/\//.test(licenceRecord.urlRead));
   const report: ImportReport = {
     sourceId, read: 0, emitted: 0, rejected: {}, unknownFieldCount: Object.fromEntries(FACT_KEYS.map((key) => [key, 0])) as ImportReport["unknownFieldCount"], heldByLicence: !approved, retrievedAt: date, parts: [], coverageClaim: false,
-    summary: { en: `${source.name.en}: counts are not a coverage claim.`, fr: `${source.name.fr} : les totaux ne constituent pas une mesure de couverture.` },
+    summary: { en: `${source.name.en}: counts are not a coverage claim.`, fr: `${source.name.fr}${'\u00A0'}: les totaux ne constituent pas une mesure de couverture.` },
   };
   const directory = join(root, approved ? source.licenceStatus : "held", sourceId);
   await mkdir(directory, { recursive: true });

@@ -1,4 +1,3 @@
-// @ts-ignore Node strip-types uses TypeScript source paths
 import type { Source } from "./sources.ts";
 export type JsonFetch = (url: string) => Promise<unknown>;
 export interface Feature { attributes: Record<string, unknown>; geometry: unknown; id?: unknown }

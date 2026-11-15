@@ -5,21 +5,13 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createHash } from "node:crypto";
 import { gunzipSync } from "node:zlib";
-// @ts-ignore Node strip-types uses TypeScript source paths
 import { SOURCES, sourceById } from "../src/sources.ts";
-// @ts-ignore Node strip-types uses TypeScript source paths
 import { arcgisPages, ckanPages, parseJsonLines } from "../src/readers.ts";
-// @ts-ignore Node strip-types uses TypeScript source paths
 import { mapFeature } from "../src/mapping.ts";
-// @ts-ignore Node strip-types uses TypeScript source paths
 import { validateRecord, validateReport } from "../src/schema.ts";
-// @ts-ignore Node strip-types uses TypeScript source paths
 import { FACT_KEYS } from "../src/types.ts";
-// @ts-ignore Node strip-types uses TypeScript source paths
-import type { Feature, ImportedRecord, ImportReport } from "../src/index.ts";
-// @ts-ignore Node strip-types uses TypeScript source paths
+import type { Feature, ImportedRecord } from "../src/index.ts";
 import { writePartitions } from "../src/io.ts";
-// @ts-ignore Node strip-types uses TypeScript source paths
 import { run } from "../src/cli.ts";
 const date = "2026-11-15";
 const fixture = async (name: string): Promise<Record<string, unknown>> => JSON.parse(await readFile(new URL(`./fixtures/${name}`, import.meta.url), "utf8")) as Record<string, unknown>;

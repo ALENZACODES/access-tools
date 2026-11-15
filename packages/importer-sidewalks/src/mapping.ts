@@ -1,12 +1,7 @@
-// @ts-ignore Node strip-types uses TypeScript source paths
 import type { Source } from "./sources.ts";
-// @ts-ignore Node strip-types uses TypeScript source paths
 import { FACT_KEYS } from "./types.ts";
-// @ts-ignore Node strip-types uses TypeScript source paths
 import type { FactKey, FactValue, ImportedRecord, Provenance, Sourced, SegmentKind } from "./types.ts";
-// @ts-ignore Node strip-types uses TypeScript source paths
 import type { Feature } from "./readers.ts";
-// @ts-ignore Node strip-types uses TypeScript source paths
 import { toGeometry } from "./readers.ts";
 const ALLOWED: Record<string, readonly string[]> = {
   "brampton-sidewalks": ["OBJECTID", "ID", "DESCR"],

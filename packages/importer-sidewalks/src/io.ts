@@ -3,7 +3,6 @@ import { createHash } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { gzipSync } from "node:zlib";
-// @ts-ignore Node strip-types uses TypeScript source paths
 import type { ImportedRecord, Part } from "./types.ts";
 
 /** A bounded chunk is compressed before admission, ensuring each on-disk part stays below maxBytes. */

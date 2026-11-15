@@ -1,7 +1,5 @@
-// @ts-ignore Node strip-types uses TypeScript source paths
 import Ajv from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
-// @ts-ignore Node strip-types uses TypeScript source paths
 import { FACT_KEYS } from "./types.ts";
 const ajv = new Ajv({ allErrors: true });
 addFormats(ajv);
