@@ -1,0 +1,12 @@
+{
+  "name": "@access-tools/importer-toronto",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "import": "node --experimental-strip-types src/cli.ts"
+  },
+  "dependencies": { "ajv": "^8.17.1", "ajv-formats": "^3.0.1" }
+}
