@@ -36,7 +36,7 @@ export function EssentialsFinder({ records, registry, locale = 'en', origin, rad
           {ESSENTIAL_KEYS.map(key => (
             <label key={key} style={{ display: 'grid', gap: '0.25rem' }}>
               <span>{labelFor(key)}</span>
-              <select value={filters[key] ?? 'any'} onChange={event => {
+              <select style={{ minHeight: 44, minWidth: 44, font: 'inherit' }} value={filters[key] ?? 'any'} onChange={event => {
                 const value = event.currentTarget.value as Filters[EssentialKey];
                 setFilters(previous => ({ ...previous, [key]: value }));
               }}>
@@ -68,7 +68,7 @@ export function EssentialsFinder({ records, registry, locale = 'en', origin, rad
                   <dt>{labelFor(key)}</dt>
                   <dd style={{ marginInlineStart: '1rem' }}>
                     {answer === 'UNKNOWN' ? t.unknown : answer === 'yes' ? t.yes : t.no}
-                    {fact && source ? <> — {t.source}: {source.name}; {fact.licence}; {t.fetched}: {fact.retrieved_at}; {t.tier}: {fact.tier}</> : null}
+                    {fact && source ? <> {'\u2014'} {t.source}{locale === 'fr' ? '\u202F: ' : ': '}{source.name}{locale === 'fr' ? '\u202F; ' : '; '}{fact.licence}{locale === 'fr' ? '\u202F; ' : '; '}{t.fetched}{locale === 'fr' ? '\u202F: ' : ': '}{fact.retrieved_at}{locale === 'fr' ? '\u202F; ' : '; '}{t.tier}{locale === 'fr' ? '\u202F: ' : ': '}{fact.tier}</> : null}
                   </dd>
                 </div>;
               })}

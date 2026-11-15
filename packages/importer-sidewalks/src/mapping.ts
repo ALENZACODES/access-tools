@@ -15,6 +15,19 @@ const ALLOWED: Record<string, readonly string[]> = {
 };
 const clean = (value: unknown): string | null => typeof value === "string" && value.trim() && !["UNKNOWN", "NONE", "N/A", "-1"].includes(value.trim().toUpperCase()) ? value : null;
 const yesNo = (value: unknown): "yes" | "no" | null => value === "Y" ? "yes" : value === "N" ? "no" : null;
+/** Coded winter-maintenance categories, not personal names. */
+const WATERLOO_CLEARED_BY = new Set([
+  "City Crews",
+  "Private Owner",
+  "Unknown",
+  "No winter maintenance",
+  "Shared - City Crews and Private Owner",
+]);
+const clearedByCategory = (raw: unknown): string | null => {
+  const value = typeof raw === "string" ? raw.trim() : "";
+  const match = [...WATERLOO_CLEARED_BY].find((item) => item.toLowerCase() === value.toLowerCase());
+  return match ?? null;
+};
 const provenance = (source: Source, date: string): Provenance => ({ sourceName: source.publisher, sourceId: source.id, sourceUrl: source.datasetUrl, licence: source.licence, sourceDate: date, recordDate: date, retrievedAt: date, tier: 0, prototypeLabel: "SEEDED-OPEN-DATA", verifierType: "open-data-import" });
 const sourced = <T>(value: T | null, p: Provenance): Sourced<T> => ({ value, provenance: value === null ? null : p, photoSlotIds: [] });
 export function mapFeature(source: Source, feature: Feature, date: string): ImportedRecord {
@@ -40,7 +53,9 @@ export function mapFeature(source: Source, feature: Feature, date: string): Impo
     set("widthBand", clean(a.Width)); set("surfaceMaterial", clean(a.Material));
   }
   if (source.id === "waterloo-sidewalks") {
-    set("surfaceMaterial", clean(a.SURFACE)); set("pathType", clean(a.PATH_TYPE)); set("clearedBy", clean(a.CLEARED_BY));
+    set("surfaceMaterial", clean(a.SURFACE)); set("pathType", clean(a.PATH_TYPE));
+    const clearedBy = clearedByCategory(a.CLEARED_BY);
+    if (clearedBy) set("clearedBy", clearedBy);
     const path = clean(a.PATH_TYPE)?.toUpperCase();
     if (path === "WALKWAY") kind = "walkway";
     if (path === "MULTI-USE PATH" || path === "MUP") kind = "multi-use-path";
@@ -59,7 +74,12 @@ export function mapFeature(source: Source, feature: Feature, date: string): Impo
     if (a.CROSSWALK === 1 || clean(a.CROSSWALK_TYPE) || clean(a.PX)) kind = "crosswalk";
   }
   const raw: Record<string, unknown> = {};
-  for (const column of ALLOWED[source.id] ?? []) if (Object.hasOwn(a, column)) raw[column] = a[column];
+  for (const column of ALLOWED[source.id] ?? []) {
+    if (!Object.hasOwn(a, column)) continue;
+    // Do not copy CLEARED_BY when it is not a coded operational category.
+    if (source.id === "waterloo-sidewalks" && column === "CLEARED_BY" && !clearedByCategory(a.CLEARED_BY)) continue;
+    raw[column] = a[column];
+  }
   return {
     id: `${source.id}:${String(upstream)}`, sourceId: source.id, upstreamId: String(upstream), kind,
     name: { en: sourced(nameEn, p), fr: sourced(nameFr, p) }, geometry: toGeometry(feature.geometry), facts, raw,
