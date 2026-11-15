@@ -16,7 +16,7 @@ import { WIKIDATA_P2846_ONTARIO } from "./sources.ts";
 import type { SparqlResult } from "./types";
 
 const USAGE = `Usage: npm run import -w @access-tools/importer-wikidata -- [--input result.json] [--out out] [--date YYYY-MM-DD] [--max-bytes N]
-Without --input the query is POSTed to ${ENDPOINT}.`;
+Without --input the query is POSTed to ${ENDPOINT}. If --date is omitted, retrievedAt defaults to the UTC date (YYYY-MM-DD).`;
 
 function arg(name: string): string | undefined {
   const i = process.argv.indexOf(name);
@@ -41,6 +41,7 @@ async function main(): Promise<void> {
   const source = WIKIDATA_P2846_ONTARIO;
   const input = arg("--input");
   const out = arg("--out") ?? "out";
+  // Default retrievedAt is the UTC date (YYYY-MM-DD).
   const date = arg("--date") ?? new Date().toISOString().slice(0, 10);
   const maxBytes = Number(arg("--max-bytes") ?? DEFAULT_MAX_BYTES);
 

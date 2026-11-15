@@ -25,6 +25,8 @@ Run (needs Node 22; the query goes to https://query.wikidata.org/sparql):
 npm run import -w @access-tools/importer-wikidata -- [--input result.json] [--out out] [--date YYYY-MM-DD] [--max-bytes N]
 ```
 
+If `--date` is omitted, `retrievedAt` defaults to the UTC date (`YYYY-MM-DD`).
+
 Output goes to the git-ignored `out/` folder: gzip NDJSON parts of at most 20 MB, `manifest.json` (file, records, bytes, sha256 per part) and `report.json`. Do not commit them; upload as release assets. The report gives rows read, records written, rejections, UNKNOWN counts and an EN/FR summary. Its counts are not a coverage claim.
 
 Attribution: data from Wikidata, released under CC0 1.0. Attribution is optional. An attribution line is not an endorsement or a partnership.
@@ -55,6 +57,8 @@ Exécution (Node 22 requis ; la requête est envoyée à https://query.wikidata
 ```
 npm run import -w @access-tools/importer-wikidata -- [--input result.json] [--out out] [--date YYYY-MM-DD] [--max-bytes N]
 ```
+
+Si `--date` est omis, `retrievedAt` correspond par défaut à la date UTC (`YYYY-MM-DD`).
 
 Les sorties vont dans le dossier `out/`, ignoré par git : parties NDJSON compressées (gzip) d’au plus 20 Mo, `manifest.json` (fichier, fiches, octets, sha256 par partie) et `report.json`. Ne pas les versionner ; les téléverser comme fichiers de publication. Le rapport donne les lignes lues, les fiches écrites, les rejets, les comptes UNKNOWN et un résumé EN/FR. Ses totaux ne constituent pas une affirmation de couverture.
 

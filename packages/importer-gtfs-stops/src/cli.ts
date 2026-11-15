@@ -15,6 +15,7 @@ async function main(): Promise<void> {
   const source = sourceById(id);
   const licence: LicenceRecord | undefined = licencePath ? JSON.parse(await readFile(licencePath, "utf8")) as LicenceRecord : undefined;
   const held = licenceHeld(source, licence);
+  // Default retrievedAt is the UTC date (YYYY-MM-DD).
   const date = new Date().toISOString().slice(0, 10);
   const report = blankReport(source, date, held);
   // Discovery/catalogue pages are not ZIP downloads: require an explicit ZIP input.

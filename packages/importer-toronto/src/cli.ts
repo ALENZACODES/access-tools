@@ -19,6 +19,7 @@ const fetchJson: JsonFetch = async (url) => {
 };
 const root = fileURLToPath(new URL("../out/", import.meta.url));
 for (const source of selected) {
+  // Default retrievedAt is the UTC date (YYYY-MM-DD).
   const retrievedAt = new Date().toISOString().slice(0, 10);
   const report = newReport(source, retrievedAt);
   const directory = join(root, source.id);

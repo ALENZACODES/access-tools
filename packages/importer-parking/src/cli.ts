@@ -18,6 +18,7 @@ async function run(): Promise<void> {
   const ids = process.argv[2] ? [sourceById(process.argv[2])] : SOURCES;
   const licenceFile = process.argv[3];
   const records: Record<string, LicenceRecord> = licenceFile ? JSON.parse(await readFile(licenceFile, "utf8")) as Record<string, LicenceRecord> : {};
+  // Default retrievedAt is the UTC date (YYYY-MM-DD).
   const day = new Date().toISOString().slice(0, 10);
   const base = join(import.meta.dirname, "..", "out");
   for (const source of ids) {
