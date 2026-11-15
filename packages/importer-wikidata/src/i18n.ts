@@ -2,7 +2,7 @@ export type Lang = "en" | "fr";
 
 const NBSP = " ";
 
-/** French typography: U+00A0 before : ; ? ! and inside « ». */
+/** French typography: U+00A0 before :, and U+202F before ; ! ? and inside « ». */
 export const CATALOG = {
   en: {
     summary: "{sourceName} ({retrievedAt}): {read} rows read, {emitted} records written, {rejected} rejected.",
