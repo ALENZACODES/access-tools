@@ -1,0 +1,14 @@
+{
+  "name": "@access-tools/finder-essentials",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./react": "./src/EssentialsFinder.tsx"
+  },
+  "scripts": {},
+  "peerDependencies": {
+    "react": ">=18"
+  }
+}
