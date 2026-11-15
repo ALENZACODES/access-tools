@@ -52,31 +52,69 @@ export interface AggregateExport {
 }
 
 // Export takes the schema-validated private entries, and emits ONLY eligible group counts.
-// Category and consequence counts both use the same threshold. No totals, raw entry values, amounts, ratios or individual row identifiers are exported.
+// Category and consequence counts both use the same threshold and complementary suppression:
+// if exactly one cell in a dimension is below the threshold, the next-smallest cell is also withheld.
+// No cross-dimension totals, raw entry values, amounts, ratios or individual row identifiers are exported.
+interface CountCell {
+  month: string;
+  key: string;
+  count: number;
+}
+
+function addCount(map: Map<string, Map<string, number>>, month: string, key: string): void {
+  let inner = map.get(month);
+  if (!inner) {
+    inner = new Map();
+    map.set(month, inner);
+  }
+  inner.set(key, (inner.get(key) ?? 0) + 1);
+}
+
+/** Primary threshold, then complementary suppression when exactly one cell is withheld. */
+export function publishDimension(cells: readonly CountCell[]): CountCell[] {
+  const byMonth = new Map<string, CountCell[]>();
+  for (const cell of cells) {
+    const list = byMonth.get(cell.month) ?? [];
+    list.push(cell);
+    byMonth.set(cell.month, list);
+  }
+  const published: CountCell[] = [];
+  for (const group of byMonth.values()) {
+    const suppressed = group.filter((cell) => cell.count < K);
+    let keep = group.filter((cell) => cell.count >= K);
+    if (suppressed.length === 1 && keep.length > 0) {
+      const ranked = [...keep].sort((a, b) => a.count - b.count || a.key.localeCompare(b.key));
+      const withheld = ranked[0]!;
+      keep = keep.filter((cell) => cell !== withheld);
+    }
+    published.push(...keep);
+  }
+  return published;
+}
+
 export function aggregate(entries: readonly Entry[]): AggregateExport {
-  const counts = new Map<string, number>();
-  const consequenceCounts = new Map<string, number>();
+  const categoryCounts = new Map<string, Map<string, number>>();
+  const consequenceCounts = new Map<string, Map<string, number>>();
   for (const entry of entries) {
     assertEntry(entry);
-    const key = `${entry.date.slice(0, 7)}|${entry.category}`;
-    counts.set(key, (counts.get(key) ?? 0) + 1);
-    const consequenceKey = `${entry.date.slice(0, 7)}|${entry.consequence}`;
-    consequenceCounts.set(consequenceKey, (consequenceCounts.get(consequenceKey) ?? 0) + 1);
+    const month = entry.date.slice(0, 7);
+    addCount(categoryCounts, month, entry.category);
+    addCount(consequenceCounts, month, entry.consequence);
   }
-  const cells: AggregateCell[] = [];
-  for (const [key, count] of counts) {
-    if (count < K) continue;
-    const [month, category] = key.split("|") as [string, Category];
-    cells.push({ month, category, count });
+  const categoryCells: CountCell[] = [];
+  for (const [month, inner] of categoryCounts) {
+    for (const [key, count] of inner) categoryCells.push({ month, key, count });
   }
-  cells.sort((a, b) => a.month.localeCompare(b.month) || a.category.localeCompare(b.category));
-  const consequences: ConsequenceCell[] = [];
-  for (const [key, count] of consequenceCounts) {
-    if (count < K) continue;
-    const [month, consequence] = key.split("|") as [string, Consequence];
-    consequences.push({ month, consequence, count });
+  const consequenceCells: CountCell[] = [];
+  for (const [month, inner] of consequenceCounts) {
+    for (const [key, count] of inner) consequenceCells.push({ month, key, count });
   }
-  consequences.sort((a, b) => a.month.localeCompare(b.month) || a.consequence.localeCompare(b.consequence));
+  const cells: AggregateCell[] = publishDimension(categoryCells)
+    .map(({ month, key, count }) => ({ month, category: key as Category, count }))
+    .sort((a, b) => a.month.localeCompare(b.month) || a.category.localeCompare(b.category));
+  const consequences: ConsequenceCell[] = publishDimension(consequenceCells)
+    .map(({ month, key, count }) => ({ month, consequence: key as Consequence, count }))
+    .sort((a, b) => a.month.localeCompare(b.month) || a.consequence.localeCompare(b.consequence));
   return { schemaVersion: "diary-aggregate-1.0.0", suppressionThreshold: K, cells, consequences };
 }
 
