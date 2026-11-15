@@ -21,8 +21,8 @@ const base = {
     url: "https://www.ontario.ca/page/employment-ontario",
     datedOn: "2026-11-15",
     note: {
-      en: "Public information link only. You may independently contact a partner SCI organisation employment programme. No referral or application is sent by the App.",
-      fr: "Lien d’information publique seulement. Vous pouvez communiquer vous-même avec un programme d’emploi d’un organisme partenaire en lésion médullaire. L’application n’envoie aucune demande ni recommandation.",
+      en: "Public information link only. You may independently contact an SCI organisation employment programme. No referral or application is sent by the App.",
+      fr: "Lien d’information publique seulement. Vous pouvez communiquer vous-même avec un programme d’emploi d’un organisme SCI. L’application n’envoie aucune demande ni recommandation.",
     },
   },
   relatedNavigatorIds: ["employment-ontario" as const],
