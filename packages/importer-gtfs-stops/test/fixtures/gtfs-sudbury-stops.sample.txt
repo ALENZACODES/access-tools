@@ -1,0 +1,6 @@
+stop_id,stop_name,stop_lat,stop_lon,wheelchair_boarding
+1000,Downtown Transit Hub,46.49257,-80.99162,0
+1002,Durham,46.49226,-80.99462,0
+1005,St Andrews Place,46.49125,-80.99271,0
+1015,Paris,46.49228,-80.98885,0
+1025,Cedar,46.49228,-80.98653,0

@@ -19,6 +19,8 @@ npm run import -w @access-tools/importer-pspc -- --out out
 npm run import -w @access-tools/importer-pspc -- --file path/to/local.csv --date 2026-11-15
 ```
 
+If `--date` is omitted, `retrievedAt` defaults to the UTC date (`YYYY-MM-DD`).
+
 Output goes to the git-ignored `out/`: gzip NDJSON parts (at most 20 MB each, `--max-bytes` to change), `manifest.json` (file, records, bytes, sha256) and `report.json`. Do not commit `out/`. Tests use the committed fixtures and never touch the network.
 
 ## Français
@@ -32,3 +34,5 @@ Importateur et validateur en flux du jeu de données ouvert de SPAC « Score d'a
 - Les lignes des autres provinces sont comptées comme `skipped-out-of-province`, et non comme rejetées. Les nombres décrivent une seule exécution et ne constituent pas une déclaration de couverture.
 - Source : Services publics et Approvisionnement Canada, Licence du gouvernement ouvert – Canada 2.0. Une mention de source n'est ni un appui ni un partenariat.
 - L'application ne donne aucun avis médical ni sur l'admissibilité à des prestations. Cet importateur alimente un répertoire seulement.
+
+Si `--date` est omis, `retrievedAt` correspond par défaut à la date UTC (`YYYY-MM-DD`).
