@@ -1,3 +1,4 @@
+import { containsForbiddenOrg } from "./forbiddenOrg.ts";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import axe from "axe-core";
@@ -26,8 +27,7 @@ const ADVICE = [
   /you should apply/i,
   /vous êtes admissible/i,
   /vous recevrez/i,
-  /the app recommends/i,
-  /endorsed by spinal cord injury ontario/i,
+  /the app recommends/i, "\\$&")).join("|"), "i"),
   /partner of the app/i,
 ];
 
@@ -45,6 +45,7 @@ describe("directory records", () => {
       expect(record.placeFacts).toBe("none");
       expect(record.officialUrl.startsWith("https://")).toBe(true);
       const blob = JSON.stringify(record);
+      expect(containsForbiddenOrg(blob)).toBe(false);
       for (const pattern of ADVICE) expect(blob).not.toMatch(pattern);
     }
     const odsp = DIRECTORY.find((record) => record.id === "odsp");
@@ -60,7 +61,7 @@ describe("directory records", () => {
     expect(DIRECTORY.find((record) => record.id === "march-of-dimes-hvmp")).toBeUndefined();
     expect(DIRECTORY.find((record) => record.id === "call-911")).toBeUndefined();
     expect(DIRECTORY.find((record) => record.id === "health-sciences-north")?.summary.en).toMatch(/does not classify/i);
-    expect(DIRECTORY.find((record) => record.id === "scio-public-site")?.summary.en).toMatch(/not an endorsement/i);
+    expect(DIRECTORY.find((record) => record.id === "sample-peer-programme-site")?.summary.en).toMatch(/not an endorsement/i);
   });
 
   it("searches English and French and filters by category", () => {

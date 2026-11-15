@@ -1,6 +1,6 @@
 # access-tools
 
-Libraries for the unbranded Ontario accessibility app (“the App”). It is spinal-cord-injury first. This repository does not claim endorsement by Spinal Cord Injury Ontario, a hospital, a ministry, or any other organization.
+Libraries for the unbranded Ontario accessibility app (“the App”). It is spinal-cord-injury first. This repository does not claim endorsement by any hospital, ministry, or other organization.
 
 ## Directory, timing, and games
 
