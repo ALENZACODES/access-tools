@@ -43,6 +43,7 @@ describe("parking importer", () => {
     expect(rows[0]?.facts.aodaType.value).toBe("type-a");
     expect(rows[0]?.facts.aodaType.provenance?.note).toBe("2024 City of Toronto Aerial");
     expect(rows[0]?.raw.CP_ID_TEXT).toBe("852");
+    expect(rows[0]?.raw).not.toHaveProperty("NOTES");
     expect(rows[0]?.geometry?.type).toBe("Point");
     expect(rows[0]?.facts.accessibleSpaces).toEqual(unknown());
     const source = sourceById("toronto-accessible-stalls");

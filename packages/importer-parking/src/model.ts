@@ -119,7 +119,7 @@ export function mapRow(source: ParkingSource, row: Row, day: string, geometry: G
   const note = isToronto ? label(row.SOURCE) ?? undefined : undefined;
   const nameEn = label(row.NAME) ?? label(row.Name) ?? label(row.LOT_NAME) ?? label(row.PARK_NAME);
   const nameFr = label(row.NAME_FR) ?? label(row.NAME_F);
-  const rawColumns = isToronto ? ["_id", "CP_ID_TEXT", "CP_ID_NUM", "AODA_TYPE", "SOURCE", "NOTES"] :
+  const rawColumns = isToronto ? ["_id", "CP_ID_TEXT", "CP_ID_NUM", "AODA_TYPE", "SOURCE"] :
     source.id === "mississauga-parking-facilities" ? ["OBJECTID", "Name", "NAME", "Accessible"] :
     source.id === "london-parking" ? ["OBJECTID", "Name", "NAME", "CountDisabledSpaces"] :
     source.id === "waterloo-parking-lots" ? ["OBJECTID", "NAME", "Name", "ACCESSIBLE", "CAPACITY"] :
