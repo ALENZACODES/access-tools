@@ -75,7 +75,7 @@ test("[R28-01] washroom finder shows fields, tiers, and Unknown", async ({ page 
   await openTab(page, "Finders");
   const finder = page.getByRole("region", { name: "Washrooms, change tables, and hoists", exact: true });
   await expect(finder).toBeVisible();
-  await expect(finder.getByText(/record\(s\) shown\./).first()).toBeVisible();
+  await expect(finder.getByText(/washroom record\(s\) listed\./).first()).toBeVisible();
   await expect(finder.getByText("Transfer", { exact: false }).first()).toBeVisible();
   await expect(finder.getByText("Change table", { exact: false }).first()).toBeVisible();
   await expect(finder.getByText("Hoist", { exact: false }).first()).toBeVisible();
