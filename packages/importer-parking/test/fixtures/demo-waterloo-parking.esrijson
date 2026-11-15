@@ -1,0 +1,29 @@
+{
+  "features": [
+    {
+      "attributes": {
+        "OBJECTID": 1,
+        "NAME": "Demo Waterloo Lot 1",
+        "ACCESSIBLE": "Y",
+        "CAPACITY": 80
+      },
+      "geometry": {
+        "x": -79.0,
+        "y": 43.0
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 2,
+        "NAME": "Demo Waterloo Lot 2",
+        "ACCESSIBLE": "N",
+        "CAPACITY": 60
+      },
+      "geometry": {
+        "x": -78.99,
+        "y": 43.01
+      }
+    }
+  ],
+  "exceededTransferLimit": false
+}
