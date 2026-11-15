@@ -27,7 +27,7 @@ const ADVICE = [
   /you should apply/i,
   /vous êtes admissible/i,
   /vous recevrez/i,
-  /the app recommends/i, "\\$&")).join("|"), "i"),
+  /the app recommends/i,
   /partner of the app/i,
 ];
 
