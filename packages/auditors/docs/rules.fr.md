@@ -8,7 +8,7 @@ Respecter les niveaux de `packages/place/src/types.ts` : 0 (non vérifié), 1 (
 
 ## Processus de service proposé
 
-1. Recevoir et dater la correction ou la contestation; conserver les observations et toutes les actions, avec acteur et horodatage.
+1. Recevoir et dater la correction ou la contestation ; conserver les observations et toutes les actions, avec acteur et horodatage.
 2. **Objectif proposé :** accuser réception dans les **cinq jours civils**. Ce n’est pas un engagement opérationnel.
 3. Demander et examiner les preuves avant toute modification d’un fait public vérifié. Une future version réelle documenterait les décisions et délais.
 4. Afficher les demandes sans réponse et les **retards** (délai dépassé sans réponse). Ne pas présenter les chiffres fictifs comme des résultats réels.
