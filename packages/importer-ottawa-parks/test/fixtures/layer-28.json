@@ -1,0 +1,16 @@
+{
+  "fields": [
+    { "name": "OBJECTID", "type": "esriFieldTypeOID" },
+    { "name": "NAME" }, { "name": "NAME_FR" },
+    { "name": "ACCESSIBLE" }, { "name": "MODIFIED_DATE" }
+  ],
+  "objectIdField": "OBJECTID",
+  "editingInfo": { "lastEditDate": 1794700800000 },
+  "page": {
+    "features": [
+      { "attributes": { "OBJECTID": 42, "NAME": "Demonstration bench", "NAME_FR": "Banc de démonstration", "ACCESSIBLE": "yes/oui", "MODIFIED_DATE": 1794700800000 }, "geometry": { "x": -75.7, "y": 45.4 } },
+      { "attributes": { "OBJECTID": 43, "NAME": "Example bench", "NAME_FR": null, "ACCESSIBLE": null, "MODIFIED_DATE": null }, "geometry": null }
+    ],
+    "exceededTransferLimit": false
+  }
+}
