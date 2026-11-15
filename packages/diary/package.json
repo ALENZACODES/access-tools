@@ -1,0 +1,22 @@
+{
+  "name": "@access-tools/diary",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Consent-gated on-device supply diary with suppressed aggregate export",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "vite build --config vite.config.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test:e2e": "playwright test -c playwright.config.ts"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}
