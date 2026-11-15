@@ -26,7 +26,7 @@ export const VERIFICATION_DESK: Bilingual = {
 
 export const NEVER_MEANS: Bilingual = {
   en: "It does not mean you qualify, and it does not mean any organisation endorses the App.",
-  fr: "Cela ne signifie pas une décision d'admissibilité, ni que l'administrateur appuie l'application.",
+  fr: "Cela ne signifie pas une décision d\u2019admissibilité, ni qu\u2019une organisation appuie l\u2019application.",
 };
 
 export const LICENCE_NOTE: Bilingual = {
