@@ -1,4 +1,4 @@
-import { endorsedByForbiddenOrgSample } from "./forbiddenOrg.ts";
+import { endorsedByForbiddenOrgSample } from "./forbiddenOrg.js";
 import { describe, expect, it } from "vitest";
 import * as finders from "../../finders/src/index.js";
 import * as games from "../../games/src/index.js";

@@ -1,4 +1,4 @@
-import { containsForbiddenOrg } from "./forbiddenOrg.ts";
+import { containsForbiddenOrg } from "./forbiddenOrg.js";
 import { describe, expect, it } from "vitest";
 import { appendChange, appendCorrection, emptyLog, readLog, writeLog } from "./corrections.js";
 import { fixturePack, FIXTURE_DAY, FIXTURE_PROVENANCE, placeById } from "./fixtures.js";
