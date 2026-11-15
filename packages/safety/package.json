@@ -1,0 +1,20 @@
+{
+  "name": "@access-tools/safety",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "On-device trip check-in, time-limited trip share payload, and a disruption-mode shell. The App does not dispatch help, stream location, or run a tracking server.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test:e2e": "playwright test -c e2e/playwright.config.ts"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}

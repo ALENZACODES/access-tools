@@ -1,0 +1,27 @@
+:root { font-family: system-ui, sans-serif; color: #172d35; background: #f7fafb; line-height: 1.55; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { max-width: 75rem; margin: auto; padding: 1rem; }
+h1 { line-height: 1.2; }
+section { border-top: 2px solid #9ab8c1; padding: 1rem 0 1.5rem; }
+.notice { padding: .75rem 1rem; background: #e4f1f4; border-left: 4px solid #22586d; }
+.controls { display: flex; flex-wrap: wrap; gap: 1rem; }
+.controls > div { flex: 1 1 15rem; }
+label { display: block; margin: .4rem 0; font-weight: 650; }
+input, select, button { font: inherit; min-height: 44px; padding: .5rem; border: 2px solid #476977; border-radius: .3rem; max-width: 100%; }
+input:not([type=checkbox]), select { width: 100%; }
+button { cursor: pointer; background: #174c64; color: white; margin: .5rem 0; }
+button:hover { background: #0b374a; }
+:focus-visible { outline: 3px solid #ae5200; outline-offset: 3px; }
+.checkbox { display: flex; align-items: center; gap: .75rem; }
+.checkbox input { width: 44px; height: 44px; flex: none; }
+.rooms { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr)); gap: 1rem; }
+.room, .empty { border: 2px solid #b4c8cf; border-radius: .5rem; padding: 1rem; background: #fff; min-width: 0; }
+.room h3 { margin-top: 0; }
+dl { margin: 0; }
+.fact { padding: .65rem 0; border-top: 1px solid #c3d2d6; overflow-wrap: anywhere; }
+dt { font-weight: 700; }
+dd { margin: 0; }
+.provenance { display: block; font-size: .87rem; color: #354c56; }
+form { max-width: 35rem; }
+@media (max-width: 380px) { main { padding: .75rem; } h1 { font-size: 1.7rem; } }
