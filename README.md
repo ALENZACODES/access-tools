@@ -27,6 +27,12 @@ Real place records come from **access-maps**. This repository ships **labelled f
 - A charging range note uses only a number the user typed. It does not say a route is within range.
 - Repair and supply lists publish only the services or categories on the record. They do not recommend a product, a repair, or funding, and they do not give medical advice.
 
+## Master-plan acceptance tests
+
+`packages/acceptance/test/days-1-6.test.tsx` holds one test per Day 1 to 6 pass sentence that this repository can check (D01-6, D03-1 to D03-6, D06-2, D06-3). Each title starts with its check id from the access-help day catalogue. The records are labelled fixtures, so D03-1 stands in for the seeded Toronto data that access-maps provides.
+
+The saved chair type is a flag, not a filter. A power wheelchair adds a note to a place whose entrance is not recorded as step-free. The record stays visible. Every profile note and every hidden reason starts with the profile setting it comes from.
+
 ## Checks
 
 ```bash

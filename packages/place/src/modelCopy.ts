@@ -406,8 +406,8 @@ export const MODEL_COPY = {
   },
   "profile.chair": { en: "Chair type", fr: "Type de fauteuil" },
   "profile.chair-hint": {
-    en: "Stored on this device. This does not filter records yet.",
-    fr: "Enregistré sur cet appareil. Ceci ne filtre pas encore les fiches.",
+    en: "Stored on this device. A power wheelchair adds a note when an entrance is not recorded as step-free. It does not hide records.",
+    fr: "Enregistré sur cet appareil. Un fauteuil roulant motorisé ajoute une note quand une entrée n'est pas enregistrée comme sans marche. Il ne cache aucune fiche.",
   },
   "profile.chair.unset": { en: "Not set", fr: "Non précisé" },
   "profile.chair.manual": { en: "Manual wheelchair", fr: "Fauteuil roulant manuel" },
@@ -452,19 +452,23 @@ export const MODEL_COPY = {
     fr: "Ne correspond pas au profil enregistré. Inconnu n'est pas une correspondance.",
   },
   "profile.reason.step-free": {
-    en: "Step-free is not recorded as yes, so this record is not shown as a match.",
-    fr: "Sans marche n'est pas enregistré comme oui, donc cette fiche n'est pas un résultat.",
+    en: "Profile setting “Step-free required”. Step-free is not recorded as yes, so this record is not shown as a match.",
+    fr: "Réglage du profil «\u00A0Sans marche exigé\u00A0». Sans marche n'est pas enregistré comme oui, donc cette fiche n'est pas un résultat.",
   },
   "profile.reason.change-table": {
-    en: "An adult change table is not recorded as present, so this record is not shown as a match.",
-    fr: "Aucune table à langer pour adultes n'est enregistrée comme présente, donc cette fiche n'est pas un résultat.",
+    en: "Profile setting “Adult change table needed”. An adult change table is not recorded as present, so this record is not shown as a match.",
+    fr: "Réglage du profil «\u00A0Table à langer pour adultes nécessaire\u00A0». Aucune table à langer pour adultes n'est enregistrée comme présente, donc cette fiche n'est pas un résultat.",
   },
   "profile.reason.missing": {
-    en: "Cannot judge, measurement missing.",
-    fr: "Impossible de juger, mesure manquante.",
+    en: "Profile setting “Chair width for door clearance”. Cannot judge, measurement missing.",
+    fr: "Réglage du profil «\u00A0Largeur du fauteuil pour le passage de porte\u00A0». Impossible de juger, mesure manquante.",
   },
   "profile.reason.narrower": {
-    en: "The measured door is narrower than the saved chair width, so this record is not shown as a match.",
-    fr: "La porte mesurée est plus étroite que la largeur enregistrée, donc cette fiche n'est pas un résultat.",
+    en: "Profile setting “Chair width for door clearance”. The measured door is narrower than the saved chair width, so this record is not shown as a match.",
+    fr: "Réglage du profil «\u00A0Largeur du fauteuil pour le passage de porte\u00A0». La porte mesurée est plus étroite que la largeur enregistrée, donc cette fiche n'est pas un résultat.",
+  },
+  "profile.note.power-step-free": {
+    en: "Profile setting “Chair type: Power wheelchair”. The entrance is not recorded as step-free. Unknown is not a match. Check with the place before you go.",
+    fr: "Réglage du profil «\u00A0Type de fauteuil\u00A0: Fauteuil roulant motorisé\u00A0». L'entrée n'est pas enregistrée comme sans marche. Inconnu n'est pas une correspondance. Vérifiez auprès du lieu avant de partir.",
   },
 } as const;
