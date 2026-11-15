@@ -16,7 +16,7 @@ licence is supplied by these links.
 
 A source needs its **own** recorded open licence (ODbL, OGL-Ontario,
 OGL-Canada, CC-BY or CC0), confirmation, provenance origin, and an actual
-retrieved ISO date. An unconfirmed/non-open licence is held; zero records are
+retrieved ISO date. Imported records emit `prototypeLabel: SEEDED-OPEN-DATA`. An unconfirmed/non-open licence is held; zero records are
 written. Never assume that an entire catalogue shares a licence. ODbL records
 are in separate `odbl` partitions with `share_alike: true`; other approved
 licences use `open`. Keep partitions separate when distributing data.

@@ -36,7 +36,7 @@ describe('licence-gated local importer', () => {
     expect(results[0]).toBeDefined();
     expect(results[0]).toMatchObject({ name: 'Example Clinic', cell_id: 'cell-437--794',
       licence: 'OGL-Ontario', tier: 0, raw_publisher_score: '92', fields: {},
-      provenance: { input_origin: 'synthetic-test-fixture', share_alike: false } });
+      provenance: { input_origin: 'synthetic-test-fixture', share_alike: false, prototypeLabel: 'SEEDED-OPEN-DATA' } });
     expect(results[0]?.fields.step_free).toBeUndefined();
   });
 
@@ -45,7 +45,7 @@ describe('licence-gated local importer', () => {
     expect(results[0]).toBeDefined();
     expect(results[0]?.address).toContain('Example Road');
     expect(results[0]?.fields).toEqual({});
-    expect(results[0]).toMatchObject({ silo: 'odbl', provenance: { share_alike: true } });
+    expect(results[0]).toMatchObject({ silo: 'odbl', provenance: { share_alike: true, prototypeLabel: 'SEEDED-OPEN-DATA' } });
   });
 
   it('holds unconfirmed adult-change register without producing records', async () => {

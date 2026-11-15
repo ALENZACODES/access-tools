@@ -72,7 +72,8 @@ export function mapRow(row: InputRow, config: SourceConfig): ImportedRecord | nu
     tier: Object.values(fields).some(f => f.tier === 1) ? 1 : 0, fields,
     ...(seed.rawScore === undefined ? {} : { raw_publisher_score: seed.rawScore }),
     provenance: { source_id: config.id, input_origin: config.input_origin, licence,
-      retrieved_at: config.retrieved_at, share_alike: licence === 'ODbL' } };
+      retrieved_at: config.retrieved_at, share_alike: licence === 'ODbL',
+      prototypeLabel: 'SEEDED-OPEN-DATA' } };
 }
 
 export async function* importRows(rows: AsyncIterable<InputRow>, config: SourceConfig,

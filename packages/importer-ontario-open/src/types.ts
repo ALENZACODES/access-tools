@@ -43,6 +43,7 @@ export interface ImportedRecord {
     licence: OpenLicence;
     retrieved_at: string;
     share_alike: boolean;
+    prototypeLabel: "SEEDED-OPEN-DATA";
   };
 }
 
