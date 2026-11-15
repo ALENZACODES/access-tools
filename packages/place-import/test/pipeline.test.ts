@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { displayedFields, importPlaces } from "../src/pipeline.js";
-import { validateEmittedRecord, validateImportReport, validateRawDocument } from "../src/schema.js";
+import { messages } from "../src/i18n.js";
+import { validateEmittedRecord, validateImportReport, validateProvenance, validateRawDocument } from "../src/schema.js";
 import demo from "../src/demo.json";
 
 const provenance = {
@@ -96,5 +97,52 @@ describe("place import", () => {
   it("rejects duplicate ids and malformed document shapes", () => {
     expect(importPlaces({ records: [base(), base()] }).report).toMatchObject({ accepted: 1, rejected: 1 });
     expect(importPlaces({ records: "wrong" }).report.rejected).toBe(1);
+  });
+
+  it("does not allow a VERIFIED prototype label in the provenance schema", () => {
+    expect(validateProvenance({ ...provenance, prototypeLabel: "VERIFIED" })).toBe(false);
+    const record = base();
+    record.recordProvenance = { ...provenance, prototypeLabel: "VERIFIED" };
+    expect(run(record).report.rejected).toBe(1);
+  });
+
+  it("rejects tier 2 and E without evidence, and accepts them with evidence", () => {
+    const evidence = {
+      protocolVersion: "demo-1",
+      verifierRole: "importer",
+      method: "desk review of a labelled fixture",
+      observedAt: "2026-11-15",
+      photoIds: [],
+    };
+    for (const tier of [2, "E"] as const) {
+      const missing = base();
+      missing.fields["entrance.stepFree"] = { value: "yes", provenance: { ...provenance, tier } };
+      expect(validateProvenance({ ...provenance, tier })).toBe(false);
+      expect(run(missing).report.rejected).toBe(1);
+      const present = base();
+      present.id = `fiction-${tier}`;
+      present.fields["entrance.stepFree"] = { value: "yes", provenance: { ...provenance, tier, evidence } };
+      const result = run(present);
+      expect(validateProvenance({ ...provenance, tier, evidence })).toBe(true);
+      expect(result.report.accepted).toBe(1);
+      expect(result.places[0]?.entrance.stepFree.provenance?.evidence).toEqual(evidence);
+    }
+  });
+
+  it("enforces a configurable import size and row cap", () => {
+    const accepted = importPlaces({ records: [base(), { ...base(), id: "fiction-2" }] });
+    expect(accepted.report.accepted).toBe(2);
+    const tooManyRows = importPlaces({ records: [base(), { ...base(), id: "fiction-2" }] }, { maxRows: 1 });
+    expect(tooManyRows).toMatchObject({ places: [], report: { accepted: 0, rejected: 1 } });
+    expect(tooManyRows.report.rejections[0]?.reason).toMatch(/row cap/);
+    const tooManyBytes = importPlaces({ records: [base()] }, { maxBytes: 32 });
+    expect(tooManyBytes).toMatchObject({ places: [], report: { accepted: 0, rejected: 1 } });
+    expect(tooManyBytes.report.rejections[0]?.reason).toMatch(/size cap/);
+  });
+
+  it("uses l’App in the French title, not an untranslated the App", () => {
+    expect(messages.fr.title).toBe("l’App — importation de lieux");
+    expect(messages.fr.title).not.toMatch(/the App/);
+    expect(messages.en.title).toMatch(/^the App /);
   });
 });

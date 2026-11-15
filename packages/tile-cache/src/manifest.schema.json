@@ -21,6 +21,6 @@
     "licence": { "type": "string", "minLength": 1 },
     "attribution": { "type": "string", "minLength": 1 },
     "retrievedOn": { "type": "string", "format": "date" },
-    "verification": { "enum": ["UNKNOWN", "0", "1", "2", "4", "E", "PROTOTYPE-UNVERIFIED", "SEEDED-OPEN-DATA"] }
+    "verification": { "enum": ["UNKNOWN", "0", "1", "E", "PROTOTYPE-UNVERIFIED", "SEEDED-OPEN-DATA"] }
   }
 }

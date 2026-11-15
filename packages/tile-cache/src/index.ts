@@ -9,7 +9,7 @@ export interface TileKey {
 }
 
 export type Verification =
-  | "UNKNOWN" | "0" | "1" | "2" | "4" | "E"
+  | "UNKNOWN" | "0" | "1" | "E"
   | "PROTOTYPE-UNVERIFIED" | "SEEDED-OPEN-DATA";
 
 export interface TileManifest {
@@ -45,6 +45,32 @@ const ajv = new Ajv2020({ allErrors: true, strict: false });
 addFormats(ajv);
 const validate = ajv.compile<TileManifest>(manifestSchema);
 export const OSM_CREDIT = "© OpenStreetMap contributors";
+
+/** Synthetic demonstration tile. Never fetched from a tile server. */
+export function demonstrationTile(now = "2026-11-15T12:00:00.000Z"): TileRecord {
+  const bytes = new Uint8Array([0x89, 0x50, 0x4e, 0x47]);
+  return {
+    bytes,
+    manifest: {
+      key: { z: 0, x: 0, y: 0 },
+      byteLength: bytes.byteLength,
+      storedAt: now,
+      expiresAt: "2026-11-22T12:00:00.000Z",
+      source: "OpenStreetMap demonstration synthetic tiles",
+      licence: "ODbL-1.0",
+      attribution: OSM_CREDIT,
+      retrievedOn: "2026-11-15",
+      verification: "PROTOTYPE-UNVERIFIED",
+    },
+  };
+}
+
+export function seedDemonstrationCache(capMB = 2, now = Date.parse("2026-11-15T12:00:00.000Z")): TileCache {
+  const cache = new TileCache(capMB, () => now);
+  cache.put(demonstrationTile());
+  return cache;
+}
+
 const FORBIDDEN = /(?:live[\s_-]*)?(?:traffic|elevators?|disruptions?)/i;
 
 function checkedKey(key: TileKey): string {
