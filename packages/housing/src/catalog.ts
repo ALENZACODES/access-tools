@@ -40,7 +40,7 @@ const fr: typeof en = {
   barriers: "Signalement d’obstacle sur l’appareil", privacy: "Catégorie anonyme facultative seulement. Aucun nom, contact ou détail médical. Enregistré sur cet appareil, sans envoi.",
   category: "Expérience", categories: { applied: "Demande déposée", waited: "Attente", refused: "Refus", unsuitable: "Inadapté" },
   optionalCity: "Ville (facultatif)", save: "Enregistrer sur cet appareil", saved: "Signalement enregistré sur cet appareil.", invalidCity: "Utilisez des lettres et une ponctuation simple (60 caractères au plus).",
-  publish: "Aperçu agrégé local (non transmis)", suppressed: "Masqué (moins de 5)", aggregateNote: "Les cellules de 1 à 4 signalements sont masquées; zéro n’est pas affiché non plus. Aucun service public de données n’est connecté.",
+  publish: "Aperçu agrégé local (non transmis)", suppressed: "Masqué (moins de 5)", aggregateNote: "Les cellules de 1 à 4 signalements sont masquées ; zéro n’est pas affiché non plus. Aucun service public de données n’est connecté.",
   clear: "Supprimer mes signalements locaux", cleared: "Signalements locaux supprimés.",
 };
 export const CATALOG: Record<Language, typeof en> = { en, fr };
