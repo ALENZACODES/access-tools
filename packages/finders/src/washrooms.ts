@@ -131,7 +131,7 @@ export function findWashrooms(pack: PlacePack, query: WashroomQuery): WashroomRe
         recommendation: useLabelText(washroomUseLabel(place.datasetStatus, washroom), query.lang),
         phone,
         hiddenReasons: reasons(place, washroom, query),
-        profileNotes: profileWashroomNotes(washroom, query.profile ?? null, query.lang),
+        profileNotes: profileWashroomNotes(washroom, query.profile ?? null, query.lang, place),
       });
     }
   }
