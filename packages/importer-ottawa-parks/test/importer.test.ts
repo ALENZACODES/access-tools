@@ -23,6 +23,8 @@ describe("registry and provenance", () => {
     expect(layers.map(([id]) => id as number)).not.toContain(14);
     expect(new Set(layers.map(([id]) => id)).size).toBe(25);
     expect(layerNames(layers[2]![1]).fr).toContain("terrain de l'école");
+    expect(layers.every(([, name]) => !name.includes("\u200B"))).toBe(true);
+    expect(layerNames("Ball Diamonds School / Terrains de balle sur \u200B\u200Ble terrain de l'école").fr).toBe("Terrains de balle sur le terrain de l'école");
     expect(layerNames("Only English").fr).toBeNull();
     expect(layerNames(layers[8]![1]).en).toBe("Lawn Bowling");
   });
