@@ -39,18 +39,24 @@ function valueText(def: FieldDef, v: SciFieldFact["value"], lang: Lang): string 
   return typeof v === "string" ? (def.values?.[v]?.[lang] ?? null) : null;
 }
 
+function colon(lang: Lang): string {
+  return lang === "fr" ? "\u00A0: " : ": ";
+}
+
 /** Renders Unknown/Inconnu unless a valid tier 1+ fact exists. Tier 0 drafts never render as facts. */
 export function formatFact(fact: SciFieldFact | null | undefined, lang: Lang): string {
   const unknown = UNKNOWN[lang];
   if (!fact || !validateFactShape(fact)) return unknown;
-  const def = CATALOG.find((f) => f.id === fact.field)!;
+  const def = CATALOG.find((f) => f.id === resolveId(fact.field));
+  if (!def) return unknown;
   const text = valueText(def, fact.value, lang);
   const tier = fact.tier as Tier | undefined;
   if (text === null || tier === undefined || tier < 1) return unknown;
   const ui = UI[lang];
   const date = String(fact.retrieved_at).slice(0, 10);
   const dated = def.expiry === "visit" || def.expiry === "short" ? ui.checked : ui.retrieved;
-  const parts = [`${text}`, `${ui.source}: ${fact.source_id}`, `${ui.licence}: ${fact.licence}`, `${dated}: ${date}`, `${ui.tier}: ${tier}`];
+  const sep = colon(lang);
+  const parts = [`${text}`, `${ui.source}${sep}${fact.source_id}`, `${ui.licence}${sep}${fact.licence}`, `${dated}${sep}${date}`, `${ui.tier}${sep}${tier}`];
   if (fact.licence === "ODbL") parts.push(ui.osm);
   return parts.join(" \u2014 ");
 }

@@ -54,12 +54,14 @@ function parkingQuery(part: Partial<ParkingQuery> = {}): ParkingQuery {
   return { text: "", lang: "en", origin: null, vanLift: false, showHidden: false, month: 11, ...part };
 }
 
-/** "Unverified" and the PROTOTYPE-UNVERIFIED label are allowed. Any other "verified" wording is a claim. */
+/** "Unverified", PROTOTYPE-UNVERIFIED, and the "Verification date" label are allowed. Any other "verified" wording is a claim. */
 function verifiedClaims(text: string): string[] {
   const stripped = text
     .replace(/PROTOTYPE-UNVERIFIED/g, "")
     .replace(/unverified/gi, "")
-    .replace(/non vérifié(e)?(s)?/gi, "");
+    .replace(/non vérifié(e)?(s)?/gi, "")
+    .replace(/Verification date/gi, "")
+    .replace(/Date de vérification/gi, "");
   return stripped.match(/\S*(verif|vérif)\S*/gi) ?? [];
 }
 
@@ -250,7 +252,7 @@ describe("washroom finder screen", () => {
         const text = field.textContent ?? "";
         expect(text).toMatch(/Tier: \S/);
         expect(text).toMatch(/Source: \S/);
-        expect(text).toMatch(/Record date: (2026-11-13|Unknown)/);
+        expect(text).toMatch(/Verification date: (2026-11-13|Unknown)/);
       }
     }
     const blank = container.querySelector('[data-washroom="fix-cc-wash-2"]') as HTMLElement;
@@ -369,12 +371,12 @@ describe("parking finder screen", () => {
         const text = field.textContent ?? "";
         expect(text).toMatch(/Tier: \S/);
         expect(text).toMatch(/Source: \S/);
-        expect(text).toMatch(/Record date: (2026-11-13|Unknown)/);
+        expect(text).toMatch(/Verification date: (2026-11-13|Unknown)/);
       }
     }
     const surface = container.querySelector('[data-field="fix-lot-bay.surface"]') as HTMLElement;
     expect(surface).toHaveClass("unknown");
-    expect(surface).toHaveTextContent("SurfaceUnknownTier: No tier. Unverified.Source: No sourceRecord date: Unknown");
+    expect(surface).toHaveTextContent("SurfaceUnknownTier: No tier. Unverified.Source: No sourceVerification date: Unknown");
   });
 
   it("gives an honest empty state that names the filter and the seeded count, and broadens", async () => {
@@ -427,7 +429,7 @@ describe("no verified label, and French marks the English fixture text", () => {
     expect(audit.find((row) => row.sample === "Fixture surface text: paved")?.occurrences ?? 0).toBeGreaterThan(0);
     const french = container.cloneNode(true) as HTMLElement;
     french.querySelectorAll('[lang="en"], style').forEach((node) => node.remove());
-    expect(french.textContent).not.toMatch(/Unknown|Tier:|Record date|Source:/);
+    expect(french.textContent).not.toMatch(/Unknown|Tier:|Verification date|Source:/);
   });
 });
 

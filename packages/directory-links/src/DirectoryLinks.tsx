@@ -5,16 +5,19 @@ import { strings } from "./strings";
 import type { AssistanceProfile, Attendant, Lang, OfficialLink, WavFact } from "./types";
 
 function typography(lang: Lang) {
-  const colon = lang === "fr" ? "\u202F: " : ": ";
+  const colon = lang === "fr" ? "\u00A0: " : ": ";
   const dash = " \u2014 ";
   return { colon, dash };
 }
 
+const targetCss = `a, button, input, textarea, select { min-height: 44px; min-width: 44px; box-sizing: border-box; font: inherit; } label:has(input[type="radio"]) { min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; }`;
 
 export function LinkList({ links, lang }: { links: OfficialLink[]; lang: Lang }) {
   const s = strings[lang];
   const { colon, dash } = typography(lang);
   return (
+    <>
+    <style>{targetCss}</style>
     <ul>
       {links.map((l) => (
         <li key={l.id}>
@@ -32,6 +35,7 @@ export function LinkList({ links, lang }: { links: OfficialLink[]; lang: Lang })
         </li>
       ))}
     </ul>
+    </>
   );
 }
 
@@ -75,6 +79,7 @@ export function ProfileSection({ lang }: { lang: Lang }) {
   const radios: [Attendant, string][] = [["yes", s.attendantYes], ["no", s.attendantNo], ["unset", s.attendantUnset]];
   return (
     <section aria-labelledby="dl-profile">
+      <style>{targetCss}</style>
       <h2 id="dl-profile">{s.profileHeading}</h2>
       <p>{s.profileIntro}</p>
       <p>
@@ -112,6 +117,7 @@ export function DirectoryLinks({ lang, links = defaultCatalog, wavFact }: { lang
   const s = strings[lang];
   return (
     <main lang={lang}>
+      <style>{targetCss}</style>
       <h1>{s.title}</h1>
       <p>{s.intro}</p>
       <p>{s.notAffiliated}</p>

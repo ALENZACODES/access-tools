@@ -26,7 +26,7 @@ export function exportProfileJson(p: AssistanceProfile, exportedAt: string): str
 
 export function exportProfileText(p: AssistanceProfile, lang: Lang, exportedAt: string): string {
   const s = strings[lang];
-  const colon = lang === "fr" ? "\u202F: " : ": ";
+  const colon = lang === "fr" ? "\u00A0: " : ": ";
   const val = (v: string) => (v.trim() === "" ? s.unknown : v.trim());
   const att = p.attendant === "yes" ? s.attendantYes : p.attendant === "no" ? s.attendantNo : s.unknown;
   return [

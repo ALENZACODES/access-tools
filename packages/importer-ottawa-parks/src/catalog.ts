@@ -5,7 +5,7 @@ export const catalog = {
     attribution: "Attribution is not endorsement of the App.",
   },
   fr: {
-    summary: "Inventaire des parcs d’Ottawa : les lignes sources ne prouvent pas la couverture.",
+    summary: "Inventaire des parcs d’Ottawa : les lignes sources ne prouvent pas la couverture.",
     held: "Sortie retenue en attendant une vérification documentée de la licence.",
     attribution: "L’attribution n’implique aucun appui à l’App.",
   },

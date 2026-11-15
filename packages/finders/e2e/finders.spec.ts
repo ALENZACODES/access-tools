@@ -121,7 +121,7 @@ test("washroom results show every field with tier, source and record date, and n
   const fields = page.locator("[data-washroom] [data-field]");
   await expect(fields).toHaveCount(28);
   for (const text of await fields.allTextContents()) {
-    expect(text).toMatch(/Tier: \S.*Source: \S.*Record date: (2026-11-13|Unknown)/);
+    expect(text).toMatch(/Tier: \S.*Source: \S.*Verification date: (2026-11-13|Unknown)/);
   }
   const body = (await page.locator("body").textContent()) ?? "";
   const claims = body.replace(/PROTOTYPE-UNVERIFIED|unverified/gi, "").match(/\S*verif\S*/gi) ?? [];

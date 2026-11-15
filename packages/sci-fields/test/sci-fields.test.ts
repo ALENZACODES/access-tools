@@ -65,13 +65,26 @@ describe("UNKNOWN default and display", () => {
     const s = formatFact(synthetic({}), "en");
     expect(s).toContain("900 mm");
     for (const part of ["synthetic-fixture", "CC0", "2026-01-15", "Tier: 1"]) expect(s).toContain(part);
-    expect(formatFact(synthetic({}), "fr")).toContain("Niveau: 1");
+    expect(formatFact(synthetic({}), "fr")).toContain("Niveau\u00A0: 1");
   });
   it("uses 'last checked' for dated-visit fields and adds ODbL attribution", () => {
     const f = synthetic({ field: "staff_will_help", value: false, licence: "ODbL" });
     expect(formatFact(f, "en")).toContain("Last checked: 2026-01-15");
     expect(formatFact(f, "en")).toContain("© OpenStreetMap contributors, ODbL");
     expect(formatFact(f, "en")).toContain("No");
+  });
+  it("uses a no-break space (U+00A0) before every French colon in provenance", () => {
+    const s = formatFact(synthetic({}), "fr");
+    expect(s).toContain("Source\u00A0: synthetic-fixture");
+    expect(s).toContain("Licence\u00A0: CC0");
+    expect(s).toContain("Récupéré le\u00A0: 2026-01-15");
+    expect(s).not.toMatch(/(?<!\u00A0): /);
+  });
+  it("renders Unknown when the catalog has no matching field definition", () => {
+    const fact = synthetic({});
+    (fact as { field: string }).field = "not_a_catalog_field";
+    expect(formatFact(fact, "en")).toBe("Unknown");
+    expect(formatFact(fact, "fr")).toBe("Inconnu");
   });
   it("label resolves aliases and throws on unknown ids", () => {
     expect(label("door_clear_width", "en")).toBe(label("door_clear_width_mm", "en"));
@@ -103,6 +116,9 @@ describe("catalog hygiene", () => {
       if (f.id.endsWith("_mm")) expect(f.unit).toBe("mm");
       if (f.kind === "enum") expect(Object.keys(f.values ?? {}).length).toBeGreaterThan(1);
     }
+  });
+  it("uses the adult change-table term in French", () => {
+    expect(label("adult_change_table", "fr")).toBe("Table à langer pour adultes");
   });
   it("contains no advice, medical, model-name or scoring language", () => {
     for (const t of allCopy()) expect(t).not.toMatch(BANNED);

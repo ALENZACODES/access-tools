@@ -21,7 +21,7 @@ export const CATALOG: FieldDef[] = [
     observed: { en: "Diameter of the largest clear circle measured on the floor.", fr: "Diamètre du plus grand cercle libre mesuré au sol." },
   },
   {
-    id: "adult_change_table", label: { en: "Adult change table", fr: "Table à langer pour adulte" }, kind: "boolean", values: bool,
+    id: "adult_change_table", label: { en: "Adult change table", fr: "Table à langer pour adultes" }, kind: "boolean", values: bool,
     needKey: "change_table", expiry: "annual",
     observed: { en: "Seen in the washroom on the visit.", fr: "Aperçue dans la salle de toilette lors de la visite." },
   },
