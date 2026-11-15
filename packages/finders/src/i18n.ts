@@ -14,8 +14,8 @@ export const FINDER_COPY = {
     fr: "Toilettes, tables à langer pour adultes et lève-personnes",
   },
   "finder.washroom.empty": {
-    en: "No record is shown. A gap in this pack is not proof that no place exists.",
-    fr: "Aucune fiche affichée. Une lacune dans ce paquet ne prouve pas qu'aucun lieu n'existe.",
+    en: "No record is shown. A gap in this pack is not proof that no place exists. Change or clear a filter, or show hidden records to see why each one was left out.",
+    fr: "Aucune fiche affichée. Une lacune dans ce paquet ne prouve pas qu'aucun lieu n'existe. Changez ou retirez un filtre, ou affichez les fiches cachées pour voir pourquoi chacune a été écartée.",
   },
   "finder.transfer": { en: "Transfer", fr: "Transfert" },
   "finder.change-table": { en: "Change table", fr: "Table à langer pour adultes" },
@@ -32,7 +32,10 @@ export const FINDER_COPY = {
   "finder.lift": { en: "Lift", fr: "Hayon" },
   "finder.privilege": { en: "Privilege", fr: "Privilège" },
   "finder.winter": { en: "Winter", fr: "Hiver" },
-  "finder.parking.empty": { en: "No bay is shown for these filters.", fr: "Aucune place affichée pour ces filtres." },
+  "finder.parking.empty": {
+    en: "No bay is shown for these filters. Change or clear a filter, or show hidden bays to see why each one was left out.",
+    fr: "Aucune place affichée pour ces filtres. Changez ou retirez un filtre, ou affichez les places cachées pour voir pourquoi chacune a été écartée.",
+  },
   "finder.hidden-bays": { en: "Hidden bays", fr: "Places cachées" },
   "finder.charging.heading": { en: "Wheelchair and scooter charging", fr: "Recharge des fauteuils, triporteurs et quadriporteurs" },
   "finder.charging.note": {
@@ -40,14 +43,20 @@ export const FINDER_COPY = {
     fr: "Cet écran ne lit pas la position de l'appareil. La distance utilise le point que vous saisissez.",
   },
   "finder.seating": { en: "Seating", fr: "Places assises" },
-  "finder.charging.empty": { en: "No charging point is shown.", fr: "Aucun point de recharge affiché." },
+  "finder.charging.empty": {
+    en: "No charging point is shown. A gap in this pack is not proof that none exists. Change or clear a filter, or type a different starting point.",
+    fr: "Aucun point de recharge affiché. Une lacune dans ce paquet ne prouve pas qu'il n'en existe aucun. Changez ou retirez un filtre, ou saisissez un autre point de départ.",
+  },
   "finder.repair.heading": { en: "Repair and supply", fr: "Réparation et fournitures" },
   "finder.services": { en: "Published services", fr: "Services publiés" },
   "finder.categories": { en: "Published categories", fr: "Catégories publiées" },
   "finder.detail": { en: "Detail", fr: "Détail" },
   "finder.phone-unknown": { en: "Phone: Unknown", fr: "Téléphone\u00A0: Inconnu" },
   "finder.fixture-page": { en: "Fixture page", fr: "Page du jeu d'essai" },
-  "finder.repair.empty": { en: "No record is shown.", fr: "Aucune fiche affichée." },
+  "finder.repair.empty": {
+    en: "No record is shown. A gap in this pack is not proof that none exists. Change or clear a filter, or show hidden records to see why each one was left out.",
+    fr: "Aucune fiche affichée. Une lacune dans ce paquet ne prouve pas qu'il n'en existe aucune. Changez ou retirez un filtre, ou affichez les fiches cachées pour voir pourquoi chacune a été écartée.",
+  },
   "finder.demo-data": {
     en: "Demonstration data. Every record on this list is a labelled fixture, not a real place and not a visit.",
     fr: "Données de démonstration. Chaque fiche de cette liste est un jeu d'essai étiqueté, pas un lieu réel ni une visite.",
@@ -118,10 +127,10 @@ export const FINDER_COPY = {
   },
   "finder.washroom.empty-title": { en: "No washroom record matches.", fr: "Aucune fiche de toilettes ne correspond." },
   "finder.parking.empty-title": { en: "No parking bay matches.", fr: "Aucune place de stationnement ne correspond." },
-  "finder.empty.filters": { en: "Filters on: {list}.", fr: "Filtres actifs\u00A0: {list}." },
-  "finder.empty.no-filters": { en: "No filter is on.", fr: "Aucun filtre n'est actif." },
-  "finder.empty.destination": { en: "Destination searched: {text}.", fr: "Destination cherchée\u00A0: {text}." },
-  "finder.empty.no-destination": { en: "No destination is typed.", fr: "Aucune destination n'est saisie." },
+  "finder.empty.filters": { en: "Filters on: {list}. Change or clear a filter to see more records.", fr: "Filtres actifs\u00A0: {list}. Changez ou retirez un filtre pour voir plus de fiches." },
+  "finder.empty.no-filters": { en: "No filter is on. Type a destination, or show hidden records to see why each one was left out.", fr: "Aucun filtre n'est actif. Saisissez une destination, ou affichez les fiches cachées pour voir pourquoi chacune a été écartée." },
+  "finder.empty.destination": { en: "Destination searched: {text}. Try a broader destination, or clear it to list every record.", fr: "Destination cherchée\u00A0: {text}. Essayez une destination plus large, ou effacez-la pour lister toutes les fiches." },
+  "finder.empty.no-destination": { en: "No destination is typed. Try a place name, or leave the field empty to list every record.", fr: "Aucune destination n'est saisie. Essayez un nom de lieu, ou laissez le champ vide pour lister toutes les fiches." },
   "finder.washroom.seeded": {
     en: "The demonstration data holds {records} washroom record(s) in {places} place(s). {matching} match(es) this destination before the filters.",
     fr: "Les données de démonstration contiennent {records} fiche(s) de toilettes dans {places} lieu(x). {matching} correspond(ent) à cette destination avant les filtres.",
@@ -131,8 +140,8 @@ export const FINDER_COPY = {
     fr: "Les données de démonstration contiennent {records} fiche(s) de place de stationnement dans {places} lieu(x). {matching} correspond(ent) à cette destination avant les filtres.",
   },
   "finder.empty.gap": {
-    en: "A gap in the demonstration data is not proof that nothing exists.",
-    fr: "Une lacune dans les données de démonstration ne prouve pas que rien n'existe.",
+    en: "A gap in the demonstration data is not proof that nothing exists. Change or clear a filter, or show hidden records to see why each one was left out.",
+    fr: "Une lacune dans les données de démonstration ne prouve pas que rien n'existe. Changez ou retirez un filtre, ou affichez les fiches cachées pour voir pourquoi chacune a été écartée.",
   },
   "finder.broaden": { en: "Broaden filters", fr: "Élargir les filtres" },
   "finder.broaden.filters-hint": {

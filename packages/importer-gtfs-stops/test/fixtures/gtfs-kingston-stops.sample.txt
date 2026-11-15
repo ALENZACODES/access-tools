@@ -1,0 +1,6 @@
+stop_id,stop_name,stop_lat,stop_lon,wheelchair_boarding
+S02077,Cataraqui Centre,44.25508,-76.57215,0
+00799,Midland / Norwest,44.25722,-76.57395,0
+09075,Andersen / Crossfield,44.26475,-76.54892,0
+00858,Chadwick Parkette,44.26208,-76.54846,0
+00006,Andersen / Sheridan,44.2604,-76.54911,0

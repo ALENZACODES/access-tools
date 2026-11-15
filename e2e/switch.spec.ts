@@ -18,6 +18,9 @@ async function tabTo(page: Page, name: string, limit = 400): Promise<void> {
 
 async function openScreen(page: Page, name: string): Promise<void> {
   await page.goto("/");
+  // Wait for the harness nav to hydrate before Tab, otherwise 12 keypresses can
+  // finish on an empty page and miss the section button (CI flake on 7cb1155).
+  await expect(page.getByRole("button", { name, exact: true })).toBeVisible();
   await page.keyboard.press("Tab");
   await tabTo(page, name, 12);
   await page.keyboard.press("Enter");

@@ -1,6 +1,6 @@
 # access-tools
 
-Libraries for the unbranded Ontario accessibility app (“the App”). It is spinal-cord-injury first. This repository does not claim endorsement by Spinal Cord Injury Ontario, a hospital, a ministry, or any other organization.
+Libraries for the unbranded Ontario accessibility app (“the App”). It is spinal-cord-injury first. This repository does not claim endorsement by any hospital, ministry, or other organization.
 
 ## Directory, timing, and games
 
@@ -27,6 +27,12 @@ Real place records come from **access-maps**. This repository ships **labelled f
 - A charging range note uses only a number the user typed. It does not say a route is within range.
 - Repair and supply lists publish only the services or categories on the record. They do not recommend a product, a repair, or funding, and they do not give medical advice.
 
+## Master-plan acceptance tests
+
+`packages/acceptance/test/days-1-6.test.tsx` holds one test per Day 1 to 6 pass sentence that this repository can check (D01-6, D03-1 to D03-6, D06-2, D06-3). Each title starts with its check id from the access-help day catalogue. The records are labelled fixtures, so D03-1 stands in for the seeded Toronto data that access-maps provides.
+
+The saved chair type is a flag, not a filter. A power wheelchair adds a note to a place whose entrance is not recorded as step-free. The record stays visible. Every profile note and every hidden reason starts with the profile setting it comes from.
+
 ## Checks
 
 ```bash
@@ -47,6 +53,16 @@ npm run demo -w @access-tools/finders
 ```
 
 Each place, search, and finder demo binds Vite's default port. The interface is in English and French.
+
+## Post-demo regression audit
+
+`npm run test:e2e` also runs `e2e/regression.spec.ts`, the Day 28 post-demo regression audit for this repository. Each test title carries a check id from `e2e/regression/catalog.ts`. The reporter writes `test-results/regression-audit.md` and `.json`: one row per check, the build identifier, pass or fail, and the reason for any check that is not run here.
+
+- The build identifier is `REGRESSION_BUILD_ID` when it is set, otherwise the git commit of the checkout, marked when there are uncommitted changes.
+- A console error or an uncaught page error during a check fails that check.
+- A check that was expected here but has no result is listed as not run and blocks the result.
+- Demo journeys, the outage reroute, the offline place pack, and the shell profile belong to access-maps and access-main. They are listed as not run here. Earlier evidence is not reused.
+- "No regression found here" covers only the checks in this repository. It is not a result for the whole App.
 
 ## Third-party notices
 

@@ -1,0 +1,64 @@
+{
+  "records": [
+    {
+      "id": "demo-alpha",
+      "name": "Fictional Lantern Hall",
+      "municipality": "Example Township",
+      "recordProvenance": {
+        "sourceName": "Demonstration fixture author",
+        "sourceId": "fixture-2026-11-15",
+        "licence": "CC0-1.0",
+        "sourceDate": "2026-11-15",
+        "recordDate": "2026-11-15",
+        "retrievedAt": "2026-11-15",
+        "tier": 0,
+        "prototypeLabel": "PROTOTYPE-UNVERIFIED",
+        "verifierType": "fixture-author"
+      },
+      "fields": {
+        "entrance.stepCount": {
+          "value": 0,
+          "provenance": {
+            "sourceName": "Demonstration fixture author",
+            "sourceId": "fixture-2026-11-15",
+            "licence": "CC0-1.0",
+            "sourceDate": "2026-11-15",
+            "recordDate": "2026-11-15",
+            "retrievedAt": "2026-11-15",
+            "tier": 0,
+            "prototypeLabel": "PROTOTYPE-UNVERIFIED",
+            "verifierType": "fixture-author"
+          }
+        },
+        "entrance.stepFree": {
+          "value": "yes",
+          "provenance": {
+            "sourceName": "Demonstration fixture author",
+            "sourceId": "fixture-2026-11-15",
+            "licence": "CC0-1.0",
+            "sourceDate": "2026-11-15",
+            "recordDate": "2026-11-15",
+            "retrievedAt": "2026-11-15",
+            "tier": 0,
+            "prototypeLabel": "PROTOTYPE-UNVERIFIED",
+            "verifierType": "fixture-author"
+          }
+        },
+        "interior.routes": {
+          "value": "Demonstration route only",
+          "provenance": {
+            "sourceName": "Demonstration fixture author",
+            "sourceId": "fixture-2026-11-15",
+            "licence": "CC0-1.0",
+            "sourceDate": "2026-11-15",
+            "recordDate": "2026-11-15",
+            "retrievedAt": "2026-11-15",
+            "tier": 0,
+            "prototypeLabel": "PROTOTYPE-UNVERIFIED",
+            "verifierType": "fixture-author"
+          }
+        }
+      }
+    }
+  ]
+}

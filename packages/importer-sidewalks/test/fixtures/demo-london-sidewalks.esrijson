@@ -1,0 +1,1 @@
+{"demonstration":true,"features":[{"attributes":{"OBJECTID":9001,"Width":">= 1.5m","Material":"Demo paving"},"geometry":{"paths":[[[-81.25,42.98],[-81.251,42.981]]]}},{"attributes":{"OBJECTID":9002,"Width":"< 1.5m","Material":null},"geometry":null}]}

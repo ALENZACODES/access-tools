@@ -1,0 +1,13 @@
+{
+  "fields": [
+    { "name": "OBJECTID", "type": "esriFieldTypeOID" },
+    { "name": "NAME" }, { "name": "NAME_FR" },
+    { "name": "PR_Park_Buildings_Info.ACCESSIBLE" }, { "name": "MODIFIED_DATE" }
+  ],
+  "objectIdField": "OBJECTID",
+  "page": {
+    "features": [
+      { "attributes": { "OBJECTID": 8, "NAME": "Demonstration facility", "NAME_FR": "Installation de démonstration", "PR_Park_Buildings_Info.ACCESSIBLE": "No/Non" }, "geometry": { "paths": [[[0, 0], [1, 1]], [[2, 2], [3, 3]]] } }
+    ]
+  }
+}

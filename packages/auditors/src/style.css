@@ -1,0 +1,22 @@
+:root { font-family: system-ui, sans-serif; line-height: 1.55; color: #162b37; background: #f7f8fa; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { max-width: 860px; padding: 1rem; margin: 0 auto; }
+header, section { background: white; border: 1px solid #bccbd4; border-radius: .6rem; padding: 1rem; margin: 1rem 0; }
+h1 { font-size: clamp(1.5rem, 5vw, 2.2rem); }
+h2 { font-size: 1.3rem; }
+.switches { display: flex; gap: 1rem; flex-wrap: wrap; }
+label { display: flex; flex-direction: column; gap: .3rem; margin: .7rem 0; min-width: 0; }
+label.check { flex-direction: row; align-items: center; gap: .65rem; }
+input, select, textarea, button { font: inherit; min-height: 44px; border: 2px solid #607585; border-radius: .3rem; padding: .4rem; max-width: 100%; }
+input:not([type="checkbox"]):not([type="radio"]), textarea, select { width: 100%; }
+input[type="checkbox"], input[type="radio"] { width: 24px; height: 24px; }
+button { color: white; background: #155d82; border-color: #155d82; cursor: pointer; padding: .6rem .9rem; }
+button:hover { background: #0b3c56; }
+:focus-visible { outline: 3px solid #b34d00; outline-offset: 3px; }
+fieldset { border: 1px solid #607585; }
+.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: .75rem; }
+.metrics div { padding: .7rem; border: 1px solid #bccbd4; }
+.metrics dd { margin: 0; font-size: 1.5rem; font-weight: 700; }
+li { margin: .6rem 0; overflow-wrap: anywhere; }
+@media (max-width: 360px) { main { padding: .5rem; } header, section { padding: .75rem; } }
