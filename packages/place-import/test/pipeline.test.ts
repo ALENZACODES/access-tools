@@ -99,11 +99,13 @@ describe("place import", () => {
     expect(importPlaces({ records: "wrong" }).report.rejected).toBe(1);
   });
 
-  it("does not allow a VERIFIED prototype label in the provenance schema", () => {
-    expect(validateProvenance({ ...provenance, prototypeLabel: "VERIFIED" })).toBe(false);
-    const record = base();
-    record.recordProvenance = { ...provenance, prototypeLabel: "VERIFIED" };
-    expect(run(record).report.rejected).toBe(1);
+  it("does not allow a VERIFIED or COMMUNITY-REPORTED prototype label in the provenance schema", () => {
+    for (const prototypeLabel of ["VERIFIED", "COMMUNITY-REPORTED"] as const) {
+      expect(validateProvenance({ ...provenance, prototypeLabel })).toBe(false);
+      const record = base();
+      record.recordProvenance = { ...provenance, prototypeLabel };
+      expect(run(record).report.rejected).toBe(1);
+    }
   });
 
   it("rejects tier 2 and E without evidence, and accepts them with evidence", () => {
