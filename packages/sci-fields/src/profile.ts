@@ -41,6 +41,6 @@ export function breakReminderText(p: DeviceProfile, lang: Lang): string | null {
   const n = p.breakIntervalMinutes;
   if (n === undefined) return null;
   return lang === "fr"
-    ? `Rappel toutes les ${n} minutes (r�glage que vous avez choisi)`
+    ? `Rappel toutes les ${n} minutes (réglage que vous avez choisi)`
     : `Reminder every ${n} minutes (set by you)`;
 }

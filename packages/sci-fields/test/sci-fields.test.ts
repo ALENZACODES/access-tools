@@ -5,7 +5,7 @@ import {
 } from "../src";
 import type { SciFieldFact } from "../src";
 
-const BANNED = /you should|you are eligible|vous devriez|vous �tes admissible|catheter|cath�ter|pressure[- ]relief|d�charge de pression|\bAI\b|artificial intelligence|intelligence artificielle|\bclaude\b|\bgpt\b|\bscore\b|\bstars?\b/i;
+const BANNED = /you should|you are eligible|vous devriez|vous êtes admissible|catheter|cathéter|pressure[- ]relief|décharge de pression|\bAI\b|artificial intelligence|intelligence artificielle|\bclaude\b|\bgpt\b|\bscore\b|\bstars?\b/i;
 
 function allCopy(): string[] {
   const out: string[] = [];
@@ -70,7 +70,7 @@ describe("UNKNOWN default and display", () => {
   it("uses 'last checked' for dated-visit fields and adds ODbL attribution", () => {
     const f = synthetic({ field: "staff_will_help", value: false, licence: "ODbL" });
     expect(formatFact(f, "en")).toContain("Last checked: 2026-01-15");
-    expect(formatFact(f, "en")).toContain("� OpenStreetMap contributors, ODbL");
+    expect(formatFact(f, "en")).toContain("© OpenStreetMap contributors, ODbL");
     expect(formatFact(f, "en")).toContain("No");
   });
   it("label resolves aliases and throws on unknown ids", () => {

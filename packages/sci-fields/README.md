@@ -35,7 +35,7 @@ eligibility wording and catheter / pressure-relief instructions.
 ## Helpers
 
 `label(id, lang)`, `formatFact(fact, lang)` (source, licence, date, tier; ODbL facts add
-"� OpenStreetMap contributors, ODbL"), `unknownFact(id)`, `makeFact(fact)`.
+"© OpenStreetMap contributors, ODbL"), `unknownFact(id)`, `makeFact(fact)`.
 
 ## Tests
 

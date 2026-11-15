@@ -5,8 +5,8 @@ import type { FieldDef, Lang, SciFieldFact, Tier } from "./types";
 
 export const UNKNOWN: Record<Lang, string> = { en: "Unknown", fr: "Inconnu" };
 const UI = {
-  en: { source: "Source", licence: "Licence", checked: "Last checked", retrieved: "Retrieved", tier: "Tier", osm: "� OpenStreetMap contributors, ODbL" },
-  fr: { source: "Source", licence: "Licence", checked: "Derni�re v�rification", retrieved: "R�cup�r� le", tier: "Niveau", osm: "� Contributeurs d'OpenStreetMap, ODbL" },
+  en: { source: "Source", licence: "Licence", checked: "Last checked", retrieved: "Retrieved", tier: "Tier", osm: "© OpenStreetMap contributors, ODbL" },
+  fr: { source: "Source", licence: "Licence", checked: "Dernière vérification", retrieved: "Récupéré le", tier: "Niveau", osm: "© Contributeurs d’OpenStreetMap, ODbL" },
 };
 
 export function resolveId(id: string): string { return ALIASES[id] ?? id; }
@@ -52,5 +52,5 @@ export function formatFact(fact: SciFieldFact | null | undefined, lang: Lang): s
   const dated = def.expiry === "visit" || def.expiry === "short" ? ui.checked : ui.retrieved;
   const parts = [`${text}`, `${ui.source}: ${fact.source_id}`, `${ui.licence}: ${fact.licence}`, `${dated}: ${date}`, `${ui.tier}: ${tier}`];
   if (fact.licence === "ODbL") parts.push(ui.osm);
-  return parts.join(" � ");
+  return parts.join(" \u2014 ");
 }
