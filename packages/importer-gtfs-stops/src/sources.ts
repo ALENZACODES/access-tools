@@ -17,12 +17,24 @@ const entries: Array<[string, string, string, string, string, string, string]> =
   ["gtfs-cornwall-transit", "Cornwall Transit", "http://metrolinx.tmix.se/gtfs/gtfs-cornwall.zip", "No licence text found with the feed", "unknown", "Cornwall Transit", "Cornwall Transit"],
 ];
 
+const KINGSTON_LICENCE_URL = "https://www.cityofkingston.ca/media/wtpgpkb0/gis_license_opendata.pdf";
+const KINGSTON_ATTRIBUTION = "Contains information licensed under the Open Data Licence \u2013 City of Kingston.";
+const SUDBURY_LICENCE_URL = "https://www.greatersudbury.ca/city-hall/open-government/open-data/licence/";
+const SUDBURY_ATTRIBUTION = "Contains information licensed under the Open Data Licence \u2013 City of Greater Sudbury.";
+
 /** Catalogue pages are discovery URLs, not automatically downloadable ZIP URLs. */
-export const SOURCES: readonly Source[] = entries.map(([id, publisher, datasetUrl, licence, status, en, fr]) => ({
-  id, name: { en: en!, fr: fr! }, publisher: publisher!, datasetUrl: datasetUrl!, apiUrl: datasetUrl!,
-  licence: licence!, licenceUrl: datasetUrl!, licenceStatus: status as Source["licenceStatus"],
-  attribution: `Data: ${publisher}`, cadence,
-}));
+export const SOURCES: readonly Source[] = entries.map(([id, publisher, datasetUrl, licence, status, en, fr]) => {
+  const openRecorded = id === "gtfs-kingston-transit"
+    ? { licenceUrl: KINGSTON_LICENCE_URL, attribution: KINGSTON_ATTRIBUTION }
+    : id === "gtfs-sudbury-gova"
+      ? { licenceUrl: SUDBURY_LICENCE_URL, attribution: SUDBURY_ATTRIBUTION }
+      : { licenceUrl: datasetUrl!, attribution: `Data: ${publisher}` };
+  return {
+    id, name: { en: en!, fr: fr! }, publisher: publisher!, datasetUrl: datasetUrl!, apiUrl: datasetUrl!,
+    licence: licence!, licenceStatus: status as Source["licenceStatus"], cadence,
+    ...openRecorded,
+  };
+});
 export function sourceById(id: string): Source {
   const found = SOURCES.find((source) => source.id === id);
   if (!found) throw new Error(`Unknown feed: ${id}`);

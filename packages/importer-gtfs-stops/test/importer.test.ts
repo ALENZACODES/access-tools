@@ -28,6 +28,14 @@ describe("GTFS registry and permissions", () => {
     expect(SOURCES.map((s) => s.id).filter((id) => excluded.includes(id))).toEqual([]);
     expect(new Set(SOURCES.map((s) => s.id)).size).toBe(13);
   });
+  it("uses the official Kingston and Sudbury attribution statements and licence documents", () => {
+    const kingston = sourceById("gtfs-kingston-transit");
+    expect(kingston.attribution).toBe("Contains information licensed under the Open Data Licence \u2013 City of Kingston.");
+    expect(kingston.licenceUrl).toBe("https://www.cityofkingston.ca/media/wtpgpkb0/gis_license_opendata.pdf");
+    const sudbury = sourceById("gtfs-sudbury-gova");
+    expect(sudbury.attribution).toBe("Contains information licensed under the Open Data Licence \u2013 City of Greater Sudbury.");
+    expect(sudbury.licenceUrl).toBe("https://www.greatersudbury.ca/city-hall/open-government/open-data/licence/");
+  });
   it("holds verify/unknown without a reviewed licence record", () => {
     for (const source of SOURCES) expect(licenceHeld(source)).toBe(!["open", "open-recorded"].includes(source.licenceStatus));
     const yrt = sourceById("gtfs-yrt");
