@@ -39,20 +39,29 @@ export interface AggregateCell {
   category: Category;
   count: number;
 }
+export interface ConsequenceCell {
+  month: string;
+  consequence: Consequence;
+  count: number;
+}
 export interface AggregateExport {
   schemaVersion: "diary-aggregate-1.0.0";
   suppressionThreshold: 5;
   cells: AggregateCell[];
+  consequences: ConsequenceCell[];
 }
 
 // Export takes the schema-validated private entries, and emits ONLY eligible group counts.
-// No totals, raw entry values, amounts, ratios or individual row identifiers are exported.
+// Category and consequence counts both use the same threshold. No totals, raw entry values, amounts, ratios or individual row identifiers are exported.
 export function aggregate(entries: readonly Entry[]): AggregateExport {
   const counts = new Map<string, number>();
+  const consequenceCounts = new Map<string, number>();
   for (const entry of entries) {
     assertEntry(entry);
     const key = `${entry.date.slice(0, 7)}|${entry.category}`;
     counts.set(key, (counts.get(key) ?? 0) + 1);
+    const consequenceKey = `${entry.date.slice(0, 7)}|${entry.consequence}`;
+    consequenceCounts.set(consequenceKey, (consequenceCounts.get(consequenceKey) ?? 0) + 1);
   }
   const cells: AggregateCell[] = [];
   for (const [key, count] of counts) {
@@ -61,7 +70,14 @@ export function aggregate(entries: readonly Entry[]): AggregateExport {
     cells.push({ month, category, count });
   }
   cells.sort((a, b) => a.month.localeCompare(b.month) || a.category.localeCompare(b.category));
-  return { schemaVersion: "diary-aggregate-1.0.0", suppressionThreshold: K, cells };
+  const consequences: ConsequenceCell[] = [];
+  for (const [key, count] of consequenceCounts) {
+    if (count < K) continue;
+    const [month, consequence] = key.split("|") as [string, Consequence];
+    consequences.push({ month, consequence, count });
+  }
+  consequences.sort((a, b) => a.month.localeCompare(b.month) || a.consequence.localeCompare(b.consequence));
+  return { schemaVersion: "diary-aggregate-1.0.0", suppressionThreshold: K, cells, consequences };
 }
 
 export function exportAggregates(entries: readonly Entry[]): string {

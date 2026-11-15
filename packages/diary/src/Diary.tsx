@@ -132,8 +132,9 @@ export function Diary() {
         <p>{t.exportHelp}</p>
         <button type="button" onClick={() => setPreview(true)}>{t.preview}</button>
         {preview && <div aria-live="polite">
-          {report.cells.length === 0 ? <p>{t.noCells}</p> : <>
-            <ul>{report.cells.map((cell) => <li key={`${cell.month}:${cell.category}`}>{cell.month} — {t.categoryNames[cell.category]} — {cell.count}</li>)}</ul>
+          {report.cells.length === 0 && report.consequences.length === 0 ? <p>{t.noCells}</p> : <>
+            {report.cells.length > 0 ? <ul>{report.cells.map((cell) => <li key={`${cell.month}:${cell.category}`}>{cell.month} — {t.categoryNames[cell.category]} — {cell.count}</li>)}</ul> : null}
+            {report.consequences.length > 0 ? <ul>{report.consequences.map((cell) => <li key={`${cell.month}:${cell.consequence}`}>{cell.month} — {t.consequenceNames[cell.consequence]} — {cell.count}</li>)}</ul> : null}
             <button type="button" onClick={download}>{t.download}</button>
           </>}
         </div>}

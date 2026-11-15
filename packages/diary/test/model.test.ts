@@ -20,16 +20,22 @@ describe("export is suppressed aggregate only", () => {
     }
     const entries = [...Array.from({ length: 5 }, () => base), { ...base, category: "cushions" as const }];
     expect(aggregate(entries).cells).toEqual([{ month: "2026-11", category: "catheters", count: 5 }]);
+    expect(aggregate(entries).consequences).toEqual([{ month: "2026-11", consequence: "missed-work", count: 6 }]);
   });
-  it("never exports individual values or counts under 5", () => {
-    const rows = Array.from({ length: 5 }, (_, i) => ({ ...base, amount: 100 + i, consequence: "infection-reported-by-person" as const }));
+  it("exports infection-reported-by-person as a suppressed aggregate, never as individual values", () => {
+    const few = Array.from({ length: 4 }, (_, i) => ({ ...base, amount: 100 + i, consequence: "infection-reported-by-person" as const }));
+    expect(aggregate(few).consequences).toEqual([]);
+    expect(exportAggregates(few)).not.toContain("infection-reported-by-person");
+    const rows = [...few, { ...base, amount: 104, consequence: "infection-reported-by-person" as const }];
     const output = exportAggregates(rows);
     const exported = JSON.parse(output) as Record<string, unknown>;
-    expect(Object.keys(exported).sort()).toEqual(["cells", "schemaVersion", "suppressionThreshold"]);
+    expect(Object.keys(exported).sort()).toEqual(["cells", "consequences", "schemaVersion", "suppressionThreshold"]);
     expect(exported.cells).toEqual([{ month: "2026-11", category: "catheters", count: 5 }]);
-    for (const field of ["date", "amount", "rationed", "consequence", "id", "infection-reported-by-person", "100", "101", "102", "103", "104"]) {
+    expect(exported.consequences).toEqual([{ month: "2026-11", consequence: "infection-reported-by-person", count: 5 }]);
+    for (const field of ["date", "amount", "rationed", "id", "100", "101", "102", "103", "104"]) {
       expect(output).not.toContain(`"${field}"`);
     }
     expect((exported.cells as Array<{ count: number }>).every((cell) => cell.count >= 5)).toBe(true);
+    expect((exported.consequences as Array<{ count: number }>).every((cell) => cell.count >= 5)).toBe(true);
   });
 });
