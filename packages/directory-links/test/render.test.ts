@@ -1,5 +1,8 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { catalog, isLive } from "../src/catalog";
 import { DirectoryLinks, LinkList, WavSection } from "../src/DirectoryLinks";
@@ -43,9 +46,17 @@ describe("rendering", () => {
     const html = renderToStaticMarkup(createElement(DirectoryLinks, { lang: "en" }));
     for (const id of ["dl-name", "dl-mobility", "dl-transfer"]) expect(html).toContain(`for="${id}"`);
   });
-  it("gives interactive targets a 44px minimum size", () => {
+  it("scopes 44px target sizes to the component", () => {
     const html = renderToStaticMarkup(createElement(DirectoryLinks, { lang: "en" }));
-    expect(html).toContain("min-height: 44px");
-    expect(html).toContain("min-width: 44px");
+    expect(html).not.toContain("<style>");
+    expect(html).toContain('class="directory-links"');
+    const list = renderToStaticMarkup(createElement(LinkList, { links: catalog, lang: "en" }));
+    expect(list).toContain('class="directory-links"');
+    expect(list).not.toContain("<style>");
+    const css = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "../src/DirectoryLinks.css"), "utf8");
+    expect(css).toMatch(/\.directory-links\s+a,/);
+    expect(css).toMatch(/min-height:\s*44px/);
+    expect(css).toMatch(/min-width:\s*44px/);
+    expect(css).not.toMatch(/^(a|button|input)\s*,/m);
   });
 });

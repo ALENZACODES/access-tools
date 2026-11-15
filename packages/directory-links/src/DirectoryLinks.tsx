@@ -3,6 +3,7 @@ import { catalog as defaultCatalog, isLive } from "./catalog";
 import { emptyProfile, exportProfileJson, exportProfileText } from "./profile";
 import { strings } from "./strings";
 import type { AssistanceProfile, Attendant, Lang, OfficialLink, WavFact } from "./types";
+import "./DirectoryLinks.css";
 
 function typography(lang: Lang) {
   const colon = lang === "fr" ? "\u00A0: " : ": ";
@@ -10,15 +11,11 @@ function typography(lang: Lang) {
   return { colon, dash };
 }
 
-const targetCss = `a, button, input, textarea, select { min-height: 44px; min-width: 44px; box-sizing: border-box; font: inherit; } label:has(input[type="radio"]) { min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; }`;
-
 export function LinkList({ links, lang }: { links: OfficialLink[]; lang: Lang }) {
   const s = strings[lang];
   const { colon, dash } = typography(lang);
   return (
-    <>
-    <style>{targetCss}</style>
-    <ul>
+    <ul className="directory-links">
       {links.map((l) => (
         <li key={l.id}>
           <p>
@@ -35,7 +32,6 @@ export function LinkList({ links, lang }: { links: OfficialLink[]; lang: Lang })
         </li>
       ))}
     </ul>
-    </>
   );
 }
 
@@ -78,8 +74,7 @@ export function ProfileSection({ lang }: { lang: Lang }) {
   const set = <K extends keyof AssistanceProfile>(k: K, v: AssistanceProfile[K]) => setP({ ...p, [k]: v });
   const radios: [Attendant, string][] = [["yes", s.attendantYes], ["no", s.attendantNo], ["unset", s.attendantUnset]];
   return (
-    <section aria-labelledby="dl-profile">
-      <style>{targetCss}</style>
+    <section className="directory-links" aria-labelledby="dl-profile">
       <h2 id="dl-profile">{s.profileHeading}</h2>
       <p>{s.profileIntro}</p>
       <p>
@@ -116,8 +111,7 @@ export function ProfileSection({ lang }: { lang: Lang }) {
 export function DirectoryLinks({ lang, links = defaultCatalog, wavFact }: { lang: Lang; links?: OfficialLink[]; wavFact?: WavFact }) {
   const s = strings[lang];
   return (
-    <main lang={lang}>
-      <style>{targetCss}</style>
+    <main className="directory-links" lang={lang}>
       <h1>{s.title}</h1>
       <p>{s.intro}</p>
       <p>{s.notAffiliated}</p>
