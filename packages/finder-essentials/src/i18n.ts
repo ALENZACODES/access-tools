@@ -19,7 +19,7 @@ export const strings: Record<Locale, {
       staff_refuel: 'Staff will refuel', charging: 'Charging' },
   },
   fr: {
-    heading: 'the App — services essentiels à proximité', filters: 'Filtrer selon les renseignements connus',
+    heading: 'L’App — services essentiels à proximité', filters: 'Filtrer selon les renseignements connus',
     all: 'Tous', yes: 'Oui', no: 'Non', unknown: 'Inconnu',
     noKnown: 'Aucun résultat connu dans le rayon. Cela ne signifie pas qu’il n’en existe aucun.',
     unknownCount: n => `${n} fiches à proximité ont des renseignements inconnus pour au moins un filtre sélectionné.`,
@@ -27,7 +27,7 @@ export const strings: Record<Locale, {
     source: 'Source', fetched: 'Dernière récupération', tier: 'Niveau',
     odbl: '© contributeurs OpenStreetMap, ODbL',
     labels: { washroom_wheelchair: 'Toilettes accessibles en fauteuil roulant', parking_accessible: 'Stationnement accessible',
-      adult_change_table: 'Table à langer pour adulte', hoist: 'Lève-personne',
+      adult_change_table: 'Table à langer pour adultes', hoist: 'Lève-personne',
       open_without_purchase: 'Toilettes sans achat obligatoire', staff_refuel: 'Personnel disponible pour faire le plein',
       charging: 'Recharge' },
   },
