@@ -1,0 +1,1 @@
+{"demo":true,"result":{"resource_id":"demo-pops","records":[{"_id":4001,"Location":"Demo Plaza 1","Description":"Publicly accessible demo courtyard","Status":"EXISTING","Ward":"Demo Ward","Image URL":"https://example.invalid/demo.jpg","geometry":"{\"type\":\"Polygon\",\"coordinates\":[[[-79.4,43.7],[-79.3,43.7],[-79.3,43.8],[-79.4,43.7]]]}"}],"total":1,"limit":1,"offset":0}}
