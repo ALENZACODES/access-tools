@@ -19,6 +19,7 @@ async function main(): Promise<void> {
   if (!source) throw new Error("source not registered");
   const outDir = arg("out") ?? "out";
   const file = arg("file");
+  // Default retrievedAt is the UTC date (YYYY-MM-DD).
   const retrievedAt = arg("date") ?? new Date().toISOString().slice(0, 10);
   const maxBytes = Number(arg("max-bytes") ?? DEFAULT_MAX_BYTES);
 
