@@ -9,7 +9,7 @@ export const source = {
   licence: "City of Ottawa Open Data Licence v2.0",
   licenceUrl: "https://open.ottawa.ca/pages/open-data-licence-version-2-0",
   licenceStatus: "verify" as const,
-  attribution: "Source: City of Ottawa / Source : Ville d’Ottawa",
+  attribution: "Source: City of Ottawa / Source : Ville d’Ottawa",
   cadence: "As updated by the city (MODIFIED_DATE per feature)",
 };
 
@@ -17,7 +17,7 @@ export const source = {
 export const layers = [
   [0, "Beaches / Plages"],
   [1, "Ball Diamonds / Terrains de balle"],
-  [2, "Ball Diamonds School / Terrains de balle sur ​​le terrain de l'école"],
+  [2, "Ball Diamonds School / Terrains de balle sur le terrain de l'école"],
   [3, "Basketball Courts / Terrains de basketball"],
   [4, "Boat Launches / Rampes de mise à l'eau"],
   [5, "Parks and Recreation Facilities / Installations récréatives"],
@@ -33,7 +33,7 @@ export const layers = [
   [17, "Sledding Hills / Pente de traîneau"],
   [18, "Splash Pads / Aire de jeux d’eau"],
   [19, "Sports Fields / Terrains de sport "],
-  [20, "Sports Fields on School Property / Terrains de sport sur ​​le terrain de l'école"],
+  [20, "Sports Fields on School Property / Terrains de sport sur le terrain de l'école"],
   [21, "Tennis Courts / Courts de tennis"],
   [22, "Volleyball Courts / Terrains de Volleyball"],
   [23, "Pathway Links / Liens de la voie"],
@@ -43,8 +43,9 @@ export const layers = [
 ] as const;
 
 export function layerNames(name: string): { en: string; fr: string | null } {
-  const separator = name.indexOf(" / ");
-  return separator < 0 ? { en: name, fr: null } : {
-    en: name.slice(0, separator), fr: name.slice(separator + 3),
+  const cleaned = name.replaceAll("\u200B", "").replaceAll("\u200C", "").replaceAll("\u200D", "");
+  const separator = cleaned.indexOf(" / ");
+  return separator < 0 ? { en: cleaned, fr: null } : {
+    en: cleaned.slice(0, separator), fr: cleaned.slice(separator + 3),
   };
 }

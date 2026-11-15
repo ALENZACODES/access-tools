@@ -1,0 +1,10 @@
+{
+  "name": "@access-tools/importer-ontario-open",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "import": "tsx src/cli.ts"
+  }
+}

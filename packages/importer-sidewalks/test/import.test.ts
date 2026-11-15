@@ -26,6 +26,11 @@ describe("source registry", () => {
     for (const source of SOURCES) {
       expect(earlier).not.toContain(source.id);
       expect(source.licenceUrl.startsWith("https://")).toBe(true);
+    expect(sourceById("ottawa-pedestrian-network").licenceUrl).toBe("https://open.ottawa.ca/pages/open-data-licence-version-2-0");
+    expect(sourceById("london-sidewalks").licenceUrl).toBe("https://london.ca/government/council-civic-administration/open-data");
+    expect(sourceById("london-walkways").licenceUrl).toBe("https://london.ca/government/council-civic-administration/open-data");
+    expect(sourceById("kitchener-sidewalks").licenceUrl).toBe("https://www.kitchener.ca/council-and-city-administration/data-and-maps/open-data-licence/");
+    expect(sourceById("waterloo-sidewalks").licenceUrl).toBe("https://www.waterloo.ca/media/hptgov1j/open-data-policy.pdf");
     }
     expect(SOURCES.filter((s) => s.licenceStatus === "open")).toHaveLength(3);
   });
@@ -86,10 +91,13 @@ describe("mapping", () => {
     expect(mapped("ottawa-pedestrian-network", mup!).name.fr.value).toBe("Sentier fictif partagé");
   });
   it("maps Waterloo text, Toronto crosswalk and Toronto area without inference", () => {
-    const waterloo = mapped("waterloo-sidewalks", { attributes: { OBJECTID: 1, SURFACE: "Demo asphalt", PATH_TYPE: "MUP", CLEARED_BY: "Demo city" }, geometry: { rings: [[[-80.5, 43.4], [-80.6, 43.4], [-80.5, 43.4]]] } });
+    const waterloo = mapped("waterloo-sidewalks", { attributes: { OBJECTID: 1, SURFACE: "Demo asphalt", PATH_TYPE: "MUP", CLEARED_BY: "City Crews" }, geometry: { rings: [[[-80.5, 43.4], [-80.6, 43.4], [-80.5, 43.4]]] } });
     expect(waterloo.kind).toBe("multi-use-path");
     expect(waterloo.geometry?.type).toBe("Polygon");
-    expect(waterloo.facts.clearedBy.value).toBe("Demo city");
+    expect(waterloo.facts.clearedBy.value).toBe("City Crews");
+    const named = mapped("waterloo-sidewalks", { attributes: { OBJECTID: 2, SURFACE: "Demo asphalt", PATH_TYPE: "MUP", CLEARED_BY: "Jane Smith" }, geometry: { rings: [[[-80.5, 43.4], [-80.6, 43.4], [-80.5, 43.4]]] } });
+    expect(named.facts.clearedBy.value).toBeNull();
+    expect(named.raw.CLEARED_BY).toBeUndefined();
     expect(mapped("toronto-pedestrian-network", { attributes: { OBJECTID: 1, CROSSWALK: 1 }, geometry: null }).kind).toBe("crosswalk");
     const topo = mapped("toronto-topo-sidewalks", { attributes: { OBJECTID: 1, SUBTYPE_DESC: "Demo footprint" }, geometry: null });
     expect(topo.kind).toBe("sidewalk-area");
