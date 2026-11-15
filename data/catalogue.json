@@ -1299,7 +1299,7 @@
         "value": 11391,
         "unit": "records",
         "kind": "counted",
-        "method": "ArcGIS returnCountOnly on every Parks_Inventory layer that has an ACCESSIBLE field (25 layers = 11,800), minus layer 14 Parking (409, assigned to H5).",
+        "method": "ArcGIS returnCountOnly on every Parks_Inventory layer that has an ACCESSIBLE field (26 layers = 11,800), minus layer 14 Parking (409, assigned to H5).",
         "date": "2026-11-15"
       },
       "breakdown": {
