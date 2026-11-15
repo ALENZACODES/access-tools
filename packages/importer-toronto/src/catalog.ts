@@ -9,7 +9,7 @@ export const CATALOG = {
   },
   fr: {
     summary: (id: string, read: number, emitted: number) => `${id}${NBSP}: ${read} lignes lues, ${emitted} lignes exportées. Ces chiffres ne constituent pas une garantie de couverture.`,
-    held: `Vérification de la licence requise${NBSP}; aucune donnée n'a été publiée.`,
+    held: "Vérification de la licence requise\u202F; aucune donnée n'a été publiée.",
     disclaimer: "Ces chiffres ne constituent pas une garantie de couverture.",
     notice: "L’attribution ne signifie pas que la Ville appuie the App.",
   },

@@ -9,6 +9,6 @@ export const COPY = {
   },
   open: {
     en: "Licence recorded; output available for review.",
-    fr: "Licence consignée ; sortie disponible pour examen.",
+    fr: "Licence consignée\u202F; sortie disponible pour examen.",
   },
 } as const;
