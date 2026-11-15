@@ -1,5 +1,5 @@
-import { API_URL } from "./sources.ts";
-import type { ArcPage, LayerMetadata } from "./types.ts";
+import { API_URL } from "./sources.js";
+import type { ArcPage, LayerMetadata } from "./types.js";
 
 type Fetcher = typeof fetch;
 

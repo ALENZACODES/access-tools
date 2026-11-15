@@ -5,7 +5,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { gzipSync } from "node:zlib";
 import { once } from "node:events";
-import type { ImportedRecord, ImportReport } from "./types.ts";
+import type { ImportedRecord, ImportReport } from "./types.js";
 
 export type Partition = ImportReport["partitions"][number];
 

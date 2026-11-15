@@ -1,13 +1,13 @@
 /// <reference types="node" />
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { featurePages, layerMetadata } from "./arcgis.ts";
-import { catalog } from "./catalog.ts";
-import { writePartitions, writeReport } from "./io.ts";
-import { mapPages } from "./mapping.ts";
-import { validateRecord, validateReport } from "./schema.ts";
-import { layers, source } from "./sources.ts";
-import type { ImportedRecord, ImportReport, LicenceRecord } from "./types.ts";
+import { featurePages, layerMetadata } from "./arcgis.js";
+import { catalog } from "./catalog.js";
+import { writePartitions, writeReport } from "./io.js";
+import { mapPages } from "./mapping.js";
+import { validateRecord, validateReport } from "./schema.js";
+import { layers, source } from "./sources.js";
+import type { ImportedRecord, ImportReport, LicenceRecord } from "./types.js";
 
 export function licenceApproved(record: LicenceRecord | null): boolean {
   return !!record && /^\d{4}-\d{2}-\d{2}$/.test(record.checkedOn) &&

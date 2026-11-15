@@ -1,5 +1,5 @@
-import { layerNames, source } from "./sources.ts";
-import type { ArcFeature, ArcPage, Geometry, ImportedRecord, LayerMetadata, Position, Provenance, Sourced } from "./types.ts";
+import { layerNames, source } from "./sources.js";
+import type { ArcFeature, ArcPage, Geometry, ImportedRecord, LayerMetadata, Position, Provenance, Sourced } from "./types.js";
 
 export function accessible(value: unknown): "yes" | "no" | null {
   if (typeof value !== "string") return null;
