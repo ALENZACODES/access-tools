@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://access-tools.local/schema/diary-entry-1.0.0.json",
+  "title": "On-device voluntary supply diary entry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["date", "category", "amount", "rationed", "consequence"],
+  "properties": {
+    "date": { "type": "string", "format": "date", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+    "category": { "enum": ["catheters", "dressings", "cushions", "other-equipment"] },
+    "amount": { "oneOf": [{ "type": "number", "minimum": 0, "maximum": 1000000 }, { "const": "Unknown" }] },
+    "rationed": { "type": "boolean" },
+    "consequence": { "enum": ["none", "missed-work", "delayed-care", "infection-reported-by-person", "other"] }
+  }
+}
