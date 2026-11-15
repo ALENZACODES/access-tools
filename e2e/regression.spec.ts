@@ -73,9 +73,9 @@ async function axeViolations(page: Page, selector: string): Promise<string[]> {
 
 test("[R28-01] washroom finder shows fields, tiers, and Unknown", async ({ page }) => {
   await openTab(page, "Finders");
-  const finder = page.getByRole("region", { name: "Washrooms, change tables, and hoists" });
+  const finder = page.getByRole("region", { name: "Washrooms, change tables, and hoists", exact: true });
   await expect(finder).toBeVisible();
-  await expect(finder.getByText(/record\(s\) shown\./).first()).toBeVisible();
+  await expect(finder.getByText(/washroom record\(s\) listed\./).first()).toBeVisible();
   await expect(finder.getByText("Transfer", { exact: false }).first()).toBeVisible();
   await expect(finder.getByText("Change table", { exact: false }).first()).toBeVisible();
   await expect(finder.getByText("Hoist", { exact: false }).first()).toBeVisible();
@@ -85,7 +85,7 @@ test("[R28-01] washroom finder shows fields, tiers, and Unknown", async ({ page 
 
 test("[R28-02] parking finder states the privilege rule and no free-now claim", async ({ page }) => {
   await openTab(page, "Finders");
-  const finder = page.getByRole("region", { name: "Accessible parking" });
+  const finder = page.getByRole("region", { name: "Accessible parking", exact: true });
   await expect(finder).toBeVisible();
   await expect(finder.getByText(/A municipal privilege is quoted only when the municipality, bylaw, and date are all present\./)).toBeVisible();
   await expect(finder).not.toContainText(/\bfree now\b|\bavailable now\b/i);
