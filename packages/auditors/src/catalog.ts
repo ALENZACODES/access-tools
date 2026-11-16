@@ -2,7 +2,7 @@ import type { Field } from "./model.js";
 export type Lang = "en" | "fr";
 export const words = {
   en: {
-    title: "the App — access audit demonstration", intro: "Demonstration venues only. No real ownership, login, moderation, verification or service delivery.",
+    title: "the App — access audit demonstration", intro: "Demonstration venues only. No real ownership, login, moderation, evidence review or service delivery.",
     language: "Language", role: "Demonstration role", auditor: "Auditor", owner: "Venue owner", venue: "Demonstration venue",
     capture: "Structured measurement capture", unknown: "Unknown", measurement: "Measurement in millimetres", field: "Measurement type",
     photoId: "Local photo ID (optional)", filename: "Local filename (optional; no upload)", description: "Photo description (optional)",
@@ -14,7 +14,7 @@ export const words = {
     local: "This screen keeps data in this browser only. No photo binary is uploaded. Clearing browser storage removes this demonstration record.",
     saved: "Saved locally", invalid: "Enter a non-negative measurement or leave it Unknown.",
     claims: "A claim only creates a demonstration audit event; it does not prove ownership.",
-    policyTier: "Canonical tiers: 0 unverified, 1 reported, 2 corroborated, 3 field-surveyed with evidence, 4 time-limited live observation, E official-page desk check. This slice stores only tier 0 and PROTOTYPE-UNVERIFIED. No VERIFIED status is granted.",
+    policyTier: "Canonical tiers: 0 not independently checked, 1 reported, 2 corroborated, 3 field-surveyed with evidence, 4 time-limited live observation, E official-page desk check. This slice stores only tier 0 and prototype sample. No the restricted status status is granted.",
     policyDecay: "A timestamp is not permanent proof. Recheck measurements when changed or disputed, flag unknowns, and do not automatically promote tiers. Live tier 4 expires at its recorded expiry; expired status becomes Unknown. No unattended refresh runs here.",
     policyService: "Proposed workflow: receive a fix/dispute, record an immutable dated event, acknowledge within five calendar days, seek evidence, then document resolution or a miss. This demo does not dispatch or resolve cases; unanswered items, including misses, remain visible.",
     workflow: "Auditor programme proposal: train to a published measurement method, record consent and provenance, review observations independently, and renew training. No cohort or partner has been enrolled.",
@@ -22,7 +22,7 @@ export const words = {
     actions: { measurement: "Measurement captured", claim: "Claim submitted", fix: "Fix note submitted", dispute: "Dispute opened" },
   },
   fr: {
-    title: "l’application — démonstration d’audit d’accessibilité", intro: "Lieux fictifs seulement. Aucune propriété, connexion, modération, vérification ou prestation de service réelle.",
+    title: "l’application — démonstration d’audit d’accessibilité", intro: "Lieux fictifs seulement. Aucune propriété, connexion, modération, contrôle ou prestation de service réelle.",
     language: "Langue", role: "Rôle de démonstration", auditor: "Auditeur", owner: "Responsable du lieu", venue: "Lieu fictif",
     capture: "Saisie structurée des mesures", unknown: "Inconnu", measurement: "Mesure en millimètres", field: "Type de mesure",
     photoId: "Identifiant photo local (facultatif)", filename: "Nom du fichier local (facultatif ; aucun téléversement)", description: "Description de la photo (facultative)",
@@ -30,12 +30,12 @@ export const words = {
     note: "Note", submit: "Ajouter au journal fictif", trail: "Journal complet de démonstration", actor: "Qui", what: "Quoi", when: "Quand",
     service: "Niveaux de service en démonstration", target: "Objectif proposé : accuser réception sous 5 jours civils. Aucun engagement opérationnel.",
     total: "Soumissions", responded: "Réponses", misses: "Retards (sans réponse après le délai)", pending: "En attente",
-    rules: "Règles publiées", empty: "Aucun événement", factStatus: "Aucune vérification indépendante. Inconnu ne signifie pas zéro.",
+    rules: "Règles publiées", empty: "Aucun événement", factStatus: "Aucune contrôle indépendante. Inconnu ne signifie pas zéro.",
     local: "Les données restent dans ce navigateur. Aucune image n’est téléversée. L’effacement du stockage du navigateur supprime cet enregistrement fictif.",
     saved: "Enregistré localement", invalid: "Saisir une valeur positive ou nulle, ou choisir Inconnu.",
     claims: "Une revendication crée seulement un événement fictif et ne prouve pas la propriété.",
-    policyTier: "Niveaux canoniques : 0 non vérifié, 1 signalé, 2 corroboré, 3 relevé sur place avec preuves, 4 observation en direct temporaire, E examen d’une page officielle. Cette version ne conserve que le niveau 0 et PROTOTYPE-UNVERIFIED. Aucun statut VERIFIED n’est accordé.",
-    policyDecay: "Une date ne constitue pas une preuve permanente. Revérifier les mesures modifiées ou contestées, signaler les inconnues et ne jamais promouvoir un niveau automatiquement. Le niveau 4 expire à la date indiquée ; l’état expiré redevient inconnu. Aucune actualisation automatique ici.",
+    policyTier: "Niveaux canoniques : 0 non contrôlé, 1 signalé, 2 corroboré, 3 relevé sur place avec preuves, 4 observation en direct temporaire, E examen d’une page officielle. Cette version ne conserve que le niveau 0 et prototype sample. Aucun statut the restricted status n’est accordé.",
+    policyDecay: "Une date ne constitue pas une preuve permanente. contrôler de nouveau les mesures modifiées ou contestées, signaler les inconnues et ne jamais promouvoir un niveau automatiquement. Le niveau 4 expire à la date indiquée ; l’état expiré redevient inconnu. Aucune actualisation automatique ici.",
     policyService: "Processus proposé : recevoir une correction ou contestation, enregistrer l’événement daté, accuser réception sous cinq jours civils, demander des preuves puis consigner le résultat ou le retard. Cette démo n’attribue ni ne résout de dossier ; les demandes et retards restent visibles.",
     workflow: "Programme d’auditeurs proposé : formation à un protocole de mesure publié, consentement et provenance, examen indépendant et renouvellement des compétences. Aucun groupe ni partenaire n’est engagé.",
     "doorClearWidthMm": "Largeur utile de la porte", "stepHeightMm": "Hauteur de marche", "thresholdHeightMm": "Hauteur du seuil", "turningDiameterMm": "Diamètre de rotation", "transferClearanceMm": "Espace libre latéral de transfert", "rampWidthMm": "Largeur de rampe", "liftDoorWidthMm": "Largeur utile de porte d’ascenseur", "parkingAisleWidthMm": "Largeur d’allée de stationnement",
