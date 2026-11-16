@@ -32,10 +32,10 @@ function UnitCard({ match: { record, unit }, lang }: { match: UnitMatch; lang: L
     <p>{t.completeness(filled.known, filled.total)}</p>
     <h4>{t.building}</h4>
     <dl>{BUILDING_FIELDS.map((key) => <FactRow key={key} label={t.fields[key]} fact={record.building[key]} lang={lang} />)}</dl>
-    {unit.rooms.map((room) => <section className="room-facts" key={room.id} aria-labelledby={`${room.id}-title`}>
+    {unit.rooms.map((room) => <div className="room-facts" key={room.id}>
       <h4 id={`${room.id}-title`}>{t.roomTypes[room.roomType]}</h4>
       <dl>{ROOM_FIELDS[room.roomType].map((key) => <FactRow key={key} label={t.fields[key]} fact={room.facts[key]} lang={lang} />)}</dl>
-    </section>)}
+    </div>)}
   </article>;
 }
 
