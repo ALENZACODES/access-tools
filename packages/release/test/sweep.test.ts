@@ -25,22 +25,10 @@ const CATALOGS: Record<string, Record<string, { en: string; fr: string }>> = {
 };
 
 /**
- * Hits read by a person and kept. Each describes a program in the words of
- * its official page, as a sourced directory summary. None says the App is
- * endorsed by anyone.
+ * Hits read by a person and kept. Directory summaries no longer use
+ * partnership wording, so there are no reviewed exceptions.
  */
-const REVIEWED: Array<{ where: string; rule: string; reason: string }> = [
-  {
-    where: "navigator.DIRECTORY[17].summary.en",
-    rule: "endorsement",
-    reason: "Quotes who administers the program, per its official page. Not a claim about the App.",
-  },
-  {
-    where: "navigator.DIRECTORY[17].summary.fr",
-    rule: "endorsement-fr",
-    reason: "French of the same sourced summary.",
-  },
-];
+const REVIEWED: Array<{ where: string; rule: string; reason: string }> = [];
 
 const ALL = Object.entries(PACKAGES).flatMap(([name, module]) => collectStrings(module, name));
 const CATALOG_STRINGS = Object.entries(CATALOGS).flatMap(([name, catalog]) => collectStrings(catalog, `${name}.copy`));

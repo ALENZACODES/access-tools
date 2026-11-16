@@ -105,12 +105,12 @@ export const MODEL_COPY = {
     fr: "Périmé selon l'estimation du plan ({limit} jours). La fiche reste affichée.",
   },
   "fresh.window": {
-    en: "Within the plan's estimated window. An estimate, not a guarantee.",
-    fr: "Dans la fenêtre estimée du plan. Estimation, pas une garantie.",
+    en: "Within the plan's estimated window. An estimate only. The time is not confirmed.",
+    fr: "Dans la fenêtre estimée du plan. Estimation seulement. Le délai n’est pas confirmé.",
   },
   "fresh.window-days": {
-    en: "Within the plan's estimated window ({limit} days). An estimate, not a guarantee.",
-    fr: "Dans la fenêtre estimée du plan ({limit} jours). Estimation, pas une garantie.",
+    en: "Within the plan's estimated window ({limit} days). An estimate only. The time is not confirmed.",
+    fr: "Dans la fenêtre estimée du plan ({limit} jours). Estimation seulement. Le délai n’est pas confirmé.",
   },
   "fresh.live-unknown": {
     en: "Live status unknown. The feed is missing, has no clock time, is expired, or is older than {hours} hours. A stale status is not shown as working.",
@@ -127,8 +127,8 @@ export const MODEL_COPY = {
   "winter.unknown": { en: "Winter clearance unknown", fr: "Déneigement hivernal inconnu" },
   "winter.recorded": { en: "Clearance recorded on {date}.", fr: "Déneigement enregistré le {date}." },
   "use.measured": {
-    en: "Peer or surveyor measurements are on file. Check the date. This is not a guarantee.",
-    fr: "Mesures de pair ou d'enquêteur au dossier. Vérifiez la date. Ce n'est pas une garantie.",
+    en: "Peer or surveyor measurements are on file. Check the date. This is not a confirmed measurement.",
+    fr: "Mesures de pair ou d’enquêteur au dossier. Vérifiez la date. Ce n’est pas un relevé confirmé.",
   },
   "use.call-ahead": {
     en: "Unverified — call ahead. This record is not a recommendation.",
@@ -154,8 +154,8 @@ export const MODEL_COPY = {
   },
   "range.unknown": { en: "unknown", fr: "inconnue" },
   "range.note": {
-    en: "You entered a tested range of {range} m. The straight-line distance is {distance} m. This is not a guarantee. The application does not use a generic chair range.",
-    fr: "Vous avez saisi une autonomie essayée de {range} m. La distance à vol d'oiseau est {distance} m. Ce n'est pas une garantie. L'application n'utilise pas d'autonomie générique de fauteuil.",
+    en: "You entered a tested range of {range} m. The straight-line distance is {distance} m. This is not a confirmed range. The application does not use a generic chair range.",
+    fr: "Vous avez saisi une autonomie essayée de {range} m. La distance à vol d’oiseau est {distance} m. Ce n’est pas une autonomie confirmée. L’application n’utilise pas d’autonomie générique de fauteuil.",
   },
   "disclaimer.availability": {
     en: "This list does not show whether a bay is free right now. No live availability feed is connected.",

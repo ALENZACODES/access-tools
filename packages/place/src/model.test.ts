@@ -331,7 +331,7 @@ describe("freshness and hours", () => {
 
   it("refuses a generic in-range claim", () => {
     const note = rangeNote(1200, 5000, "en");
-    expect(note).toContain("not a guarantee");
+    expect(note).toContain("not a confirmed");
     expect(note?.toLowerCase()).not.toContain("in range");
   });
 });

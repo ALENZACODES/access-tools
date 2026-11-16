@@ -152,7 +152,7 @@ describe("charging finder", () => {
     const text = JSON.stringify(result);
     expect(text.toLowerCase()).not.toContain("in range");
     expect(result.hits.every((hit) => hit.recommendation.includes("call ahead"))).toBe(true);
-    expect(result.hits.some((hit) => hit.rangeText?.includes("not a guarantee"))).toBe(true);
+    expect(result.hits.some((hit) => hit.rangeText?.includes("not a confirmed range"))).toBe(true);
     expect(result.rangeReminder).toContain("does not use a generic chair range");
   });
 });
