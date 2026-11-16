@@ -26,4 +26,19 @@ describe("catalog", () => {
     expect(pendingRow).toBeDefined();
     expect(isLive({ ...pendingRow!, url: "https://example.invalid/" })).toBe(false);
   });
+  it("lists the pages read on 2026-11-16 as dated link-outs on https addresses", () => {
+    const dated = catalog.filter((l) => l.retrieved_at === "2026-11-16");
+    expect(dated).toHaveLength(32);
+    expect(dated.filter((l) => l.group === "transit")).toHaveLength(25);
+    expect(dated.filter((l) => l.group === "wav")).toHaveLength(7);
+    for (const l of dated) {
+      expect(isLive(l)).toBe(true);
+      expect(l.licence).toBe("link-out");
+      expect(l.notesEn).toMatch(/^Link-out only\./);
+      expect(l.notesFr).toMatch(/^Lien externe seulement\./);
+    }
+    expect(new Set(dated.map((l) => l.url)).size).toBe(dated.length);
+    // The general wheelchair-accessible vehicle placeholder stays unverified: no province-wide page was read.
+    expect(catalog.find((l) => l.id === "wav-official-info")?.url).toBeNull();
+  });
 });
