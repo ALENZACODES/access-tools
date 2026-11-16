@@ -31,4 +31,4 @@ form { max-width: 35rem; }
 fieldset { border: 2px solid #476977; border-radius: .3rem; margin: .75rem 0; padding: .5rem .75rem; min-width: 0; }
 legend { font-weight: 650; padding: 0 .3rem; }
 .checkbox label { font-weight: 500; }
-a.download { display: inline-block; min-height: 44px; padding: .6rem 0; color: #0b4a6f; overflow-wrap: anywhere; }
+button.download { min-height: 44px; overflow-wrap: anywhere; }

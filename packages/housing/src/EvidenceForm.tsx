@@ -19,6 +19,25 @@ function CellList<K extends string>({ heading, cells, labels, suppressed }: { he
   </>;
 }
 
+/**
+ * Saves the aggregate counts as a file. The file is made only when the person asks for it, so the page
+ * holds no data: link (a host may refuse links that are not http, https, tel or mailto).
+ */
+function saveAggregate(json: string): void {
+  try {
+    const url = URL.createObjectURL(new Blob([json], { type: "application/json" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "housing-aggregate.json";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  } catch {
+    // Saving files is not available in this browser. Nothing is saved, and the counts stay on screen.
+  }
+}
+
 export function EvidenceForm({ lang, today }: { lang: Language; today?: string }) {
   const t = DEPTH_CATALOG[lang];
   const [category, setCategory] = useState<BarrierCategory>("applied");
@@ -85,7 +104,7 @@ export function EvidenceForm({ lang, today }: { lang: Language; today?: string }
     <CellList heading={t.bySetting} cells={summary.bySetting} labels={t.settings} suppressed={t.suppressed} />
     <CellList heading={t.byWaitBand} cells={summary.byWaitBand} labels={t.waitBands} suppressed={t.suppressed} />
     <CellList heading={t.byBarrier} cells={summary.byBarrier} labels={t.barrierTypes} suppressed={t.suppressed} />
-    <p><a className="download" download="housing-aggregate.json" href={`data:application/json;charset=utf-8,${encodeURIComponent(JSON.stringify(summary, null, 2))}`}>{t.download}</a></p>
+    <p><button type="button" className="download" onClick={() => saveAggregate(JSON.stringify(summary, null, 2))}>{t.download}</button></p>
     <button type="button" onClick={clear}>{t.clear}</button>
   </section>;
 }
