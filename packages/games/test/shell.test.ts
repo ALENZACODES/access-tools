@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CATALOG, SHELL_CONTRACT_VERSION, gamesShellModule, listGamesForShell } from "../src/index.js";
+import { CATALOG, GAME_LIBRARY, SHELL_CONTRACT_VERSION, gamesShellModule, listGamesForShell } from "../src/index.js";
 
 const SCOPE_LOCK = [
   "Grid Recall",
@@ -19,10 +19,12 @@ describe("games shell adapter", () => {
     expect(SHELL_CONTRACT_VERSION).toBe("1.1.0");
   });
 
-  it("lists the ten scope-lock games with no clinical claim and no flashing", async () => {
+  it("lists every game in the library by default, the ten scope-lock games first, with no clinical claim and no flashing", async () => {
     const result = await gamesShellModule.list();
     expect(result).toMatchObject({ moduleId: "games", availability: "ready", asOf: null, liveStatus: "unavailable" });
-    expect(result.items.map((item) => item.title).sort()).toEqual([...SCOPE_LOCK].sort());
+    expect(result.items).toHaveLength(25);
+    expect(result.items).toHaveLength(GAME_LIBRARY.length);
+    expect(result.items.slice(0, 10).map((item) => item.title).sort()).toEqual([...SCOPE_LOCK].sort());
     for (const item of result.items) {
       expect(item).toEqual({
         id: item.id,
@@ -35,8 +37,12 @@ describe("games shell adapter", () => {
     }
   });
 
-  it("keeps catalogue ids and order", () => {
-    expect(listGamesForShell().items.map((item) => item.id)).toEqual(CATALOG.map((game) => game.id));
-    expect(new Set(CATALOG.map((game) => game.id)).size).toBe(CATALOG.length);
+  it("keeps library ids and order", () => {
+    expect(listGamesForShell().items.map((item) => item.id)).toEqual(GAME_LIBRARY.map((game) => game.id));
+    expect(new Set(GAME_LIBRARY.map((game) => game.id)).size).toBe(GAME_LIBRARY.length);
+  });
+
+  it("lists a shorter catalogue when a host passes one", () => {
+    expect(listGamesForShell(CATALOG).items.map((item) => item.id)).toEqual(CATALOG.map((game) => game.id));
   });
 });
