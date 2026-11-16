@@ -19,6 +19,6 @@ export { NO_DEPTH_FILTERS, evaluateUnit, searchUnits } from "./depthFilter.js";
 export type { DepthFilters, DepthSearch, UnitMatch, Verdict } from "./depthFilter.js";
 export {
   BARRIER_TYPES, EVIDENCE_STORAGE_KEY, SETTINGS, SUPPRESSION_THRESHOLD, WAIT_BANDS, aggregateEvidence, buildEvidence, clearEvidence,
-  quarterOf, readEvidence, saveEvidence, suppressCounts, suppressPartition, validEvidence,
+  quarterOf, readEvidence, saveEvidence, suppressCounts, suppressOverlapping, suppressPartition, validEvidence,
 } from "./evidence.js";
 export type { BarrierType, EvidenceAggregate, EvidenceDraft, EvidenceReport, EvidenceSetting, WaitBand } from "./evidence.js";
