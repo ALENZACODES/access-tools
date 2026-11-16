@@ -1,3 +1,5 @@
+import type { BatchTwoFamily, BatchTwoState } from "./batch2/types.js";
+
 export type Language = "en" | "fr";
 export type Pace = "relaxed" | "standard" | "brisk";
 
@@ -12,7 +14,8 @@ export type TaskFamily =
   | "selective_attention"
   | "task_switching"
   | "spatial_assembly"
-  | "running_inventory";
+  | "running_inventory"
+  | BatchTwoFamily;
 
 export interface Choice {
   id: string;
@@ -65,7 +68,8 @@ export type GameData =
   | { kind: "focus-flankers"; index: number }
   | { kind: "switch-rules"; index: number }
   | { kind: "shape-assembly"; selected: string | null; rotation: number; placed: Array<string | null> }
-  | { kind: "order-keeper"; index: number; list: string[] };
+  | { kind: "order-keeper"; index: number; list: string[] }
+  | { kind: "batch-two"; state: BatchTwoState };
 
 export interface GameSession {
   metaId: string;
@@ -92,6 +96,10 @@ export interface GamesSettings {
   favouriteGameIds: string[];
   skippedGameIds: string[];
   streakOptOut: boolean;
+  /** Dwell select. Off when absent. */
+  dwellEnabled?: boolean;
+  /** Dwell hold time in milliseconds, 500 to 5000. 1500 when absent. */
+  dwellMs?: number;
 }
 
 export interface GamesRound {
