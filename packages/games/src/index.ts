@@ -45,6 +45,8 @@ export type {
 } from "./types.js";
 export { BATCH_TWO_CATALOG } from "./batch2/index.js";
 export type { BatchTwoFamily, BatchTwoGameId, BatchTwoState } from "./batch2/index.js";
+export { BATCH_THREE_CATALOG } from "./batch3/index.js";
+export type { BatchThreeFamily, BatchThreeGameId, BatchThreeState } from "./batch3/index.js";
 export {
   DWELL_DEFAULT_MS,
   DWELL_MAX_MS,

@@ -1,4 +1,5 @@
 import { BATCH_COPY } from "./batch2/copy.js";
+import { BATCH_THREE_COPY } from "./batch3/copy.js";
 import { GAME_COPY } from "./i18n.js";
 
 /**
@@ -32,6 +33,7 @@ type CopyCatalogue = Record<string, { en: string; fr: string }>;
 export const GAMES_COPY_CATALOGUES: ReadonlyArray<{ id: string; copy: CopyCatalogue }> = [
   { id: "first-ten", copy: GAME_COPY },
   { id: "batch-two", copy: BATCH_COPY },
+  { id: "batch-three", copy: BATCH_THREE_COPY },
 ];
 
 /** All catalogues as one, each key prefixed with its catalogue id so two catalogues can share a key. */
@@ -45,7 +47,7 @@ export function allGamesCopy(): CopyCatalogue {
 
 /**
  * Scans every English and French string a person can see in the games:
- * the first ten games, the second batch, and dwell select.
+ * the first ten games, the second and third batches, and dwell select.
  */
 export function healthClaimHits(catalog: CopyCatalogue = allGamesCopy()): ClaimHit[] {
   const hits: ClaimHit[] = [];

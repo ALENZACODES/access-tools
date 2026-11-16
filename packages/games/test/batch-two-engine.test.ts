@@ -69,10 +69,11 @@ function playWrong(session: GameSession): GameSession {
 describe("second batch catalogue", () => {
   it("adds nine games after the first ten, with original names and the shared notes", () => {
     expect(BATCH_TWO_CATALOG.map((game) => game.name)).toEqual(NEW_NAMES);
-    expect(GAME_LIBRARY.map((game) => game.id)).toEqual([...CATALOG, ...BATCH_TWO_CATALOG].map((game) => game.id));
-    expect(new Set(GAME_LIBRARY.map((game) => game.id)).size).toBe(19);
-    expect(new Set(GAME_LIBRARY.map((game) => game.name)).size).toBe(19);
-    expect(new Set(GAME_LIBRARY.map((game) => game.taskFamily)).size).toBe(19);
+    // A third batch now follows these nineteen in the library.
+    expect(GAME_LIBRARY.slice(0, 19).map((game) => game.id)).toEqual([...CATALOG, ...BATCH_TWO_CATALOG].map((game) => game.id));
+    expect(new Set(GAME_LIBRARY.map((game) => game.id)).size).toBe(GAME_LIBRARY.length);
+    expect(new Set(GAME_LIBRARY.map((game) => game.name)).size).toBe(GAME_LIBRARY.length);
+    expect(new Set(GAME_LIBRARY.map((game) => game.taskFamily)).size).toBe(GAME_LIBRARY.length);
     for (const game of BATCH_TWO_CATALOG) {
       expect(metaById(game.id)).toBe(game);
       expect(game.timingNote.en).toMatch(/Untimed/);
@@ -94,7 +95,7 @@ describe("second batch catalogue", () => {
 
   it("registers the new games in the hub list, search, filters, Surprise me, and the daily set", () => {
     expect(filterGames("all", []).map((game) => game.name)).toEqual(GAME_LIBRARY.map((game) => game.name));
-    expect(filterGames("short", []).length).toBe(19);
+    expect(filterGames("short", []).length).toBe(GAME_LIBRARY.length);
     expect(filterGames("favourites", ["jug-measure"]).map((game) => game.name)).toEqual(["Jug Measure"]);
     expect(searchGames("jug").map((game) => game.id)).toEqual(["jug-measure"]);
     expect(searchGames("cruches").map((game) => game.id)).toEqual(["jug-measure"]);

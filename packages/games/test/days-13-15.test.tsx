@@ -4,8 +4,11 @@ import axe from "axe-core";
 import { useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { BATCH_COPY } from "../src/batch2/copy.js";
+import { BATCH_THREE_COPY } from "../src/batch3/copy.js";
 import { GAME_COPY } from "../src/i18n.js";
 import {
+  BATCH_THREE_CATALOG,
+  BATCH_TWO_CATALOG,
   CATALOG,
   GAMES_BOUNDARY,
   GAME_LIBRARY,
@@ -99,10 +102,10 @@ afterEach(() => {
 });
 
 describe("Day 13: games hub", () => {
-  it("lists all nineteen games, the ten scope-lock names first, each with a one-line description, a timing note, and an input note", () => {
+  it("lists all twenty-five games, the ten scope-lock names first, each with a one-line description, a timing note, and an input note", () => {
     render(<Harness rounds={[]} />);
     const cards = screen.getAllByRole("listitem").filter((item) => within(item).queryByRole("button", { name: /^Play / }));
-    expect(GAME_LIBRARY).toHaveLength(19);
+    expect(GAME_LIBRARY).toHaveLength(25);
     expect(cards).toHaveLength(GAME_LIBRARY.length);
     expect(GAME_LIBRARY.slice(0, CATALOG.length)).toEqual([...CATALOG]);
     expect(CATALOG).toHaveLength(10);
@@ -151,18 +154,25 @@ describe("Day 13: games hub", () => {
     expect(healthClaimHits()).toEqual([]);
     expect(JSON.stringify(GAME_COPY).toLowerCase()).not.toContain("lumosity");
     expect(JSON.stringify(BATCH_COPY).toLowerCase()).not.toContain("lumosity");
+    expect(JSON.stringify(BATCH_THREE_COPY).toLowerCase()).not.toContain("lumosity");
     expect(JSON.stringify(GAME_LIBRARY).toLowerCase()).not.toContain("lumosity");
   });
 
-  it("scans the second batch's strings and dwell select as well as the first ten games", () => {
+  it("scans the second and third batches' strings and dwell select as well as the first ten games", () => {
     const scanned = Object.keys(allGamesCopy());
-    expect(scanned).toHaveLength(Object.keys(GAME_COPY).length + Object.keys(BATCH_COPY).length);
+    expect(scanned).toHaveLength(Object.keys(GAME_COPY).length + Object.keys(BATCH_COPY).length + Object.keys(BATCH_THREE_COPY).length);
+    for (const key of Object.keys(BATCH_THREE_COPY)) expect(scanned).toContain(`batch-three/${key}`);
     for (const key of Object.keys(GAME_COPY)) expect(scanned).toContain(`first-ten/${key}`);
     for (const key of Object.keys(BATCH_COPY)) expect(scanned).toContain(`batch-two/${key}`);
-    for (const game of GAME_LIBRARY.slice(CATALOG.length)) {
+    for (const game of BATCH_TWO_CATALOG) {
       expect(scanned, game.id).toContain(`batch-two/summary.${game.id}`);
       expect(scanned, game.id).toContain(`batch-two/name.${game.id}`);
     }
+    for (const game of BATCH_THREE_CATALOG) {
+      expect(scanned, game.id).toContain(`batch-three/summary.${game.id}`);
+      expect(scanned, game.id).toContain(`batch-three/name.${game.id}`);
+    }
+    expect(CATALOG.length + BATCH_TWO_CATALOG.length + BATCH_THREE_CATALOG.length).toBe(GAME_LIBRARY.length);
     expect(healthClaimHits({ "batch-two/x": { en: "Sharpen your focus.", fr: "Jeu." } }).map((hit) => hit.rule)).toEqual(["improves"]);
   });
 
@@ -389,22 +399,23 @@ describe("Day 15: Number Compare, Focus Flankers, Switch Rules, Shape Assembly, 
     expect(viewSession(session).detail).toMatch(/Rotate is a button, not a drag/);
   });
 
-  it("draws the daily set from all nineteen games: eighteen across six dates, the last on the seventh", () => {
-    const dates = ["2026-11-13", "2026-11-14", "2026-11-15", "2026-11-16", "2026-11-17", "2026-11-18"];
-    const six = dates.map((date) => buildDailySet(date).map((game) => game.id));
-    for (const set of six) expect(new Set(set).size).toBe(3);
-    const seen = new Set(six.flat());
-    expect(seen.size).toBe(18);
+  it("draws the daily set from all twenty-five games: twenty-four across eight dates, the last on the ninth", () => {
+    const dates = Array.from({ length: 8 }, (_, offset) => new Date(Date.UTC(2026, 10, 13 + offset)).toISOString().slice(0, 10));
+    const eight = dates.map((date) => buildDailySet(date).map((game) => game.id));
+    for (const set of eight) expect(new Set(set).size).toBe(3);
+    const seen = new Set(eight.flat());
+    expect(seen.size).toBe(24);
     for (const id of seen) expect(GAME_LIBRARY.map((game) => game.id)).toContain(id);
-    const seventh = buildDailySet("2026-11-19").map((game) => game.id);
-    const all = new Set([...seen, ...seventh]);
+    const ninth = buildDailySet("2026-11-21").map((game) => game.id);
+    const all = new Set([...seen, ...ninth]);
     expect(all.size).toBe(GAME_LIBRARY.length);
-    expect(all.size).toBe(19);
-    const batchTwoIds = GAME_LIBRARY.slice(CATALOG.length).map((game) => game.id);
-    expect(batchTwoIds.filter((id) => all.has(id))).toEqual(batchTwoIds);
+    expect(all.size).toBe(25);
+    const laterIds = GAME_LIBRARY.slice(CATALOG.length).map((game) => game.id);
+    expect(laterIds).toHaveLength(15);
+    expect(laterIds.filter((id) => all.has(id))).toEqual(laterIds);
   });
 
-  it("gives every game the same share of days over any nineteen dates in a row", () => {
+  it("gives every game the same share of days over any twenty-five dates in a row", () => {
     for (const first of [13, 20, 41]) {
       const counts = new Map<string, number>();
       for (let offset = 0; offset < GAME_LIBRARY.length; offset += 1) {
@@ -412,17 +423,17 @@ describe("Day 15: Number Compare, Focus Flankers, Switch Rules, Shape Assembly, 
         for (const game of buildDailySet(date)) counts.set(game.id, (counts.get(game.id) ?? 0) + 1);
       }
       expect([...counts.keys()].sort()).toEqual(GAME_LIBRARY.map((game) => game.id).sort());
-      expect([...counts.values()]).toEqual(Array.from({ length: 19 }, () => 3));
+      expect([...counts.values()]).toEqual(Array.from({ length: 25 }, () => 3));
     }
     expect(() => buildDailySet("not-a-date")).toThrow(/YYYY-MM-DD/);
   });
 
-  // Nineteen full rounds are played on screen in one test, so it has its own time limit.
-  it("makes no network call while all nineteen games are played", async () => {
+  // Twenty-five full rounds are played on screen in one test, so it has its own time limit.
+  it("makes no network call while all twenty-five games are played", async () => {
     const fetchSpy = vi.fn(() => Promise.reject(new Error("network disabled")));
     vi.stubGlobal("fetch", fetchSpy);
     try {
-      expect(GAME_LIBRARY).toHaveLength(19);
+      expect(GAME_LIBRARY).toHaveLength(25);
       for (const game of GAME_LIBRARY) {
         const view = render(<Harness rounds={[]} />);
         fireEvent.click(screen.getByRole("button", { name: `Play ${game.name}` }));
