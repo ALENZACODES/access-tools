@@ -38,4 +38,8 @@ Un lieu voit les obstacles signalés pour son propre lieu et peut accuser récep
 4. Les échéances et les retards sont calculés à partir de l’historique et des délais visés.
 5. Le bilan est calculé uniquement à partir des signalements saisis sur l’appareil. Il compte les délais dépassés et les retards, sans les masquer. Sans signalement, il indique « Aucune donnée pour l’instant » et n’affiche aucun chiffre. Les fiches d’exemple ne sont jamais comptées.
 
+## Valeurs proposées automatiquement
+
+Aucune source de propositions automatiques n’est reliée à ce module. Le seuil à respecter se trouve dans `src/gate.ts` : un type de champ peut être publié seulement lorsque des personnes ont révisé au moins 100 propositions échantillonnées pour ce type de champ et en ont jugé moins de 5 % inexactes. Un échantillon insuffisant bloque la publication, et le résultat d’un type de champ ne vaut jamais pour un autre.
+
 Le stockage du navigateur sert à la démonstration et peut être effacé. N’inscrivez aucun renseignement médical personnel.

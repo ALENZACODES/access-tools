@@ -18,3 +18,5 @@ export {
 export type { CaseState, CorrectionCase, ServiceLevels, ServiceSummary, StageSummary } from "./workflow.js";
 export { isWorkspace, loadWorkspace, saveWorkspace, seedWorkspace } from "./workspace.js";
 export type { Workspace } from "./workspace.js";
+export { DEFAULT_GATE_RULES, extractionGate, mayPublish } from "./gate.js";
+export type { GateResult, GateRules, ReviewedSample } from "./gate.js";

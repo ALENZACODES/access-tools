@@ -38,4 +38,8 @@ A venue sees the barrier reports for its own place and can acknowledge a report,
 4. Due dates and overdue flags are computed from the history and the targets.
 5. The summary is computed only from reports entered on the device. It counts missed targets and overdue reports and never hides them. With no reports it says "No data yet" and shows no figures. Sample records are never counted.
 
+## Automatically proposed values
+
+No automatic proposal source is connected in this package. The gate it would have to pass is in `src/gate.ts`: a field type may publish only when people have reviewed at least 100 sampled proposals for that field type and found under 5% of them wrong. Too few samples is a block, and one field type's result never covers another.
+
 Browser storage is demonstration-only and can be cleared. Do not enter personal medical details.
