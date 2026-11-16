@@ -61,7 +61,7 @@ describe("unit and room finder", () => {
 });
 
 describe("barrier and wait report form", () => {
-  it("saves a structured report on the device only after agreement, and sends nothing", () => {
+  it("saves a structured report on the device only after agreement, and sends nothing", async () => {
     const fetchSpy = vi.fn();
     vi.stubGlobal("fetch", fetchSpy);
     render(<EvidenceForm lang="en" />);
@@ -85,9 +85,25 @@ describe("barrier and wait report form", () => {
     // One report is far under the threshold: no count is shown.
     const preview = screen.getByText("Local aggregate preview (not transmitted)").closest("section")!;
     expect(within(preview).queryByText(/^[0-9]+$/, { selector: "dd" })).not.toBeInTheDocument();
-    const link = screen.getByText("Download aggregate counts (JSON file)");
-    const exported = JSON.parse(decodeURIComponent(link.getAttribute("href")!.split(",")[1]!)) as { total: number | null };
+    // The file is made only on request: no data: link sits in the page.
+    expect(document.querySelector("a[href^='data:']")).toBeNull();
+    const saved: Blob[] = [];
+    const createObjectURL = vi.fn((blob: Blob) => { saved.push(blob); return "blob:housing-test"; });
+    const revokeObjectURL = vi.fn();
+    Object.assign(URL, { createObjectURL, revokeObjectURL });
+    const button = screen.getByRole("button", { name: "Download aggregate counts (JSON file)" });
+    expect(button.getAttribute("type")).toBe("button");
+    fireEvent.click(button);
+    expect(saved).toHaveLength(1);
+    expect(revokeObjectURL).toHaveBeenCalledWith("blob:housing-test");
+    const text = await new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.readAsText(saved[0]!);
+    });
+    const exported = JSON.parse(text) as { total: number | null };
     expect(exported.total).toBeNull();
+    expect(document.querySelector("a[href^='blob:']")).toBeNull();
 
     fireEvent.click(screen.getByText("Delete my local reports", { selector: "button" }));
     expect(window.localStorage.getItem(EVIDENCE_STORAGE_KEY)).toBeNull();
