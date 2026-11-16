@@ -1,4 +1,4 @@
-import { CATALOG } from "./engine.js";
+import { GAME_LIBRARY as CATALOG } from "./library.js";
 import { mulberry32, pick } from "./rng.js";
 import type { GameMeta, GamesRound, HubFilter } from "./types.js";
 

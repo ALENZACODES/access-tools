@@ -1,5 +1,7 @@
 import { useEffect, useId, useRef, useState, type CSSProperties } from "react";
 import { SwitchBar } from "../../../place/src/react/SwitchBar.js";
+import { dwellConfig, type DwellConfig } from "../dwell.js";
+import { DwellLayer, DwellSettings } from "./Dwell.js";
 import { DAILY_NOTE, GAMES_BOUNDARY, GRACE_RULE, PRACTICE_BANNER } from "../boundaries.js";
 import { TASK_FAMILY_LABEL, choose, createSession, pauseSession, viewSession } from "../engine.js";
 import { HUB_FILTERS, buildDailySet, filterGames, searchGames, streakFromRounds, surpriseGame } from "../hub.js";
@@ -158,6 +160,7 @@ export function GamesApp(props: GamesAppProps) {
           finishIfNeeded(session);
         }}
         onExit={() => setActive(null)}
+        dwell={dwellConfig(props.settings)}
       />
     );
   }
@@ -258,7 +261,9 @@ export function GamesApp(props: GamesAppProps) {
             <option value="extra_large">{copy.textExtra}</option>
           </select>
         </label>
+        <DwellSettings settings={props.settings} onSettings={props.onSettings} button={button} />
       </fieldset>
+      <DwellLayer rootRef={rootRef} config={dwellConfig(props.settings)} language={language} colors={colors} />
     </main>
   );
 }
@@ -271,6 +276,7 @@ function GamePlay(props: {
   copy: ReturnType<typeof uiCopy>;
   onSession: (session: GameSession) => void;
   onExit: () => void;
+  dwell: DwellConfig;
 }) {
   const view = viewSession(props.session);
   const titleId = useId();
@@ -337,6 +343,7 @@ function GamePlay(props: {
           {view.points}. {props.copy.insideOnly}
         </p>
       ) : null}
+      <DwellLayer rootRef={rootRef} config={props.dwell} language={props.session.language} colors={props.colors} />
     </main>
   );
 }

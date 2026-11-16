@@ -41,3 +41,18 @@ export type {
   Pace,
   TaskFamily,
 } from "./types.js";
+export { BATCH_TWO_CATALOG } from "./batch2/index.js";
+export type { BatchTwoFamily, BatchTwoGameId, BatchTwoState } from "./batch2/index.js";
+export {
+  DWELL_DEFAULT_MS,
+  DWELL_MAX_MS,
+  DWELL_MIN_MS,
+  DWELL_STEP_MS,
+  changeHoldMs,
+  clampHoldMs,
+  dwellConfig,
+  dwellPercent,
+  type DwellConfig,
+} from "./dwell.js";
+export { GAME_LIBRARY } from "./library.js";
+export { DwellLayer, DwellSettings } from "./ui/Dwell.js";

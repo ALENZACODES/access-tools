@@ -32,7 +32,9 @@
         "timerEnabled": { "type": "boolean" },
         "favouriteGameIds": { "type": "array", "items": { "type": "string" } },
         "skippedGameIds": { "type": "array", "items": { "type": "string" } },
-        "streakOptOut": { "type": "boolean" }
+        "streakOptOut": { "type": "boolean" },
+        "dwellEnabled": { "type": "boolean" },
+        "dwellMs": { "type": "integer", "minimum": 500, "maximum": 5000 }
       }
     },
     "round": {
