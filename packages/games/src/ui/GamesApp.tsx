@@ -26,6 +26,7 @@ function uiCopy(language: Language) {
     graceLeft: text("ui.grace-left"),
     resetStreak: text("ui.reset-streak"),
     search: text("ui.search"),
+    clearSearch: text("ui.clear-search"),
     filters: text("ui.filters"),
     surprise: text("ui.surprise"),
     play: text("ui.play"),
@@ -219,6 +220,18 @@ export function GamesApp(props: GamesAppProps) {
         {copy.search}
         <input id="game-search" value={query} onChange={(event) => setQuery(event.target.value)} style={{ ...button, width: "100%", fontWeight: 400 }} />
       </label>
+      {query !== "" ? (
+        <button
+          type="button"
+          style={button}
+          onClick={() => {
+            setQuery("");
+            document.getElementById("game-search")?.focus();
+          }}
+        >
+          {copy.clearSearch}
+        </button>
+      ) : null}
       <div role="group" aria-label={copy.filters} style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
         {HUB_FILTERS.map((item) => (
           <button key={item} type="button" aria-pressed={filter === item} style={button} onClick={() => setFilter(item)}>
