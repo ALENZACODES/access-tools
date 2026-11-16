@@ -284,6 +284,11 @@ export const FINDER_COPY = {
   "finder.pack.radius": { en: "Radius (metres)", fr: "Rayon (mètres)" },
   "finder.pack.broaden": { en: "Broaden results", fr: "Élargir les résultats" },
   "finder.pack.count": { en: "Results: {count}", fr: "Résultats\u00A0: {count}" },
+  "finder.pack.count-groups": {
+    en: "Results: {known} known, {unknown} unknown",
+    fr: "Résultats\u00A0: {known} connu, {unknown} inconnu",
+  },
+  "finder.pack.english-only-note": { en: "English only", fr: "en anglais seulement" },
   "finder.pack.empty": {
     en: "No sourced records for this finder in the searched area (0). Try broadening the area or change the filters.",
     fr: "Aucune fiche sourcée pour cette recherche dans la zone (0). Essayez d’élargir la zone ou changez les filtres.",
@@ -380,5 +385,6 @@ export function packFieldLabel(key: string, lang: Lang): string {
   if (Object.prototype.hasOwnProperty.call(FINDER_COPY, catalogKey)) {
     return finderCopy(catalogKey as FinderKey, lang);
   }
-  return key.replaceAll("_", " ");
+  const english = key.replaceAll("_", " ");
+  return `${english} (${finderCopy("finder.pack.english-only-note", lang)})`;
 }

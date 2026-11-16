@@ -10,6 +10,14 @@ const contributeLink: CSSProperties = { display: "inline-flex", alignItems: "cen
 
 export interface PackFindersPageProps { source: PackSource; lang?: FinderLang }
 
+function resultCountMessage(result: PackFinderResult, lang: FinderLang): string {
+  if (result.kind === "changing" || result.unknownRows.length > 0) {
+    return finderFill("finder.pack.count-groups", lang, { known: result.rows.length, unknown: result.unknownRows.length });
+  }
+  return finderFill("finder.pack.count", lang, { count: result.count });
+}
+
+
 function ResultList({ rows, lang, headingLevel = 2 }: { rows: PackFinderRow[]; lang: FinderLang; headingLevel?: 2 | 3 }) {
   const Heading = headingLevel === 3 ? "h3" : "h2";
   return <>
@@ -87,7 +95,7 @@ export function PackFindersPage({ source, lang = "en" }: PackFindersPageProps) {
     </form>
     {kind === "washroom" && <p>{finderCopy("finder.pack.availability", lang)}</p>}
     {kind === "parking" && <p>{finderCopy("finder.pack.parking-notice", lang)}</p>}
-    <div role="status" aria-live="polite">{loading ? finderCopy("finder.pack.loading", lang) : error ? finderCopy("finder.pack.error", lang) : result ? finderFill("finder.pack.count", lang, { count: result.count }) : null}</div>
+    <div role="status" aria-live="polite">{loading ? finderCopy("finder.pack.loading", lang) : error ? finderCopy("finder.pack.error", lang) : result ? resultCountMessage(result, lang) : null}</div>
     {empty && <p>{finderCopy("finder.pack.empty", lang)} <a href="/contribute" style={contributeLink}>{finderCopy("finder.pack.contribute", lang)}</a></p>}
     {!loading && !error && result && result.rows.length > 0 && (kind === "changing"
       ? <section data-pack-known-yes="" aria-labelledby="pack-known-yes">
