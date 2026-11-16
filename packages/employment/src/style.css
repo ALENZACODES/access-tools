@@ -23,3 +23,17 @@ dt::after { content: ': '; }
 dd { display: inline; margin: 0 0 0 0.3rem; }
 code { overflow-wrap: anywhere; }
 @media (max-width: 650px) { .columns { grid-template-columns: 1fr; } .employment { padding: 0.75rem; } }
+.badge { display: block; margin: 0.4rem 0; padding: 0.4rem 0.6rem; border: 2px dashed #5b4a00; border-radius: 0.3rem; background: #fff8dc; color: #3d3100; font-weight: 600; }
+.own-check { border-top: 1px solid #607781; margin-top: 1rem; padding-top: 0.5rem; }
+.own-check h4 { font-size: 1.05rem; margin: 0.5rem 0; }
+.own-check h5 { font-size: 1rem; margin: 0.75rem 0 0.25rem; }
+.stack { display: grid; gap: 0.75rem; max-width: 36rem; }
+.stack label { display: block; font-weight: 600; }
+.stack input:not([type="checkbox"]), .stack textarea, .stack select { width: 100%; max-width: 100%; min-height: 44px; padding: 0.5rem; font: inherit; border: 2px solid #476977; border-radius: 0.3rem; background: #fff; color: #172a32; }
+.stack fieldset { border: 1px solid #607781; border-radius: 0.3rem; margin: 0; padding: 0.5rem 0.75rem; min-width: 0; }
+.stack legend { font-weight: 700; padding: 0 0.3rem; }
+.check { display: flex; align-items: flex-start; gap: 0.6rem; margin: 0.4rem 0; }
+.check input { width: 28px; height: 28px; flex: none; margin: 0; }
+.check label { font-weight: 400; }
+.known-list { padding-left: 1.2rem; }
+.known-list li { margin: 0.4rem 0; overflow-wrap: anywhere; }

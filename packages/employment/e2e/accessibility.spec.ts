@@ -10,6 +10,14 @@ for (const width of [1280, 320]) {
       await expect(page.locator("main")).toHaveAttribute("lang", language);
       await page.getByRole("button", { name: /View details|Voir les détails/ }).last().click();
       await expect(page.getByRole("heading", { level: 2 })).toHaveCount(2);
+      await expect(page.locator(".listing-list .badge")).toHaveCount(3);
+      await page.locator("#commute-travel").fill("50");
+      await page.getByRole("button", { name: /Show what is known|Afficher ce qui est connu/ }).click();
+      await expect(page.locator(".known-list li")).toHaveCount(9);
+      await page.locator("#referral-listing").check();
+      await page.locator("#referral-consent").check();
+      await page.getByRole("button", { name: /Create summary|Créer le résumé/ }).click();
+      await expect(page.locator("#referral-output")).toBeVisible();
       await page.addScriptTag({ content: axe.source });
       const report = await page.evaluate(async () => {
         const injectedAxe = (window as typeof window & { axe: typeof axe }).axe;

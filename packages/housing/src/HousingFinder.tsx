@@ -2,8 +2,9 @@ import { useState } from "react";
 import { CATALOG, FIELD_KEYS } from "./catalog.js";
 import { DEMONSTRATION_ROOMS } from "./fixtures.js";
 import { filterRooms } from "./filter.js";
-import { aggregate, CATEGORIES, readReports, saveReport, STORAGE_KEY, validReport } from "./reports.js";
-import type { BarrierCategory, HousingRoom, Language } from "./types.js";
+import { DepthFinder } from "./DepthFinder.js";
+import { EvidenceForm } from "./EvidenceForm.js";
+import type { HousingRoom, Language } from "./types.js";
 import "./styles.css";
 
 function describeValue(value: string | number | null, lang: Language): string {
@@ -38,34 +39,13 @@ export function HousingFinder() {
   const [city, setCity] = useState("");
   const [minimumDoorWidth, setMinimumDoorWidth] = useState("");
   const [requireElevator, setRequireElevator] = useState(false);
-  const [category, setCategory] = useState<BarrierCategory>("applied");
-  const [reportCity, setReportCity] = useState("");
-  const [reportMessage, setReportMessage] = useState("");
-  const [reports, setReports] = useState(() => {
-    try { return readReports(window.localStorage); } catch { return []; }
-  });
   const t = CATALOG[lang];
   const matches = filterRooms(DEMONSTRATION_ROOMS, { city, minimumDoorWidth, requireElevator });
-  const summary = aggregate(reports);
   const reset = () => { setCity(""); setMinimumDoorWidth(""); setRequireElevator(false); };
-  const save = (event: React.FormEvent) => {
-    event.preventDefault();
-    const report = { category, ...(reportCity.trim() ? { city: reportCity.trim() } : {}) };
-    if (!validReport(report)) { setReportMessage(t.invalidCity); return; }
-    try {
-      saveReport(window.localStorage, report);
-      setReports(readReports(window.localStorage));
-      setReportCity("");
-      setReportMessage(t.saved);
-    } catch { setReportMessage(t.invalidCity); }
-  };
-  const clear = () => {
-    try { window.localStorage.removeItem(STORAGE_KEY); setReports([]); setReportMessage(t.cleared); } catch { setReportMessage(t.invalidCity); }
-  };
   return <main>
     <header>
       <label htmlFor="language">{t.language}</label>
-      <select id="language" value={lang} onChange={(e) => { setLang(e.target.value as Language); setReportMessage(""); }}>
+      <select id="language" value={lang} onChange={(e) => setLang(e.target.value as Language)}>
         <option value="en">English</option><option value="fr">Français</option>
       </select>
       <h1>{t.title}</h1>
@@ -91,23 +71,7 @@ export function HousingFinder() {
         <button type="button" onClick={reset}>{t.broaden}</button>
       </div> : <div className="rooms">{matches.map((room) => <RoomCard key={room.id} room={room} lang={lang} />)}</div>}
     </section>
-    <section aria-labelledby="barriers-heading">
-      <h2 id="barriers-heading">{t.barriers}</h2>
-      <p>{t.privacy}</p>
-      <form onSubmit={save}>
-        <label htmlFor="category">{t.category}</label>
-        <select id="category" value={category} onChange={(e) => setCategory(e.target.value as BarrierCategory)}>
-          {CATEGORIES.map((item) => <option key={item} value={item}>{t.categories[item]}</option>)}
-        </select>
-        <label htmlFor="report-city">{t.optionalCity}</label>
-        <input id="report-city" maxLength={60} value={reportCity} onChange={(e) => setReportCity(e.target.value)} />
-        <button type="submit">{t.save}</button>
-      </form>
-      <p role="status" aria-live="polite">{reportMessage}</p>
-      <h3>{t.publish}</h3>
-      <p>{t.aggregateNote}</p>
-      <dl>{CATEGORIES.map((item) => <div className="fact" key={item}><dt>{t.categories[item]}</dt><dd>{summary[item] === null ? t.suppressed : summary[item]}</dd></div>)}</dl>
-      <button type="button" onClick={clear}>{t.clear}</button>
-    </section>
+    <DepthFinder lang={lang} />
+    <EvidenceForm lang={lang} />
   </main>;
 }

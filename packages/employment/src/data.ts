@@ -1,5 +1,7 @@
 import type { EmploymentListing, SourcedFact } from "./types.js";
 import { assertListing } from "./validate.js";
+import { assertListingRecord } from "./record.js";
+import type { AccessFact, ListingRecord } from "./record.js";
 
 // A demonstration label is not a claim that a particular position is open.
 // No workplace is measured, joined to a real place, or verified in these fixtures.
@@ -49,3 +51,48 @@ export const DEMONSTRATION_LISTINGS: EmploymentListing[] = [
 ];
 
 for (const listing of DEMONSTRATION_LISTINGS) assertListing(listing);
+
+// Listing records whose workplace access record travels with them. The first two
+// have no access record at all; the third carries an invented sample record so the
+// screen can show how recorded values, Unknown values and provenance appear.
+// None of these values describes a real workplace.
+const sampleFact = <T,>(value: T | "Unknown"): AccessFact<T> => ({
+  value,
+  source: "Demonstration fixture; invented value, no workplace assessed",
+  licence: "Original synthetic demonstration data; no external data reused",
+  date: "2026-11-15",
+  tier: "PROTOTYPE-UNVERIFIED",
+});
+
+const SAMPLE_RECORD_LISTING: EmploymentListing = {
+  ...base,
+  id: "demo-job-sample-access-record",
+  kind: "job",
+  title: { en: "Desk-work example with a sample access record (not a vacancy)", fr: "Exemple d’emploi de bureau avec une fiche d’accessibilité fictive (aucun poste à pourvoir)" },
+  organisation: { en: "Fictional demonstration employer", fr: "Employeur fictif de démonstration" },
+  location: { city: { en: "Kingston", fr: "Kingston" }, province: "ON" },
+  access: { stepFreeEntry: unknown(), accessibleWashroom: unknown(), workstation: unknown() },
+};
+
+export const DEMONSTRATION_LISTING_RECORDS: ListingRecord[] = [
+  ...DEMONSTRATION_LISTINGS.map((listing): ListingRecord => ({
+    schemaVersion: "employment-listing-record-1.0.0", listing, accessRecord: null,
+  })),
+  {
+    schemaVersion: "employment-listing-record-1.0.0",
+    listing: SAMPLE_RECORD_LISTING,
+    accessRecord: {
+      recordId: "demo-access-record-01",
+      stepFreeEntry: sampleFact<boolean>(true),
+      accessibleWashroom: sampleFact<boolean>("Unknown"),
+      workstation: {
+        heightAdjustableDesk: sampleFact<boolean>(false),
+        kneeClearanceMm: sampleFact<number>(700),
+        aisleClearWidthMm: sampleFact<number>("Unknown"),
+        stepFreeRouteFromEntry: sampleFact<boolean>("Unknown"),
+      },
+    },
+  },
+];
+
+for (const record of DEMONSTRATION_LISTING_RECORDS) assertListingRecord(record);
