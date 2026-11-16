@@ -18,6 +18,8 @@ export {
 } from "./notes.js";
 export { DIRECTORY } from "./records.js";
 export { CATEGORY_LABEL, searchDirectory } from "./search.js";
+export { SHELL_CONTRACT_VERSION, listForShell, navigatorShellModule } from "./shell.js";
+export type { NavigatorShellContext, NavigatorShellResult } from "./shell.js";
 export { PARATRANSIT, publishedPhoneHref } from "./paratransit/entries.js";
 export { assertParatransit, paratransitErrors } from "./paratransit/validate.js";
 export type { ParatransitEntry } from "./paratransit/types.js";

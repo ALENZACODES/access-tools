@@ -10,6 +10,15 @@ Libraries for the unbranded Ontario accessibility app (“the App”). It is spi
 
 French interface copy is included. It should be reviewed by a French-language editor before a public launch. Program rules change. Directory figures are dated 13 November 2026 and should be checked again against the official page.
 
+## Shell adapters
+
+`packages/navigator/src/shell.ts` and `packages/games/src/shell.ts` return results in the shape of access-main's `ModuleResult` (contract 1.1.0), for the `/navigator` and `/games` routes.
+
+- `navigatorShellModule.list(ctx)` returns the directory records unchanged, filtered by `ctx.query` when it is set. `asOf` is the UTC date the pages were read. Live status is `unavailable`.
+- `gamesShellModule.list()` returns the ten scope-lock games as activities with `clinicalClaim: false`, `seizureRiskFlash: false`, and `keyboardOperable: true`.
+
+Neither adapter adds a record or a value. The output was checked with access-main's `checkModuleResult` on 14 November 2026.
+
 ## Place pages, search, and finders
 
 - `packages/place` — place pages. Every core field from the field catalogue is shown with its value or **Unknown**, plus source, source date, record date, licence, and verification tier. Photograph slots, a correction form, and a report-a-change form are included. Corrections stay on the device as pending and do not change the record.

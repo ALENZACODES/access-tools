@@ -25,6 +25,8 @@ export {
   writeSettings,
 } from "./store.js";
 export { GamesApp } from "./ui/GamesApp.js";
+export { SHELL_CONTRACT_VERSION, gamesShellModule, listGamesForShell, toShellActivity } from "./shell.js";
+export type { GamesShellResult, ShellActivity } from "./shell.js";
 export type {
   Choice,
   CreateOptions,
