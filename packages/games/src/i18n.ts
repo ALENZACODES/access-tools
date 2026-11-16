@@ -4,6 +4,10 @@ export const GAME_COPY = {
   "sep.colon": { en: ": ", fr: "\u00A0: " },
   "status.paused": { en: "Paused.", fr: "Pause." },
   "note.untimed": { en: "Untimed. No clock runs.", fr: "Sans minuterie. Aucune horloge ne tourne." },
+  "note.untimed-optional": {
+    en: "Untimed unless you turn on the optional clock. The clock counts up. There is no time limit and no penalty.",
+    fr: "Sans minuterie, sauf si vous activez l'horloge facultative. L'horloge compte vers le haut. Aucune limite de temps et aucune pénalité.",
+  },
   "note.input": {
     en: "Single tap, keyboard, or switch: Next, then Choose. No drag and no typing.",
     fr: "Un toucher, le clavier, ou un contacteur\u00A0: Suivant, puis Choisir. Aucun glisser et aucune saisie.",
@@ -263,6 +267,24 @@ export const GAME_COPY = {
   "ui.back": { en: "Back to games", fr: "Retour aux jeux" },
   "ui.points": { en: "Points inside this exercise", fr: "Points dans cet exercice" },
   "ui.inside-only": { en: "These numbers measure this exercise only.", fr: "Ces nombres mesurent seulement cet exercice." },
+  "ui.device-only": {
+    en: "Scores stay on this device. Nothing is uploaded.",
+    fr: "Les pointages restent sur cet appareil. Rien n'est téléversé.",
+  },
+  "ui.reduce-motion": { en: "Reduce motion", fr: "Réduire le mouvement" },
+  "ui.reduce-motion-note": {
+    en: "The games do not use animation. When this is on, or when the device asks for reduced motion, any transition is switched off as well.",
+    fr: "Les jeux n'utilisent pas d'animation. Quand ce réglage est activé, ou quand l'appareil demande moins de mouvement, toute transition est aussi désactivée.",
+  },
+  "ui.timed-optional": { en: "Timed mode for Focus Flankers (optional)", fr: "Mode minuté pour Focus Flankers (facultatif)" },
+  "ui.timed-optional-note": {
+    en: "Off unless you turn it on. A clock counts up while you play. There is no time limit, no penalty, and the time is not saved.",
+    fr: "Désactivé à moins que vous ne l'activiez. Une horloge compte vers le haut pendant le jeu. Aucune limite de temps, aucune pénalité, et le temps n'est pas enregistré.",
+  },
+  "ui.clock": {
+    en: "Optional clock: {seconds} seconds so far. No time limit. Pause stops the clock.",
+    fr: "Horloge facultative\u00A0: {seconds} secondes jusqu'ici. Aucune limite de temps. Pause arrête l'horloge.",
+  },
   "ui.filter-all": { en: "All games", fr: "Tous les jeux" },
   "ui.filter-favourites": { en: "My favourites", fr: "Mes favoris" },
   "ui.filter-short": { en: "Short games", fr: "Jeux courts" },
