@@ -1,3 +1,4 @@
+import { doorWidthMm } from "./fit.js";
 import type { PackField, PackRecord, PackSourceEntry } from "./pack-types.js";
 
 export type PackFactName = "name" | "address" | "stepFree" | "washroom" | "doorWidth" | "changeTable" | "parking";
@@ -26,7 +27,7 @@ const FIELD_ALIASES: Record<PackFactName, readonly string[]> = {
   address: ["addr:full", "address", "addr:street"],
   stepFree: ["entrance:step_free", "step_free", "wheelchair:entrance", "wheelchair"],
   washroom: ["toilets:wheelchair", "wheelchair:toilet", "accessible_toilet", "washroom_accessible"],
-  doorWidth: ["door:width", "entrance:width", "door_clear_width_mm", "door_width_mm"],
+  doorWidth: ["door_clear_width_mm", "door_width_mm", "door:width", "entrance:width"],
   changeTable: ["changing_table:adult", "adult_changing_table", "adult_change_table"],
   parking: ["parking:wheelchair", "disabled:parking", "accessible_parking", "parking:access"],
 };
@@ -50,6 +51,27 @@ function detail(key: string, field: PackField | null, sources: PackSourceEntry[]
   };
 }
 
+
+/**
+ * Prefer a usable alias over first-key-wins when the first key would hide a
+ * later, more specific fact. Door width prefers an explicit-unit key (for
+ * example door_clear_width_mm) over a unitless door:width. Adult change-table
+ * aliases prefer a known value over UNKNOWN.
+ */
+export function resolveAliasKey(name: PackFactName, record: PackRecord): string | undefined {
+  const present = FIELD_ALIASES[name].filter((candidate) => candidate in record.fields);
+  if (present.length === 0) return undefined;
+  const known = present.filter((candidate) => isKnown(record.fields[candidate]?.value));
+  if (name === "doorWidth") {
+    const explicit = known.filter((candidate) => doorWidthMm(candidate, record.fields[candidate]?.value) !== null);
+    if (explicit.length > 0) return explicit[0];
+  }
+  if (name === "doorWidth" || name === "changeTable") {
+    if (known.length > 0) return known[0];
+  }
+  return present[0];
+}
+
 /**
  * Maps web-pack facts into the place page projection, retaining every original
  * field not consumed by a known place slot. Never infers missing access facts.
@@ -58,7 +80,7 @@ export function fromPackRecord(record: PackRecord, sources: PackSourceEntry[]): 
   const used = new Set<string>();
   const facts = {} as Record<PackFactName, PackDetail>;
   (Object.keys(FIELD_ALIASES) as PackFactName[]).forEach((name) => {
-    const key = FIELD_ALIASES[name].find((candidate) => candidate in record.fields);
+    const key = resolveAliasKey(name, record);
     if (key) used.add(key);
     facts[name] = detail(key ?? name, key ? record.fields[key] ?? null : null, sources);
   });

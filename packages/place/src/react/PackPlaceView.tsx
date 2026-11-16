@@ -50,8 +50,8 @@ function Evidence({ detail, lang }: { detail: PackDetail; lang: Lang }) {
   return (
     <span>
       {source?.name ?? field.source_id ?? copy("pack.source-missing", lang)} · {licence} · {field.retrieved_at || source?.retrieved || copy("pack.unknown", lang)} · {copy("pack.tier", lang)} {String(field.tier ?? copy("pack.unknown", lang))}
-      {source?.licenceUrl?.startsWith("https://") ? <>{" "}<a href={source.licenceUrl} rel="noopener noreferrer">{copy("pack.licence", lang)}</a></> : null}
-      {isOsm(source, field) ? <>{" · "}<a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer">{copy("pack.osm", lang)}</a></> : null}
+      {source?.licenceUrl?.startsWith("https://") ? <>{" "}<a href={source.licenceUrl} rel="noopener noreferrer" style={targetStyle}>{copy("pack.licence", lang)}</a></> : null}
+      {isOsm(source, field) ? <>{" · "}<a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer" style={targetStyle}>{copy("pack.osm", lang)}</a></> : null}
     </span>
   );
 }
@@ -106,7 +106,7 @@ function PhotoPanel({ record, lang, request }: { record: PackRecord; lang: Lang;
       {state === "ready" && photo ? (
         <figure>
           <a href={photo.pageUrl} rel="noopener noreferrer" target="_blank"><img src={photo.thumbUrl} alt={photo.title.slice(5)} loading="lazy" /></a>
-          <figcaption>{photoCreditLine(photo.author || copy("pack.commons-credit", lang), lang)}. <a href={photo.licenceUrl} rel="noopener noreferrer">{photo.licence}</a></figcaption>
+          <figcaption>{photoCreditLine(photo.author || copy("pack.commons-credit", lang), lang)}. <a href={photo.licenceUrl} rel="noopener noreferrer" style={targetStyle}>{photo.licence}</a></figcaption>
         </figure>
       ) : null}
     </section>
@@ -129,7 +129,7 @@ export function PackPlaceView({ record, sources, lang = "en", profile = null, ph
       <header>
         <h1>{place.name ?? copy("pack.unnamed", lang)}</h1>
         <p>{category} · {place.region} · {recordedLine(place.id, lang)}</p>
-        {osm ? <p><a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer">{copy("pack.osm", lang)}</a></p> : null}
+        {osm ? <p><a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer" style={targetStyle}>{copy("pack.osm", lang)}</a></p> : null}
       </header>
       <section aria-labelledby="pack-fit-heading">
         <h2 id="pack-fit-heading">{copy("pack.fit", lang)}</h2>

@@ -73,5 +73,7 @@ const FIELD_LABELS: Record<string, CopyKey> = {
 
 export function packFieldLabel(key: string, lang: Lang): string {
   const catalogKey = FIELD_LABELS[key];
-  return catalogKey ? copy(catalogKey, lang) : key.replaceAll("_", " ").replaceAll(":", " ");
+  if (catalogKey) return copy(catalogKey, lang);
+  const english = key.replaceAll("_", " ").replaceAll(":", " ");
+  return `${english} (${copy("pack.english-only-note", lang)})`;
 }
