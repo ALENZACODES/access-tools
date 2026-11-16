@@ -181,7 +181,7 @@ const TRANSPORT_IDS = [
 
 const TRUST_IDS = [
   "trust.tier",
-  "trust.last-verified",
+  "trust.last-reviewed",
   "trust.source",
   "trust.photos",
   "trust.correction-path",
@@ -480,7 +480,7 @@ export function projectPlace(place: PlaceRecord, lang: Lang, today: string, pack
   const empty = place.photos.filter((photo) => photo.status === "empty").length;
   const trustRows = [
     sourcedRow(place, "trust.tier", tierPhrase(place.recordProvenance, place.datasetStatus, lang, place.publicationContext), false, place.recordProvenance, [], "venue", lang, today),
-    sourcedRow(place, "trust.last-verified", place.recordProvenance.recordDate, false, place.recordProvenance, [], "venue", lang, today),
+    sourcedRow(place, "trust.last-reviewed", place.recordProvenance.recordDate, false, place.recordProvenance, [], "venue", lang, today),
     sourcedRow(
       place,
       "trust.source",
@@ -602,7 +602,7 @@ export function projectPlace(place: PlaceRecord, lang: Lang, today: string, pack
       id: "trust",
       heading: copy("section.source", lang),
       intro: null,
-      rows: trustRows.filter((row) => row.id === "trust.tier" || row.id === "trust.last-verified" || row.id === "trust.source" || row.id === "trust.bilingual"),
+      rows: trustRows.filter((row) => row.id === "trust.tier" || row.id === "trust.last-reviewed" || row.id === "trust.source" || row.id === "trust.bilingual"),
     },
   ];
 

@@ -62,7 +62,7 @@ export const COPY = {
   "bay.type-a-van": { en: "Type A van-accessible bay", fr: "Place de type A accessible aux fourgons" },
   "bay.type-b-standard": { en: "Type B standard bay", fr: "Place de type B standard" },
   "bay.drop-off": { en: "Drop-off", fr: "Dépose" },
-  "bay.unverified": { en: "Unverified bay", fr: "Place non vérifiée" },
+  "bay.unreviewed": { en: "Bay details not independently checked", fr: "Détails de la place non contrôlés" },
   "problem.locked": { en: "Locked", fr: "Verrouillé" },
   "problem.out-of-order": { en: "Out of order", fr: "Hors service" },
   "problem.used-as-storage": { en: "Used as storage", fr: "Utilisé comme rangement" },
@@ -84,7 +84,7 @@ export const COPY = {
     fr: "Anglais seulement. Ce texte est un texte de jeu d'essai et n'a pas de traduction française.",
   },
   "note.english-only-label": { en: "English only.", fr: "English only." },
-  "status.prototype-unverified": { en: "PROTOTYPE-UNVERIFIED", fr: "PROTOTYPE-UNVERIFIED" },
+  "status.prototype-sample": { en: "PROTOTYPE-UNVERIFIED", fr: "PROTOTYPE-UNVERIFIED" },
   "nav.skip": { en: "Skip to content", fr: "Aller au contenu" },
   "switch.help": {
     en: "Switch uses Next, then Choose. Space activates the focused button. Tab moves in order. There is no running scan.",
