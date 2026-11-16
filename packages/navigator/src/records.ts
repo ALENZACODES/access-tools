@@ -438,8 +438,8 @@ export const DIRECTORY: readonly DirectoryRecord[] = [
     },
     sourceName: "Direct Funding site, dfontario.ca",
     summary: {
-      en: "The site describes self-managed attendant services in Ontario. It says the program is administered by the Centre for Independent Living in Toronto, in partnership with the Ontario Network of Independent Living Centres, and funded by the Ontario Ministry of Health. Application steps are on that site.",
-      fr: "Le site décrit des services d'auxiliaires autogérés en Ontario. Il indique que le programme est administré par le Centre for Independent Living in Toronto, en partenariat avec l'Ontario Network of Independent Living Centres, et financé par le ministère de la Santé de l'Ontario. Les étapes de demande sont sur ce site.",
+      en: "The site describes self-managed attendant services in Ontario. It says the program is administered by the Centre for Independent Living in Toronto and the Ontario Network of Independent Living Centres, and funded by the Ontario Ministry of Health. Application steps are on that site.",
+      fr: "Le site décrit des services d'auxiliaires autogérés en Ontario. Il indique que le programme est administré par le Centre for Independent Living in Toronto et l'Ontario Network of Independent Living Centres, et financé par le ministère de la Santé de l'Ontario. Les étapes de demande sont sur ce site.",
     },
     doesNot: {
       en: "The App does not decide whether someone can manage attendants, and it does not attribute the program to any other organization.",
@@ -622,8 +622,8 @@ export const DIRECTORY: readonly DirectoryRecord[] = [
     officialUrl: "https://www.ontario.ca/page/health-care-connect-find-family-doctor-or-nurse-practitioner",
     sourceName: "Ontario.ca Health Care Connect page",
     summary: {
-      en: "The provincial registration page for finding a family doctor, nurse practitioner, or primary care team. It says a Care Connector searches for someone accepting patients, that people who need urgent care are matched first, and that registering does not guarantee a provider will be found immediately.",
-      fr: "La page provinciale d'inscription pour trouver un médecin de famille, une infirmière praticienne ou une équipe de soins primaires. Elle indique qu'un connecteur de soins cherche une personne qui accepte des patients, que les personnes qui ont besoin de soins urgents sont jumelées d'abord, et que l'inscription ne garantit pas qu'un fournisseur sera trouvé immédiatement.",
+      en: "The provincial registration page for finding a family doctor, nurse practitioner, or primary care team. It says a Care Connector searches for someone accepting patients, that people who need urgent care are matched first, and that registering does not mean a provider will be found immediately.",
+      fr: "La page provinciale d'inscription pour trouver un médecin de famille, une infirmière praticienne ou une équipe de soins primaires. Elle indique qu'un connecteur de soins cherche une personne qui accepte des patients, que les personnes qui ont besoin de soins urgents sont jumelées d'abord, et que l'inscription ne signifie pas qu'un fournisseur sera trouvé immédiatement.",
     },
     doesNot: {
       en: "The App does not register anyone and does not replace primary care.",
