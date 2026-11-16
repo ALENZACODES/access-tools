@@ -1,4 +1,4 @@
-import { CATALOG } from "./engine.js";
+import { GAME_LIBRARY } from "./library.js";
 import type { GameMeta } from "./types.js";
 
 /**
@@ -10,6 +10,8 @@ import type { GameMeta } from "./types.js";
  * so `clinicalClaim` is always false. No game in the catalogue flashes, and
  * every game is played with a keyboard, a single tap, or Next and Choose.
  * The title is the scope-lock name, which stays in English in both languages.
+ * Without an argument the list is the whole library (`GAME_LIBRARY`), so any
+ * host gets every game; a host may pass a shorter list.
  */
 export const SHELL_CONTRACT_VERSION = "1.1.0";
 
@@ -34,7 +36,7 @@ export function toShellActivity(game: GameMeta): ShellActivity {
   return { id: game.id, title: game.name, clinicalClaim: false, seizureRiskFlash: false, keyboardOperable: true };
 }
 
-export function listGamesForShell(catalog: readonly GameMeta[] = CATALOG): GamesShellResult {
+export function listGamesForShell(catalog: readonly GameMeta[] = GAME_LIBRARY): GamesShellResult {
   return {
     moduleId: "games",
     availability: "ready",
