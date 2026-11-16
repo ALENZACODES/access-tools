@@ -28,6 +28,8 @@ const MODEL_EXCLUDED = new Set([
   "lint.ts",
   "frenchFixtureLang.ts",
   "canonical.ts",
+  // Wikimedia Commons API client: URL, MIME, and query parameter strings, not UI copy.
+  "commons.ts",
 ]);
 
 const COMPONENT_DIRS = new Set(["react", "demo", "ui"]);
