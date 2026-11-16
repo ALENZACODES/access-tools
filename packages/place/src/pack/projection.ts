@@ -1,4 +1,4 @@
-import { doorWidthMm } from "./fit.js";
+import { booleanStatus, doorWidthMm } from "./fit.js";
 import type { PackField, PackRecord, PackSourceEntry } from "./pack-types.js";
 
 export type PackFactName = "name" | "address" | "stepFree" | "washroom" | "doorWidth" | "changeTable" | "parking";
@@ -52,21 +52,45 @@ function detail(key: string, field: PackField | null, sources: PackSourceEntry[]
 }
 
 
+function explicitDoorWidthMm(record: PackRecord): number[] {
+  return FIELD_ALIASES.doorWidth.flatMap((key) => {
+    if (!(key in record.fields)) return [];
+    const mm = doorWidthMm(key, record.fields[key]?.value);
+    return mm === null ? [] : [mm];
+  });
+}
+
+/**
+ * True when two or more explicit-unit door-width aliases convert to different
+ * millimetre values. A conflict cannot support a confident yes; the fit stays
+ * Unknown and every original measurement remains in allDetails.
+ */
+export function explicitDoorWidthsDisagree(record: PackRecord): boolean {
+  const values = explicitDoorWidthMm(record);
+  return values.some((value) => value !== values[0]);
+}
+
 /**
  * Prefer a usable alias over first-key-wins when the first key would hide a
  * later, more specific fact. Door width prefers an explicit-unit key (for
  * example door_clear_width_mm) over a unitless door:width. Adult change-table
- * aliases prefer a known value over UNKNOWN.
+ * aliases prefer a known value over UNKNOWN. When known adult aliases disagree
+ * (yes and no), the recorded no wins: the result is never a confident yes.
  */
 export function resolveAliasKey(name: PackFactName, record: PackRecord): string | undefined {
   const present = FIELD_ALIASES[name].filter((candidate) => candidate in record.fields);
   if (present.length === 0) return undefined;
   const known = present.filter((candidate) => isKnown(record.fields[candidate]?.value));
+  if (name === "changeTable") {
+    const nos = known.filter((candidate) => booleanStatus(record.fields[candidate]?.value) === "known-no");
+    const yeses = known.filter((candidate) => booleanStatus(record.fields[candidate]?.value) === "known-yes");
+    if (nos.length > 0 && yeses.length > 0) return nos[0];
+    if (known.length > 0) return known[0];
+    return present[0];
+  }
   if (name === "doorWidth") {
     const explicit = known.filter((candidate) => doorWidthMm(candidate, record.fields[candidate]?.value) !== null);
     if (explicit.length > 0) return explicit[0];
-  }
-  if (name === "doorWidth" || name === "changeTable") {
     if (known.length > 0) return known[0];
   }
   return present[0];
@@ -82,7 +106,11 @@ export function fromPackRecord(record: PackRecord, sources: PackSourceEntry[]): 
   (Object.keys(FIELD_ALIASES) as PackFactName[]).forEach((name) => {
     const key = resolveAliasKey(name, record);
     if (key) used.add(key);
-    facts[name] = detail(key ?? name, key ? record.fields[key] ?? null : null, sources);
+    const projected = detail(key ?? name, key ? record.fields[key] ?? null : null, sources);
+    // Disagreeing explicit-unit widths cannot be a single measured yes.
+    facts[name] = name === "doorWidth" && explicitDoorWidthsDisagree(record)
+      ? { ...projected, value: null }
+      : projected;
   });
   const allDetails = Object.keys(record.fields)
     .sort((a, b) => a.localeCompare(b))

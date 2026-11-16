@@ -1,5 +1,5 @@
 import { useEffect, useState, type CSSProperties, type FormEvent } from "react";
-import { finderCopy, finderFill, packFieldLabel } from "../i18n.js";
+import { finderCopy, finderFill, packFieldLabel, packGroupCountPhrase } from "../i18n.js";
 import { FINDER_KIND_KEYS, FINDER_KINDS, queryPackFinders, type FinderKind, type FinderLang, type PackFinderResult, type PackFinderRow } from "../pack-finders.js";
 import type { PackSource } from "../pack-types.js";
 
@@ -12,7 +12,10 @@ export interface PackFindersPageProps { source: PackSource; lang?: FinderLang }
 
 function resultCountMessage(result: PackFinderResult, lang: FinderLang): string {
   if (result.kind === "changing" || result.unknownRows.length > 0) {
-    return finderFill("finder.pack.count-groups", lang, { known: result.rows.length, unknown: result.unknownRows.length });
+    return finderFill("finder.pack.count-groups", lang, {
+      known: packGroupCountPhrase(result.rows.length, "known", lang),
+      unknown: packGroupCountPhrase(result.unknownRows.length, "unknown", lang),
+    });
   }
   return finderFill("finder.pack.count", lang, { count: result.count });
 }

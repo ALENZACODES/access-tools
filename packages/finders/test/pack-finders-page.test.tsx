@@ -4,7 +4,7 @@ import { cleanup, render, screen, waitFor, within } from "@testing-library/react
 import userEvent from "@testing-library/user-event";
 import axe from "axe-core";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { packFieldLabel } from "../src/i18n.js";
+import { packFieldLabel, packGroupCountPhrase } from "../src/i18n.js";
 import { createFindersModule } from "../src/react/pack-module.js";
 import { PackFindersPage } from "../src/react/PackFindersPage.js";
 import type { PackManifest, PackRecord, PackSource, PackSourceEntry, Tranche } from "../src/pack-types.js";
@@ -112,9 +112,22 @@ describe("PackFindersPage honesty and labels", () => {
     expect(status.textContent ?? "").not.toMatch(/[^\u00A0]:/);
   });
 
-  it("marks an uncatalogued pack field label as English only", () => {
+  it("marks an uncatalogued pack field label as English only and replaces colons", () => {
     expect(packFieldLabel("unlisted_field", "en")).toBe("unlisted field (English only)");
     expect(packFieldLabel("unlisted_field", "fr")).toBe("unlisted field (en anglais seulement)");
+    expect(packFieldLabel("foo:bar_baz", "fr")).toBe("foo bar baz (en anglais seulement)");
+    expect(packFieldLabel("foo:bar_baz", "en")).toBe("foo bar baz (English only)");
+  });
+
+  it("pluralizes French known and unknown counts (1 connu, 2 connus)", () => {
+    expect(packGroupCountPhrase(0, "known", "fr")).toBe("0 connus");
+    expect(packGroupCountPhrase(1, "known", "fr")).toBe("1 connu");
+    expect(packGroupCountPhrase(2, "known", "fr")).toBe("2 connus");
+    expect(packGroupCountPhrase(0, "unknown", "fr")).toBe("0 inconnus");
+    expect(packGroupCountPhrase(1, "unknown", "fr")).toBe("1 inconnu");
+    expect(packGroupCountPhrase(2, "unknown", "fr")).toBe("2 inconnus");
+    expect(packGroupCountPhrase(2, "known", "en")).toBe("2 known");
+    expect(packGroupCountPhrase(2, "unknown", "en")).toBe("2 unknown");
   });
 
   it("passes axe on the changing-tables grouped headings in English and French", async () => {

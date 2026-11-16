@@ -285,8 +285,8 @@ export const FINDER_COPY = {
   "finder.pack.broaden": { en: "Broaden results", fr: "Élargir les résultats" },
   "finder.pack.count": { en: "Results: {count}", fr: "Résultats\u00A0: {count}" },
   "finder.pack.count-groups": {
-    en: "Results: {known} known, {unknown} unknown",
-    fr: "Résultats\u00A0: {known} connu, {unknown} inconnu",
+    en: "Results: {known}, {unknown}",
+    fr: "Résultats\u00A0: {known}, {unknown}",
   },
   "finder.pack.english-only-note": { en: "English only", fr: "en anglais seulement" },
   "finder.pack.empty": {
@@ -380,11 +380,20 @@ export function finderFill(key: FinderKey, lang: Lang, values: Record<string, st
   return fill(finderCopy(key, lang), values);
 }
 
+/** French plural: 0 and every n other than 1 take the plural form. */
+export function packGroupCountPhrase(n: number, kind: "known" | "unknown", lang: Lang): string {
+  if (lang === "fr") {
+    if (kind === "known") return n === 1 ? `${n} connu` : `${n} connus`;
+    return n === 1 ? `${n} inconnu` : `${n} inconnus`;
+  }
+  return `${n} ${kind}`;
+}
+
 export function packFieldLabel(key: string, lang: Lang): string {
   const catalogKey = `finder.pack.field.${key}`;
   if (Object.prototype.hasOwnProperty.call(FINDER_COPY, catalogKey)) {
     return finderCopy(catalogKey as FinderKey, lang);
   }
-  const english = key.replaceAll("_", " ");
+  const english = key.replaceAll("_", " ").replaceAll(":", " ");
   return `${english} (${finderCopy("finder.pack.english-only-note", lang)})`;
 }

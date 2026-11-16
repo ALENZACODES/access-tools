@@ -179,6 +179,47 @@ describe("web pack place", () => {
     expect(fit?.decidingField).toBe("adult_changing_table");
   });
 
+  it.each([
+    { first: "yes", second: "no", order: "changing_table:adult yes then adult_changing_table no" },
+    { first: "no", second: "yes", order: "changing_table:adult no then adult_changing_table yes" },
+  ])("treats a yes/no adult change-table conflict as known-no ($order)", ({ first, second }) => {
+    const conflicting: PackRecord = {
+      ...record,
+      fields: {
+        name: field("Conflicting adult table"),
+        "changing_table:adult": field(first),
+        adult_changing_table: field(second),
+      },
+    };
+    const projection = fromPackRecord(conflicting, sources);
+    const fit = fitWithProfile(projection, profile).find((item) => item.need === "changeTable");
+    expect(fit?.status).toBe("known-no");
+    expect(fit?.status).not.toBe("known-yes");
+    expect(projection.facts.changeTable.value).toBe("no");
+    expect(projection.otherDetails.some((detail) => detail.value === "yes" && (detail.key === "changing_table:adult" || detail.key === "adult_changing_table"))).toBe(true);
+  });
+
+  it.each([
+    { first: 900, second: 700, order: "door_clear_width_mm then door_width_mm" },
+    { first: 700, second: 900, order: "door_width_mm then door_clear_width_mm" },
+  ])("treats disagreeing explicit door widths as Unknown, never a confident yes ($order)", ({ first, second }) => {
+    const conflicting: PackRecord = {
+      ...record,
+      fields: {
+        name: field("Conflicting door"),
+        door_clear_width_mm: field(first),
+        door_width_mm: field(second),
+      },
+    };
+    const projection = fromPackRecord(conflicting, sources);
+    expect(projection.facts.doorWidth.value).toBeNull();
+    const fit = fitWithProfile(projection, profile).find((item) => item.need === "doorWidth");
+    expect(fit?.status).toBe("unknown");
+    expect(fit?.status).not.toBe("known-yes");
+    expect(projection.allDetails.some((detail) => detail.key === "door_clear_width_mm" && detail.value === first)).toBe(true);
+    expect(projection.allDetails.some((detail) => detail.key === "door_width_mm" && detail.value === second)).toBe(true);
+  });
+
   it("uses Oui connu / Non connu in French and drops Vérification from photo-loading copy", () => {
     expect(copy("pack.yes", "fr")).toBe("Oui connu");
     expect(copy("pack.no", "fr")).toBe("Non connu");
