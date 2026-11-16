@@ -112,7 +112,7 @@ describe("display rules", () => {
     expect(text).not.toContain("Verified by surveyor");
     expect(text.toLowerCase()).not.toContain("open data");
     expect(text.toLowerCase()).not.toContain("open-data");
-    expect(view.tierBadge).toContain("Unverified by the App");
+    expect(view.tierBadge).toContain("Not independently checked by the App");
     expect(view.tierBadge).not.toContain("Tier 0");
     const door = view.sections.find((section) => section.id === "entrance")?.rows.find((row) => row.id === "entrance.door-clear-width-mm");
     expect(door?.valueText).toBe("860 mm (33.9 in)");
@@ -127,7 +127,7 @@ describe("display rules", () => {
     expect(tierPhrase(bare, "access-maps", "fr", "canonical")).not.toContain("Vérifié par un enquêteur");
     expect(tierPhrase(bare, "labelled-fixture", "en", "prototype")).toContain("PROTOTYPE-UNVERIFIED");
     const proven = surveyProvenance(SURVEY_EVIDENCE);
-    expect(tierPhrase(proven, "access-maps", "en", "canonical")).toBe("Verified by surveyor");
+    expect(tierPhrase(proven, "access-maps", "en", "canonical")).toBe("Reviewed by surveyor");
     expect(tierPhrase(proven, "access-maps", "en", "prototype")).not.toContain("Verified by surveyor");
     expect(tierPhrase(FIXTURE_PROVENANCE, "labelled-fixture", "en")).not.toContain("open data");
     expect(tierPhrase(FIXTURE_PROVENANCE, "labelled-fixture", "fr")).not.toContain("données ouvertes");
@@ -192,9 +192,9 @@ describe("display rules", () => {
     place.recordProvenance = surveyProvenance();
     expect(validatePlacePack(broken)).toBe(false);
     expect(schemaErrors().join(" ")).toMatch(/evidence|required/i);
-    expect(lintPlace(place).some((error) => error.includes("cannot be shown as verified"))).toBe(true);
+    expect(lintPlace(place).some((error) => error.includes("cannot be shown as reviewed"))).toBe(true);
     place.recordProvenance = surveyProvenance(SURVEY_EVIDENCE);
-    expect(lintPlace(place).some((error) => error.includes("cannot be shown as verified"))).toBe(false);
+    expect(lintPlace(place).some((error) => error.includes("cannot be shown as reviewed"))).toBe(false);
   });
 
   it("shows Unknown on the café and does not render trail fields there", () => {
