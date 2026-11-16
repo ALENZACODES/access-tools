@@ -17,25 +17,25 @@ export const SAFETY_COPY = {
     fr: "Copie impossible. Sélectionnez le texte et copiez-le vous-même.",
   },
 
-  "checkin.heading": { en: "Trip check-in", fr: "Vérification de déplacement" },
+  "checkin.heading": { en: "Trip check-in", fr: "Contrôle de déplacement" },
   "checkin.intro": {
     en: "Start a window for your trip. Nothing is sent anywhere. The App only shows, on this device, whether the window is still open.",
     fr: "Démarrez une fenêtre pour votre déplacement. Rien n'est envoyé nulle part. L'application indique seulement, sur cet appareil, si la fenêtre est encore ouverte.",
   },
   "checkin.duration-label": { en: "Window length", fr: "Durée de la fenêtre" },
   "checkin.minutes": { en: "{n} minutes", fr: "{n} minutes" },
-  "checkin.start": { en: "Start check-in window", fr: "Démarrer la fenêtre de vérification" },
+  "checkin.start": { en: "Start check-in window", fr: "Démarrer la fenêtre de contrôle" },
   "checkin.ok": { en: "I'm OK", fr: "Je vais bien" },
   "checkin.help": { en: "I need help contacting someone", fr: "J'ai besoin d'aide pour joindre quelqu'un" },
-  "checkin.close": { en: "Close check-in", fr: "Fermer la vérification" },
-  "checkin.status-idle": { en: "No check-in is running.", fr: "Aucune vérification n'est en cours." },
+  "checkin.close": { en: "Close check-in", fr: "Fermer la contrôle" },
+  "checkin.status-idle": { en: "No check-in is running.", fr: "Aucune contrôle n'est en cours." },
   "checkin.status-active": {
     en: "Check-in window open until {time}. Nothing is sent anywhere.",
-    fr: `Fenêtre de vérification ouverte jusqu'à ${"{time}"}. Rien n'est envoyé nulle part.`,
+    fr: `Fenêtre de contrôle ouverte jusqu'à ${"{time}"}. Rien n'est envoyé nulle part.`,
   },
   "checkin.status-overdue": {
     en: "Your check-in window ended at {time}. The App has not alerted anyone. Mark yourself OK, or choose to get help contacting someone.",
-    fr: "Votre fenêtre de vérification a pris fin à {time}. L'application n'a alerté personne. Indiquez que vous allez bien ou choisissez d'obtenir de l'aide pour joindre quelqu'un.",
+    fr: "Votre fenêtre de contrôle a pris fin à {time}. L'application n'a alerté personne. Indiquez que vous allez bien ou choisissez d'obtenir de l'aide pour joindre quelqu'un.",
   },
   "checkin.status-ok": {
     en: "Marked OK at {time}. The window is closed. Nobody was told.",
@@ -54,8 +54,8 @@ export const SAFETY_COPY = {
     fr: "Ce résumé a été rédigé sur cet appareil. L'application ne l'a envoyé à personne. Collez-le dans un message vous-même si vous le souhaitez.",
   },
   "help.copy": { en: "Copy summary", fr: "Copier le résumé" },
-  "summary.title": { en: "Trip check-in summary", fr: "Résumé de vérification de déplacement" },
-  "summary.started": { en: "Check-in started: {time}", fr: `Vérification démarrée${NB}: {time}` },
+  "summary.title": { en: "Trip check-in summary", fr: "Résumé de contrôle de déplacement" },
+  "summary.started": { en: "Check-in started: {time}", fr: `Contrôle démarrée${NB}: {time}` },
   "summary.due": { en: "Check-in window ended: {time}", fr: `Fin de la fenêtre${NB}: {time}` },
   "summary.status": { en: "Status: needs help contacting someone", fr: `État${NB}: a besoin d'aide pour joindre quelqu'un` },
   "summary.trip": { en: "Trip: {origin} to {destination}", fr: `Déplacement${NB}: {origin} vers {destination}` },
@@ -93,9 +93,9 @@ export const SAFETY_COPY = {
     en: "Revoking works on this device. The App cannot take back a copy you already gave someone, so the share also dies by itself at the expiry time.",
     fr: `La révocation s'applique à cet appareil. L'application ne peut pas reprendre une copie déjà remise${NB}; le partage meurt aussi de lui-même à l'heure d'expiration.`,
   },
-  "trip.check-heading": { en: "Check a trip share", fr: "Vérifier un partage" },
+  "trip.check-heading": { en: "Check a trip share", fr: "Contrôler un partage" },
   "trip.check-label": { en: "Pasted trip share text", fr: "Texte de partage collé" },
-  "trip.check-button": { en: "Check", fr: "Vérifier" },
+  "trip.check-button": { en: "Check", fr: "Contrôler" },
   "trip.check-live": {
     en: "Live until {time}: {origin} to {destination}.",
     fr: `Actif jusqu'à {time}${NB}: {origin} vers {destination}.`,
@@ -117,7 +117,7 @@ export const SAFETY_COPY = {
   "disruption.disrupted": { en: "Reported disrupted", fr: "Signalé perturbé" },
   "disruption.unknown-copy": {
     en: "Live elevator or outage status is not connected here. The App does not know whether any station, elevator or route is working. Check with the operator before you travel.",
-    fr: "L'état en direct des ascenseurs ou des pannes n'est pas connecté ici. L'application ne sait pas si une station, un ascenseur ou un trajet fonctionne. Vérifiez auprès de l'exploitant avant de partir.",
+    fr: "L'état en direct des ascenseurs ou des pannes n'est pas connecté ici. L'application ne sait pas si une station, un ascenseur ou un trajet fonctionne. Contrôlez auprès de l'exploitant avant de partir.",
   },
   "disruption.snapshot-copy": {
     en: "This is a stored snapshot, not a live feed. It may be out of date.",
@@ -128,10 +128,10 @@ export const SAFETY_COPY = {
   "disruption.licence": { en: "Licence", fr: "Licence" },
   "disruption.retrieved": { en: "Retrieved", fr: "Consulté" },
   "disruption.expires": { en: "Expires", fr: "Expire" },
-  "disruption.tier": { en: "Verification tier", fr: "Niveau de vérification" },
+  "disruption.tier": { en: "Evidence review tier", fr: "Niveau de contrôle" },
   "disruption.tier-line": {
-    en: "Verification tier: {tier}. Prototype data only. No outage is invented here.",
-    fr: `Niveau de vérification${NB}: {tier}. Données de prototype seulement. Aucune panne n'est inventée ici.`,
+    en: "Evidence review tier: {tier}. Prototype data only. No outage is invented here.",
+    fr: `Niveau de contrôle${NB}: {tier}. Données de prototype seulement. Aucune panne n'est inventée ici.`,
   },
 } as const;
 

@@ -70,35 +70,35 @@ export const MODEL_COPY = {
   "format.operator-availability": { en: "Operator availability", fr: "Opérateur" },
   "format.weight-capacity": { en: "Weight capacity", fr: "Capacité" },
   "tier.prototype-seed": {
-    en: "PROTOTYPE-UNVERIFIED. Prototype seed. Unverified by the App.",
-    fr: "PROTOTYPE-UNVERIFIED. Graine de prototype. Non vérifié par l’application.",
+    en: "PROTOTYPE-UNVERIFIED. Prototype seed. Not independently checked by the App.",
+    fr: "PROTOTYPE-UNVERIFIED. Graine de prototype. Non contrôlé par l’application.",
   },
   "tier.fixture": {
-    en: "PROTOTYPE-UNVERIFIED. Labelled fixture. Unverified by the App.",
-    fr: "PROTOTYPE-UNVERIFIED. Jeu d’essai étiqueté. Non vérifié par l’application.",
+    en: "PROTOTYPE-UNVERIFIED. Labelled fixture. Not independently checked by the App.",
+    fr: "PROTOTYPE-UNVERIFIED. Jeu d’essai étiqueté. Non contrôlé par l’application.",
   },
-  "tier.surveyor": { en: "Verified by surveyor", fr: "Vérifié par un enquêteur" },
+  "tier.surveyor": { en: "Reviewed by surveyor", fr: "Contrôlé par un enquêteur" },
   "tier.insufficient": {
-    en: "Tier 3 without enough evidence. Not shown as verified. Protocol version, verifier role, method, and visit date are required.",
-    fr: "Niveau 3 sans preuve suffisante. Pas affiché comme vérifié. Il faut la version du protocole, le rôle de l’enquêteur, la méthode et la date de visite.",
+    en: "Tier 3 without enough evidence. Not shown as reviewed. Protocol version, observer role, method, and visit date are required.",
+    fr: "Niveau 3 sans preuve suffisante. Pas affiché comme contrôlé. Il faut la version du protocole, le rôle de l’enquêteur, la méthode et la date de visite.",
   },
   "tier.open-data": {
-    en: "SEEDED-OPEN-DATA. Open-data import, unverified by the App.",
-    fr: "SEEDED-OPEN-DATA. Import de données ouvertes, non vérifié par l’application.",
+    en: "SEEDED-OPEN-DATA. Open-data import, not independently checked by the App.",
+    fr: "SEEDED-OPEN-DATA. Import de données ouvertes, non contrôlé par l’application.",
   },
   "tier.peer": { en: "Peer-reported", fr: "Signalé par un pair" },
-  "tier.business": { en: "Business-claimed, unverified", fr: "Déclaré par le lieu, non vérifié" },
+  "tier.business": { en: "Business-claimed, not independently checked", fr: "Déclaré par le lieu, non contrôlé" },
   "tier.live": { en: "Live status", fr: "Statut en direct" },
   "tier.desk": {
     en: "Desk check, with no eligibility decision",
-    fr: "Vérification documentaire, sans décision d’admissibilité",
+    fr: "Contrôle documentaire, sans décision d’admissibilité",
   },
   "tier.unknown": { en: "Unknown tier", fr: "Niveau inconnu" },
-  "tier.none": { en: "No tier. Unverified.", fr: "Aucun niveau. Non vérifié." },
+  "tier.none": { en: "No tier. Not independently checked.", fr: "Aucun niveau. Non contrôlé." },
   "fresh.none": { en: "No source on file.", fr: "Pas de source au dossier." },
   "fresh.import": {
-    en: "Source date shown. This tier is not verification by the App.",
-    fr: "Date de source affichée. Ce niveau n’est pas une vérification par l’application.",
+    en: "Source date shown. This tier is not evidence review by the App.",
+    fr: "Date de source affichée. Ce niveau n’est pas une contrôle par l’application.",
   },
   "fresh.stale": {
     en: "Stale under the plan's estimate ({limit} days). The field stays visible.",
@@ -128,11 +128,11 @@ export const MODEL_COPY = {
   "winter.recorded": { en: "Clearance recorded on {date}.", fr: "Déneigement enregistré le {date}." },
   "use.measured": {
     en: "Peer or surveyor measurements are on file. Check the date. This is not a confirmed measurement.",
-    fr: "Mesures de pair ou d’enquêteur au dossier. Vérifiez la date. Ce n’est pas un relevé confirmé.",
+    fr: "Mesures de pair ou d’enquêteur au dossier. Contrôlez la date. Ce n’est pas un relevé confirmé.",
   },
   "use.call-ahead": {
-    en: "Unverified — call ahead. This record is not a recommendation.",
-    fr: "Non vérifié — appelez avant d’y aller. Cette fiche n’est pas une recommandation.",
+    en: "Not independently checked — call ahead. This record is not a recommendation.",
+    fr: "Non contrôlé — appelez avant d’y aller. Cette fiche n’est pas une recommandation.",
   },
   "lift.aisle": {
     en: "An aisle and a width are recorded for this Type A bay. That does not say your lift will fit.",
@@ -150,7 +150,7 @@ export const MODEL_COPY = {
   },
   "privilege.quote": {
     en: "{municipality} — {bylaw}{page}, checked {date}: {statement}",
-    fr: "{municipality} — {bylaw}{page}, vérifié le {date}\u00A0: {statement}",
+    fr: "{municipality} — {bylaw}{page}, contrôlé le {date}\u00A0: {statement}",
   },
   "range.unknown": { en: "unknown", fr: "inconnue" },
   "range.note": {
@@ -167,11 +167,11 @@ export const MODEL_COPY = {
   },
   "disclaimer.supply": {
     en: "A published category is not a statement that a specific product is in stock. Call the store to check stock.",
-    fr: "Une catégorie publiée ne dit pas qu’un produit précis est en stock. Appelez le magasin pour vérifier le stock.",
+    fr: "Une catégorie publiée ne dit pas qu’un produit précis est en stock. Appelez le magasin pour contrôler le stock.",
   },
   "notice.prototype": {
-    en: "PROTOTYPE-UNVERIFIED. This screen is a prototype. Unknown means unknown. A labelled fixture is not a real place and not a verified visit.",
-    fr: "PROTOTYPE-UNVERIFIED. Cet écran est un prototype. Inconnu veut dire inconnu. Un jeu d’essai étiqueté n’est pas un lieu réel ni une visite vérifiée.",
+    en: "PROTOTYPE-UNVERIFIED. This screen is a prototype. Unknown means unknown. A labelled fixture is not a real place and not a reviewed visit.",
+    fr: "PROTOTYPE-UNVERIFIED. Cet écran est un prototype. Inconnu veut dire inconnu. Un jeu d’essai étiqueté n’est pas un lieu réel ni une visite contrôlée.",
   },
   "photo.none": { en: "No photograph on file.", fr: "Aucune photographie au dossier." },
   "photo.missing": { en: "Photograph slot is missing from the record.", fr: "Emplacement de photo manquant." },
@@ -370,8 +370,8 @@ export const MODEL_COPY = {
   "transport.charging": { en: "Charging for mobility devices", fr: "Recharge des aides à la mobilité" },
   "transport.repair-supply": { en: "Repair and supply proximity", fr: "Réparation et fournitures à proximité" },
   "transport.emergency-contacts": { en: "Emergency and help contacts", fr: "Contacts d’urgence et d’aide" },
-  "trust.tier": { en: "Verification tier", fr: "Niveau de vérification" },
-  "trust.last-verified": { en: "Last recorded date", fr: "Dernière date enregistrée" },
+  "trust.tier": { en: "Evidence review tier", fr: "Niveau de contrôle" },
+  "trust.last-reviewed": { en: "Last recorded date", fr: "Dernière date enregistrée" },
   "trust.source": { en: "Source", fr: "Source" },
   "trust.photos": { en: "Photo evidence", fr: "Preuves photographiques" },
   "trust.correction-path": { en: "Correction and report path", fr: "Chemin de correction et de signalement" },
@@ -469,6 +469,6 @@ export const MODEL_COPY = {
   },
   "profile.note.power-step-free": {
     en: "Profile setting “Chair type: Power wheelchair”. The entrance is not recorded as step-free. Unknown is not a match. Check with the place before you go.",
-    fr: "Réglage du profil «\u00A0Type de fauteuil\u00A0: Fauteuil roulant motorisé\u00A0». L’entrée n’est pas enregistrée comme sans marche. Inconnu n’est pas une correspondance. Vérifiez auprès du lieu avant de partir.",
+    fr: "Réglage du profil «\u00A0Type de fauteuil\u00A0: Fauteuil roulant motorisé\u00A0». L’entrée n’est pas enregistrée comme sans marche. Inconnu n’est pas une correspondance. Contrôlez auprès du lieu avant de partir.",
   },
 } as const;

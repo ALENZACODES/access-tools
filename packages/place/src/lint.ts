@@ -119,17 +119,17 @@ function lintProvenance(
   if (claimsVerified && !evidenceComplete(provenance.evidence, { requirePhoto })) {
     const photo = requirePhoto ? " and a photo id" : "";
     errors.push(
-      `${owner}: ${path} cannot be shown as verified without protocol version, verifier role, method, and visit date${photo}`,
+      `${owner}: ${path} cannot be shown as reviewed without protocol version, observer role, method, and visit date${photo}`,
     );
   }
   if (publicationContext === "prototype" && (provenance.tier === 3 || provenance.prototypeLabel === "VERIFIED")) {
-    errors.push(`${owner}: prototype context cannot carry tier 3 or VERIFIED (${path})`);
+    errors.push(`${owner}: prototype context cannot carry tier 3 or the restricted status (${path})`);
   }
   if (datasetIsSynthetic && (provenance.tier === 0 || provenance.prototypeLabel === "SEEDED-OPEN-DATA")) {
-    errors.push(`${owner}: synthetic records use PROTOTYPE-UNVERIFIED and are not labelled as open data (${path})`);
+    errors.push(`${owner}: synthetic records require the prototype-sample label and are not labelled as open data (${path})`);
   }
   if (datasetIsSynthetic && provenance.prototypeLabel !== "PROTOTYPE-UNVERIFIED") {
-    errors.push(`${owner}: a synthetic record must carry PROTOTYPE-UNVERIFIED (${path})`);
+    errors.push(`${owner}: a synthetic record must carry the prototype-sample label (${path})`);
   }
   return errors;
 }
