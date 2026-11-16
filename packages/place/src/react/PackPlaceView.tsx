@@ -13,6 +13,8 @@ export interface PackPlaceViewProps {
   record: PackRecord;
   sources: PackSourceEntry[];
   lang?: Lang;
+  /** Shell alias for lang. PlaceDetailPage passes locale. */
+  locale?: Lang;
   profile?: EquipmentProfile | null;
   /** Optional for tests; by default no network is used until the visitor requests a photo. */
   photoRequest?: typeof fetch;
@@ -115,7 +117,8 @@ function PhotoPanel({ record, lang, request }: { record: PackRecord; lang: Lang;
 }
 
 /** Place detail for real venue, washroom, and transit web-pack records. */
-export function PackPlaceView({ record, sources, lang = "en", profile = null, photoRequest }: PackPlaceViewProps) {
+export function PackPlaceView({ record, sources, lang, locale, profile = null, photoRequest }: PackPlaceViewProps) {
+  const language = lang ?? locale ?? "en";
   const visibleSources = acceptedSources(sources);
   const visibleRecord = dropHeldFields(record, visibleSources);
   const place = fromPackRecord(visibleRecord, visibleSources);
@@ -129,37 +132,37 @@ export function PackPlaceView({ record, sources, lang = "en", profile = null, ph
     : [];
   const missingFacts = Object.values(place.facts).filter((detail) => !present.has(detail.key) && detail.key !== "doorWidth");
   const showDetails = [...coreDetails, ...conflictWidths, ...missingFacts];
-  const category = copy(record.tranche === "washroom" ? "pack.washroom" : record.tranche === "transit" ? "pack.transit" : record.tranche === "path" ? "pack.path" : "pack.venue", lang);
+  const category = copy(record.tranche === "washroom" ? "pack.washroom" : record.tranche === "transit" ? "pack.transit" : record.tranche === "path" ? "pack.path" : "pack.venue", language);
   const osm = place.allDetails.some((detail) => isOsm(detail.source, detail.field)) || sources.some((source) => sourceIdIsOsm(source.sourceId));
   return (
-    <article lang={lang}>
+    <article lang={language}>
       <header>
-        <h1>{place.name ?? copy("pack.unnamed", lang)}</h1>
-        <p>{category} · {place.region} · {recordedLine(place.id, lang)}</p>
-        {osm ? <p><a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer" style={targetStyle}>{copy("pack.osm", lang)}</a></p> : null}
+        <h2>{place.name ?? copy("pack.unnamed", language)}</h2>
+        <p>{category} · {place.region} · {recordedLine(place.id, language)}</p>
+        {osm ? <p><a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer" style={targetStyle}>{copy("pack.osm", language)}</a></p> : null}
       </header>
       <section aria-labelledby="pack-fit-heading">
-        <h2 id="pack-fit-heading">{copy("pack.fit", lang)}</h2>
-        <p>{copy("pack.profile", lang)}</p>
+        <h2 id="pack-fit-heading">{copy("pack.fit", language)}</h2>
+        <p>{copy("pack.profile", language)}</p>
         <ul>{fit.map((item) => (
           <li key={item.need}>
-            {fitItemLine(item.need, item.status, lang)}{" "}
-            <a href={`#pack-field-${encodeURIComponent(item.decidingField)}`} style={targetStyle}>{packFieldLabel(item.decidingField, lang)}</a>
+            {fitItemLine(item.need, item.status, language)}{" "}
+            <a href={`#pack-field-${encodeURIComponent(item.decidingField)}`} style={targetStyle}>{packFieldLabel(item.decidingField, language)}</a>
           </li>
         ))}</ul>
       </section>
       <section aria-labelledby="pack-detail-heading" id={doorWidthConflict ? "pack-field-doorWidth" : undefined}>
-        <h2 id="pack-detail-heading">{copy("pack.details", lang)}</h2>
-        <FactTable rows={showDetails} title={copy("pack.details", lang)} lang={lang} />
+        <h2 id="pack-detail-heading">{copy("pack.details", language)}</h2>
+        <FactTable rows={showDetails} title={copy("pack.details", language)} lang={language} />
       </section>
       <section aria-labelledby="pack-other-heading">
-        <h2 id="pack-other-heading">{copy("pack.other", lang)}</h2>
-        <FactTable rows={place.otherDetails} title={copy("pack.other", lang)} lang={lang} />
+        <h2 id="pack-other-heading">{copy("pack.other", language)}</h2>
+        <FactTable rows={place.otherDetails} title={copy("pack.other", language)} lang={language} />
       </section>
-      <PhotoPanel key={visibleRecord.id} record={visibleRecord} lang={lang} request={photoRequest} />
-      <nav aria-label={copy("pack.correction", lang)}>
-        <a href={`/contribute?place=${encodeURIComponent(visibleRecord.id)}&action=correction`} style={targetStyle}>{copy("pack.correction", lang)}</a>{" · "}
-        <a href={`/contribute?place=${encodeURIComponent(visibleRecord.id)}&action=photo`} style={targetStyle}>{copy("pack.photo-add", lang)}</a>
+      <PhotoPanel key={visibleRecord.id} record={visibleRecord} lang={language} request={photoRequest} />
+      <nav aria-label={copy("pack.correction", language)}>
+        <a href={`/contribute?place=${encodeURIComponent(visibleRecord.id)}&action=correction`} style={targetStyle}>{copy("pack.correction", language)}</a>{" · "}
+        <a href={`/contribute?place=${encodeURIComponent(visibleRecord.id)}&action=photo`} style={targetStyle}>{copy("pack.photo-add", language)}</a>
       </nav>
     </article>
   );

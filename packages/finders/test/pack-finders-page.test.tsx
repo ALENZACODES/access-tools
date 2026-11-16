@@ -49,6 +49,9 @@ describe("PackFindersPage honesty and labels", () => {
     expect(packFieldLabel("opening_hours", "fr")).toBe("Heures d’ouverture");
     expect(packFieldLabel("opening_hours", "fr")).toContain("\u2019");
     expect(packFieldLabel("opening_hours", "fr")).not.toContain("'");
+    expect(packFieldLabel("changing_table:adult", "en")).toBe("Adult change table");
+    expect(packFieldLabel("changing_table:adult", "fr")).toBe("Table à langer pour adultes");
+
   });
 
   it("shows known-yes changing tables in the main list and unknown only in a labelled Unknown group", async () => {

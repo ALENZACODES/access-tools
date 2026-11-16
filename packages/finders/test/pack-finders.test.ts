@@ -42,12 +42,14 @@ describe("pack-backed finders", () => {
     }
     expect(result.rows.some((row) => row.id === "held-parking")).toBe(false);
   });
-  it("exposes all fourteen washroom fields and keeps unknown unclassified", async () => {
+  it("exposes all recorded washroom fields, including changing_table:adult, and keeps unknown unclassified", async () => {
     const result = await queryPackFinders(fixtureSource(), { kind: "washroom", needs: ["wheelchair"] });
+    expect(WASHROOM_KEYS).toContain("changing_table:adult");
     expect(result.rows[0]?.fields.map((field) => field.key)).toEqual(expect.arrayContaining([...WASHROOM_KEYS]));
     const row = result.rows.find((item) => item.id === "osm-toilet");
     expect(row?.unknownNeeds).toBe(1); expect(row?.excluded).toBe(false);
     expect(row?.fields.find((field) => field.key === "wheelchair")?.unknown).toBe(true);
+    expect(row?.fields.find((field) => field.key === "changing_table:adult")?.unknown).toBe(true);
   });
   it("uses search for destination text and cells for nearby places", async () => {
     const source = fixtureSource();
@@ -137,6 +139,16 @@ describe("pack-backed finders", () => {
     expect(result.rows.map((row) => row.id)).toEqual(["colon-adult-yes"]);
     expect(result.count).toBe(1);
     expect(result.unknownRows).toEqual([]);
+    expect(result.rows[0]?.fields.map((field) => field.key)).toEqual(expect.arrayContaining(["changing_table:adult", "adult_changing_table"]));
+    expect(result.rows[0]?.fields.find((field) => field.key === "changing_table:adult")).toMatchObject({ value: "yes", unknown: false });
+  });
+
+  it("includes changing_table:adult in changing field lists when only another adult alias is recorded", async () => {
+    const result = await queryPackFinders(fixtureSource(), { kind: "changing" });
+    const row = result.rows.find((item) => item.id === "municipal-toilet");
+    expect(row?.fields.map((field) => field.key)).toEqual(expect.arrayContaining(["changing_table:adult", "adult_changing_table", "changing_table"]));
+    expect(row?.fields.find((field) => field.key === "changing_table:adult")?.unknown).toBe(true);
+    expect(row?.fields.find((field) => field.key === "adult_changing_table")).toMatchObject({ value: "yes", unknown: false });
   });
 
   it("keeps demonstration imports out of the shell entry graph", () => {
