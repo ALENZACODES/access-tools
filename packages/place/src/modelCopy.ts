@@ -77,7 +77,7 @@ export const MODEL_COPY = {
     en: "prototype sample. Labelled fixture. Not independently checked by the App.",
     fr: "prototype sample. Jeu d’essai étiqueté. Non contrôlé par l’application.",
   },
-  "tier.surveyor": { en: "Reviewed by surveyor", fr: "Vérifié par un enquêteur" },
+  "tier.surveyor": { en: "Reviewed by surveyor", fr: "Contrôlé par un enquêteur" },
   "tier.insufficient": {
     en: "Tier 3 without enough evidence. Not shown as reviewed. Protocol version, observer role, method, and visit date are required.",
     fr: "Niveau 3 sans preuve suffisante. Pas affiché comme contrôlé. Il faut la version du protocole, le rôle de l’enquêteur, la méthode et la date de visite.",
