@@ -70,12 +70,12 @@ export const MODEL_COPY = {
   "format.operator-availability": { en: "Operator availability", fr: "Opérateur" },
   "format.weight-capacity": { en: "Weight capacity", fr: "Capacité" },
   "tier.prototype-seed": {
-    en: "prototype sample. Prototype seed. Not independently checked by the App.",
-    fr: "prototype sample. Graine de prototype. Non contrôlé par l’application.",
+    en: "PROTOTYPE-UNVERIFIED. Prototype seed. Not independently checked by the App.",
+    fr: "PROTOTYPE-UNVERIFIED. Graine de prototype. Non contrôlé par l’application.",
   },
   "tier.fixture": {
-    en: "prototype sample. Labelled fixture. Not independently checked by the App.",
-    fr: "prototype sample. Jeu d’essai étiqueté. Non contrôlé par l’application.",
+    en: "PROTOTYPE-UNVERIFIED. Labelled fixture. Not independently checked by the App.",
+    fr: "PROTOTYPE-UNVERIFIED. Jeu d’essai étiqueté. Non contrôlé par l’application.",
   },
   "tier.surveyor": { en: "Reviewed by surveyor", fr: "Contrôlé par un enquêteur" },
   "tier.insufficient": {
@@ -170,8 +170,8 @@ export const MODEL_COPY = {
     fr: "Une catégorie publiée ne dit pas qu’un produit précis est en stock. Appelez le magasin pour contrôler le stock.",
   },
   "notice.prototype": {
-    en: "prototype sample. This screen is a prototype. Unknown means unknown. A labelled fixture is not a real place and not a reviewed visit.",
-    fr: "prototype sample. Cet écran est un prototype. Inconnu veut dire inconnu. Un jeu d’essai étiqueté n’est pas un lieu réel ni une visite contrôlée.",
+    en: "PROTOTYPE-UNVERIFIED. This screen is a prototype. Unknown means unknown. A labelled fixture is not a real place and not a reviewed visit.",
+    fr: "PROTOTYPE-UNVERIFIED. Cet écran est un prototype. Inconnu veut dire inconnu. Un jeu d’essai étiqueté n’est pas un lieu réel ni une visite contrôlée.",
   },
   "photo.none": { en: "No photograph on file.", fr: "Aucune photographie au dossier." },
   "photo.missing": { en: "Photograph slot is missing from the record.", fr: "Emplacement de photo manquant." },
