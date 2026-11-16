@@ -221,8 +221,8 @@ export const BATCH_COPY = {
   },
   "dwell.title": { en: "Dwell select", fr: "Sélection par maintien" },
   "dwell.about": {
-    en: "Optional. When it is on, resting the pointer on a button, or moving keyboard focus to a button and waiting, chooses it after the hold time. A bar shows the hold filling up. Tap, keyboard, and switch keep working.",
-    fr: "Facultatif. Quand elle est activée, laisser le pointeur sur un bouton, ou y amener le focus du clavier et attendre, le choisit après le temps de maintien. Une barre montre le maintien qui avance. Le toucher, le clavier et le contacteur continuent de fonctionner.",
+    en: "Optional. When it is on, resting the pointer on a button, or moving keyboard focus to a button and waiting, chooses it after the hold time. A list moves to its next choice. The search box gets the cursor. With the switch bar, Next moves the highlight and the highlighted control is chosen after the hold time, so Choose is not needed. A bar shows the hold filling up. Tap, keyboard, and switch keep working.",
+    fr: "Facultatif. Quand elle est activée, laisser le pointeur sur un bouton, ou y amener le focus du clavier et attendre, le choisit après le temps de maintien. Une liste passe à son choix suivant. Le champ de recherche reçoit le curseur. Avec la barre du contacteur, Suivant déplace la surbrillance et la commande en surbrillance est choisie après le temps de maintien, donc Choisir n'est pas nécessaire. Une barre montre le maintien qui avance. Le toucher, le clavier et le contacteur continuent de fonctionner.",
   },
   "dwell.turn-on": { en: "Turn dwell select on", fr: "Activer la sélection par maintien" },
   "dwell.turn-off": { en: "Turn dwell select off", fr: "Désactiver la sélection par maintien" },
@@ -232,10 +232,18 @@ export const BATCH_COPY = {
   "dwell.shorter": { en: "Shorter hold time", fr: "Temps de maintien plus court" },
   "dwell.longer": { en: "Longer hold time", fr: "Temps de maintien plus long" },
   "dwell.help": {
-    en: "Dwell select is on. Rest on a button for {seconds} seconds to choose it. Move away, or press Escape, to cancel. Move away and come back to choose the same button again.",
-    fr: "La sélection par maintien est activée. Restez sur un bouton pendant {seconds} secondes pour le choisir. Éloignez-vous, ou appuyez sur Échap, pour annuler. Éloignez-vous puis revenez pour choisir le même bouton de nouveau.",
+    en: "Dwell select is on. Rest on a button for {seconds} seconds to choose it. Move away, or press Escape, to cancel. Move away and come back to choose the same button again. With the switch bar, press Next and wait {seconds} seconds.",
+    fr: "La sélection par maintien est activée. Restez sur un bouton pendant {seconds} secondes pour le choisir. Éloignez-vous, ou appuyez sur Échap, pour annuler. Éloignez-vous puis revenez pour choisir le même bouton de nouveau. Avec la barre du contacteur, appuyez sur Suivant et attendez {seconds} secondes.",
   },
   "dwell.holding": { en: "Holding: {name}", fr: "Maintien : {name}" },
+  "dwell.holding-list": {
+    en: "Holding the list: {name}. It will change to: {next}",
+    fr: "Maintien de la liste : {name}. Elle passera à : {next}",
+  },
+  "dwell.holding-text": {
+    en: "Holding the text box: {name}. The cursor will move into it.",
+    fr: "Maintien du champ de texte : {name}. Le curseur y sera placé.",
+  },
   "dwell.progress": { en: "Hold progress for {name}", fr: "Progression du maintien pour {name}" },
   "dwell.percent": { en: "{percent} percent", fr: "{percent} pour cent" },
   "dwell.idle": { en: "No button is being held.", fr: "Aucun bouton n'est maintenu." },

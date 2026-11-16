@@ -245,6 +245,7 @@ export const GAME_COPY = {
   "ui.grace-left": { en: "Grace days remaining", fr: "Jours de grâce restants" },
   "ui.reset-streak": { en: "Reset the streak on this device", fr: "Remettre la série à zéro sur cet appareil" },
   "ui.search": { en: "Search games", fr: "Chercher un jeu" },
+  "ui.clear-search": { en: "Clear the search", fr: "Effacer la recherche" },
   "ui.filters": { en: "Filters", fr: "Filtres" },
   "ui.surprise": { en: "Surprise me", fr: "Surprenez-moi" },
   "ui.play": { en: "Play", fr: "Jouer" },
