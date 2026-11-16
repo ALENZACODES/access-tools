@@ -1,0 +1,17 @@
+.directory-links a,
+.directory-links button,
+.directory-links input,
+.directory-links textarea,
+.directory-links select {
+  min-height: 44px;
+  min-width: 44px;
+  box-sizing: border-box;
+  font: inherit;
+}
+
+.directory-links label:has(input[type="radio"]) {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+}
