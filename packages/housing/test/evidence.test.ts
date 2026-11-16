@@ -115,7 +115,11 @@ describe("small-cell suppression", () => {
     expect(result.total).toBe(8);
     // refused = 2 is withheld; waited = 6 is withheld too, or the total would reveal the 2.
     expect(result.byCategory).toEqual({ applied: null, waited: null, refused: null, unsuitable: null });
-    expect(result.byBarrier["entrance-steps"]).toBe(6);
+    // entrance-steps = 6 of 8 is withheld as well: 8 - 6 would show that 2 reports did not name it.
+    expect(result.byBarrier["entrance-steps"]).toBeNull();
+    const wider = aggregateEvidence([...reports, ...many(3, { category: "refused", setting: "overnight" })]);
+    // 6 of 11 leaves 5, so the count can be shown.
+    expect(wider.byBarrier["entrance-steps"]).toBe(6);
     expect(Object.keys(result.byBarrier)).toEqual([...BARRIER_TYPES]);
     const text = JSON.stringify(result);
     expect(text).not.toContain("Toronto");

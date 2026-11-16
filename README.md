@@ -63,6 +63,8 @@ npm run demo -w @access-tools/finders
 
 Each place, search, and finder demo binds Vite's default port. The interface is in English and French.
 
+`npm run test:e2e` runs the harness specs in `e2e/` and, as separate Playwright projects with their own demo servers, the browser specs of `packages/employment` (port 4179), `packages/housing` (port 4178), and `packages/auditors` (port 4189). The harness uses port 5173. Each of those packages can still run alone with `npm run test:e2e -w <package>`.
+
 ## Post-demo regression audit
 
 `npm run test:e2e` also runs `e2e/regression.spec.ts`, the Day 28 post-demo regression audit for this repository. Each test title carries a check id from `e2e/regression/catalog.ts`. The reporter writes `test-results/regression-audit.md` and `.json`: one row per check, the build identifier, pass or fail, and the reason for any check that is not run here.
