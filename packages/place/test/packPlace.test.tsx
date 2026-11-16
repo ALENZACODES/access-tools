@@ -1,10 +1,12 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import axe from "axe-core";
 import { PackPlaceView } from "../src/react/PackPlaceView.js";
 import { commonsTitle, fetchCommonsPhoto } from "../src/pack/commons.js";
 import { doorWidthMm, fitWithProfile } from "../src/pack/fit.js";
+import { packFieldLabel } from "../src/pack/catalog.js";
+import { copy } from "../src/i18n.js";
 import { fromPackRecord } from "../src/pack/projection.js";
 import type { PackRecord, PackSourceEntry } from "../src/pack/pack-types.js";
 import { EQUIPMENT_PROFILE_VERSION } from "../src/profile.js";
@@ -141,5 +143,152 @@ describe("web pack place", () => {
       const correct = screen.getByRole("link", { name: "Suggest a correction" });
       expect(correct.getAttribute("style") ?? "").toContain("min-height: 44px");
     });
+  });
+
+  it("prefers an explicit-unit door width over a unitless door:width sibling", () => {
+    const both: PackRecord = {
+      ...record,
+      fields: {
+        name: field("Wide door"),
+        "door:width": field(90),
+        door_clear_width_mm: field(900),
+      },
+    };
+    const projection = fromPackRecord(both, sources);
+    expect(projection.facts.doorWidth.key).toBe("door_clear_width_mm");
+    expect(projection.facts.doorWidth.value).toBe(900);
+    const fit = fitWithProfile(projection, profile).find((item) => item.need === "doorWidth");
+    expect(fit?.status).toBe("known-yes");
+    expect(fit?.decidingField).toBe("door_clear_width_mm");
+  });
+
+  it("prefers a known adult change-table alias over an earlier UNKNOWN alias", () => {
+    const unknownFirst: PackRecord = {
+      ...record,
+      fields: {
+        name: field("Adult table later"),
+        "changing_table:adult": field("UNKNOWN"),
+        adult_changing_table: field("yes"),
+      },
+    };
+    const projection = fromPackRecord(unknownFirst, sources);
+    expect(projection.facts.changeTable.key).toBe("adult_changing_table");
+    expect(projection.facts.changeTable.value).toBe("yes");
+    const fit = fitWithProfile(projection, profile).find((item) => item.need === "changeTable");
+    expect(fit?.status).toBe("known-yes");
+    expect(fit?.decidingField).toBe("adult_changing_table");
+  });
+
+  it.each([
+    { first: "yes", second: "no", order: "changing_table:adult yes then adult_changing_table no" },
+    { first: "no", second: "yes", order: "changing_table:adult no then adult_changing_table yes" },
+  ])("treats a yes/no adult change-table conflict as known-no ($order)", ({ first, second }) => {
+    const conflicting: PackRecord = {
+      ...record,
+      fields: {
+        name: field("Conflicting adult table"),
+        "changing_table:adult": field(first),
+        adult_changing_table: field(second),
+      },
+    };
+    const projection = fromPackRecord(conflicting, sources);
+    const fit = fitWithProfile(projection, profile).find((item) => item.need === "changeTable");
+    expect(fit?.status).toBe("known-no");
+    expect(fit?.status).not.toBe("known-yes");
+    expect(projection.facts.changeTable.value).toBe("no");
+    expect(projection.otherDetails.some((detail) => detail.value === "yes" && (detail.key === "changing_table:adult" || detail.key === "adult_changing_table"))).toBe(true);
+  });
+
+  it.each([
+    { first: 900, second: 700, order: "door_clear_width_mm then door_width_mm" },
+    { first: 700, second: 900, order: "door_width_mm then door_clear_width_mm" },
+  ])("treats disagreeing explicit door widths as Unknown, never a confident yes ($order)", ({ first, second }) => {
+    const conflicting: PackRecord = {
+      ...record,
+      fields: {
+        name: field("Conflicting door"),
+        door_clear_width_mm: field(first),
+        door_width_mm: field(second),
+      },
+    };
+    const projection = fromPackRecord(conflicting, sources);
+    expect(projection.facts.doorWidth.value).toBeNull();
+    const fit = fitWithProfile(projection, profile).find((item) => item.need === "doorWidth");
+    expect(fit?.status).toBe("unknown");
+    expect(fit?.status).not.toBe("known-yes");
+    expect(projection.allDetails.some((detail) => detail.key === "door_clear_width_mm" && detail.value === first)).toBe(true);
+    expect(projection.allDetails.some((detail) => detail.key === "door_width_mm" && detail.value === second)).toBe(true);
+  });
+
+  it.each([
+    { need: "stepFree" as const, firstKey: "entrance:step_free", secondKey: "wheelchair", first: "yes", second: "no" },
+    { need: "stepFree" as const, firstKey: "entrance:step_free", secondKey: "wheelchair", first: "no", second: "yes" },
+    { need: "washroom" as const, firstKey: "toilets:wheelchair", secondKey: "accessible_toilet", first: "yes", second: "no" },
+    { need: "washroom" as const, firstKey: "toilets:wheelchair", secondKey: "accessible_toilet", first: "no", second: "yes" },
+    { need: "parking" as const, firstKey: "parking:wheelchair", secondKey: "accessible_parking", first: "yes", second: "no" },
+    { need: "parking" as const, firstKey: "parking:wheelchair", secondKey: "accessible_parking", first: "no", second: "yes" },
+  ])("treats a $need yes/no conflict as known-no ($firstKey=$first, $secondKey=$second)", ({ need, firstKey, secondKey, first, second }) => {
+    const conflicting: PackRecord = {
+      ...record,
+      fields: {
+        name: field("Conflicting need"),
+        [firstKey]: field(first),
+        [secondKey]: field(second),
+      },
+    };
+    const projection = fromPackRecord(conflicting, sources);
+    const fit = fitWithProfile(projection, profile).find((item) => item.need === need);
+    expect(fit?.status).toBe("known-no");
+    expect(fit?.status).not.toBe("known-yes");
+    expect(projection.facts[need].value).toBe("no");
+  });
+
+  it("shows both original door-width measurements in the details table when they disagree", () => {
+    const conflicting: PackRecord = {
+      ...record,
+      fields: {
+        name: field("Conflicting door"),
+        door_clear_width_mm: field(900),
+        door_width_mm: field(700),
+      },
+    };
+    render(<PackPlaceView record={conflicting} sources={sources} lang="en" profile={profile} />);
+    const details = screen.getByRole("table", { name: "Recorded fields" });
+    expect(within(details).getByText("900")).toBeTruthy();
+    expect(within(details).getByText("700")).toBeTruthy();
+    expect(screen.getByText(/Door width for your chair:\s*Unknown/)).toBeTruthy();
+    expect(screen.queryByRole("table", { name: "Other recorded details" })?.textContent ?? "").not.toContain("900");
+  });
+
+  it("uses Oui connu / Non connu in French and drops Vérification from photo-loading copy", () => {
+    expect(copy("pack.yes", "fr")).toBe("Oui connu");
+    expect(copy("pack.no", "fr")).toBe("Non connu");
+    expect(copy("pack.yes", "fr")).not.toMatch(/confirmé/i);
+    expect(copy("pack.no", "fr")).not.toMatch(/confirmé/i);
+    expect(copy("pack.photo-loading", "fr")).toBe("Chargement de la photo…");
+    expect(copy("pack.photo-loading", "fr")).not.toMatch(/v[eé]rif/i);
+    expect(copy("pack.photo-loading", "en")).not.toMatch(/verif|check/i);
+  });
+
+  it("marks an uncatalogued pack field label as English only", () => {
+    expect(packFieldLabel("unlisted_field", "en")).toBe("unlisted field (English only)");
+    expect(packFieldLabel("unlisted_field", "fr")).toBe("unlisted field (en anglais seulement)");
+    expect(packFieldLabel("foo:bar_baz", "fr")).toBe("foo bar baz (en anglais seulement)");
+  });
+
+  it("gives licence and OSM attribution links a 44px minimum size", () => {
+    render(<PackPlaceView record={record} sources={sources} lang="en" />);
+    const osm = screen.getAllByRole("link", { name: /OpenStreetMap contributors/ });
+    expect(osm.length).toBeGreaterThan(0);
+    for (const link of osm) {
+      expect(link.getAttribute("style") ?? "").toContain("min-height: 44px");
+      expect(link.getAttribute("style") ?? "").toContain("min-width: 44px");
+    }
+    const licences = screen.getAllByRole("link", { name: "Licence" });
+    expect(licences.length).toBeGreaterThan(0);
+    for (const link of licences) {
+      expect(link.getAttribute("style") ?? "").toContain("min-height: 44px");
+      expect(link.getAttribute("style") ?? "").toContain("min-width: 44px");
+    }
   });
 });

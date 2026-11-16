@@ -1,4 +1,8 @@
+import { ADULT_CHANGE_KEYS, adultChangeVerdict, type AdultChangeVerdict } from "@access-tools/place/pack-aliases";
 import type { FieldValue, PackManifest, PackRecord, PackSource, PackSourceEntry, Tranche } from "./pack-types.js";
+
+export { ADULT_CHANGE_KEYS, adultChangeVerdict };
+export type { AdultChangeVerdict };
 
 export type FinderKind = "washroom" | "parking" | "changing" | "charging" | "repair";
 export const FINDER_KINDS: readonly FinderKind[] = ["washroom", "parking", "changing", "charging", "repair"];
@@ -58,9 +62,6 @@ export const WASHROOM_KEYS = [
 const PARKING_KEYS = ["name", "amenity", "parking", "capacity_disabled", "wheelchair", "access", "surface", "fee"];
 const CHARGING_KEYS = ["name", "wheelchair_charging", "mobility_device_charging", "charging_point", "power_supply", "socket", "access", "opening_hours"];
 const REPAIR_KEYS = ["name", "wheelchair_repair", "mobility_device_repair", "repair", "service", "shop", "access", "opening_hours"];
-/** Adult-specific keys only. A generic changing_table tag is not an adult table. */
-export const ADULT_CHANGE_KEYS = ["adult_changing_table", "adult_change_table"] as const;
-const GENERIC_CHANGE_KEYS = ["changing_table", "change_table"] as const;
 const TRUE = new Set(["yes", "true", "1", "designated"]);
 const FALSE = new Set(["no", "false", "0"]);
 const recognised = (value: unknown): boolean => value !== null && value !== undefined && value !== "UNKNOWN" && value !== "";
@@ -70,26 +71,6 @@ const has = (record: PackRecord, key: string): boolean => recognised(read(record
 const isYes = (value: unknown): boolean => TRUE.has(scalar(value));
 const isNo = (value: unknown): boolean => FALSE.has(scalar(value));
 
-
-export type AdultChangeVerdict = "yes" | "no" | "unknown";
-
-/**
- * Adult change-table honesty: only an adult-specific yes is a known yes.
- * A generic changing_table tag alone is unknown. A recorded no is not listed.
- * Returns null when the record has no changing-table evidence at all.
- */
-export function adultChangeVerdict(record: PackRecord): AdultChangeVerdict | null {
-  const adultValues = ADULT_CHANGE_KEYS.map((key) => read(record, key));
-  if (adultValues.some(isYes)) return "yes";
-  if (adultValues.some(isNo)) return "no";
-  const genericValues = GENERIC_CHANGE_KEYS.map((key) => read(record, key));
-  const adultPresent = ADULT_CHANGE_KEYS.some((key) => key in record.fields);
-  const genericPresent = GENERIC_CHANGE_KEYS.some((key) => key in record.fields);
-  if (adultPresent) return "unknown";
-  if (genericValues.some(isNo)) return "no";
-  if (genericValues.some(isYes) || genericPresent) return "unknown";
-  return null;
-}
 
 /** A kind requires source-backed evidence; merely being a venue is not enough. */
 export function supportsKind(record: PackRecord, kind: FinderKind): boolean {

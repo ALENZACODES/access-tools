@@ -91,6 +91,54 @@ describe("pack-backed finders", () => {
     expect(result.hidden).toEqual([]);
     expect(result.rows.concat(result.unknownRows, result.hidden).some((row) => ["no-table", "adult-no", "generic-and-adult-no"].includes(row.id))).toBe(false);
   });
+  it.each([
+    {
+      id: "colon-no-then-yes",
+      fields: { name: "Conflict A", "changing_table:adult": "no", adult_changing_table: "yes" },
+    },
+    {
+      id: "colon-yes-then-no",
+      fields: { name: "Conflict B", "changing_table:adult": "yes", adult_changing_table: "no" },
+    },
+    {
+      id: "underscore-yes-then-short-no",
+      fields: { name: "Conflict C", adult_changing_table: "yes", adult_change_table: "no" },
+    },
+    {
+      id: "underscore-no-then-short-yes",
+      fields: { name: "Conflict D", adult_changing_table: "no", adult_change_table: "yes" },
+    },
+  ])("treats a yes/no adult-alias conflict as a recorded no in the finder ($id)", async ({ id, fields }) => {
+    const conflict = record(id, "washroom", fields);
+    expect(adultChangeVerdict(conflict)).toBe("no");
+    const plus = [...fixtures, conflict];
+    const source: PackSource = {
+      ...fixtureSource(),
+      async *records(tranche) { for (const value of plus) if (value.tranche === tranche) yield value; },
+      get: async (recordId) => plus.find((value) => value.id === recordId) ?? null,
+    };
+    const result = await queryPackFinders(source, { kind: "changing" });
+    expect(result.rows.map((row) => row.id)).toEqual(["municipal-toilet"]);
+    expect(result.rows.some((row) => row.id === id)).toBe(false);
+    expect(result.unknownRows.some((row) => row.id === id)).toBe(false);
+    expect(result.count).toBe(1);
+    expect(result.count).toBe(result.rows.length);
+  });
+
+  it("lists a changing_table:adult yes as a known adult change table", async () => {
+    const colonYes = record("colon-adult-yes", "washroom", { name: "Colon adult yes", "changing_table:adult": "yes" });
+    expect(adultChangeVerdict(colonYes)).toBe("yes");
+    const source: PackSource = {
+      ...fixtureSource(),
+      async *records() { yield colonYes; },
+      get: async (id) => (id === colonYes.id ? colonYes : null),
+    };
+    const result = await queryPackFinders(source, { kind: "changing" });
+    expect(result.rows.map((row) => row.id)).toEqual(["colon-adult-yes"]);
+    expect(result.count).toBe(1);
+    expect(result.unknownRows).toEqual([]);
+  });
+
   it("keeps demonstration imports out of the shell entry graph", () => {
     for (const file of ["react/pack-module.tsx", "react/PackFindersPage.tsx", "pack-finders.ts", "pack-types.ts"]) {
       const body = readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), "../src", file), "utf8");

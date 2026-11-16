@@ -14,7 +14,7 @@ export interface FitItem {
 const YES = new Set(["yes", "true", "1", "designated", "accessible"]);
 const NO = new Set(["no", "false", "0", "not_accessible"]);
 
-function booleanStatus(value: unknown): FitStatus {
+export function booleanStatus(value: unknown): FitStatus {
   if (typeof value === "boolean") return value ? "known-yes" : "known-no";
   if (typeof value !== "string" && typeof value !== "number") return "unknown";
   const normalized = String(value).trim().toLowerCase();

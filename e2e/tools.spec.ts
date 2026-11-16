@@ -88,6 +88,9 @@ test("PackFindersPage passes axe in English and French", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Pack finders", exact: true }).click();
   await expect(page.locator("[data-pack-finders]")).toBeVisible();
+  await page.locator("[data-pack-finders] #finder-kind").selectOption("changing");
+  await expect(page.locator("[data-pack-known-yes]")).toBeVisible();
+  await expect(page.locator("[data-pack-unknown-group]")).toBeVisible();
   await page.addScriptTag({ content: axe.source });
   for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 700 }]) {
     await page.setViewportSize(viewport);
@@ -98,8 +101,10 @@ test("PackFindersPage passes axe in English and French", async ({ page }) => {
       }
       await expect.poll(() => page.evaluate(() => document.documentElement.lang)).toBe(lang);
       await expect(page.locator("[data-pack-finders]")).toHaveAttribute("lang", lang);
+      await expect(page.locator("[data-pack-known-yes]")).toBeVisible();
+      await expect(page.locator("[data-pack-unknown-group]")).toBeVisible();
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-      expect(overflow, `PackFindersPage ${lang} ${viewport.width}`).toBeLessThanOrEqual(0);
+      expect(overflow, `PackFindersPage changing ${lang} ${viewport.width}`).toBeLessThanOrEqual(0);
       const violations = await page.evaluate(async () => {
         const axeRuntime = (window as unknown as { axe: typeof axe }).axe;
         const root = document.querySelector("[data-pack-finders]");
@@ -112,7 +117,7 @@ test("PackFindersPage passes axe in English and French", async ({ page }) => {
           return `${violation.id}: ${violation.help}${target ? ` [${target}]` : ""}`;
         });
       });
-      expect(violations, `PackFindersPage ${lang} ${viewport.width}`).toEqual([]);
+      expect(violations, `PackFindersPage changing ${lang} ${viewport.width}`).toEqual([]);
     }
   }
 });

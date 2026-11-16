@@ -1,5 +1,5 @@
 import { useEffect, useState, type CSSProperties, type FormEvent } from "react";
-import { finderCopy, finderFill, packFieldLabel } from "../i18n.js";
+import { finderCopy, finderFill, packFieldLabel, packGroupCountPhrase } from "../i18n.js";
 import { FINDER_KIND_KEYS, FINDER_KINDS, queryPackFinders, type FinderKind, type FinderLang, type PackFinderResult, type PackFinderRow } from "../pack-finders.js";
 import type { PackSource } from "../pack-types.js";
 
@@ -9,6 +9,17 @@ const checkBox: CSSProperties = { minHeight: 44, minWidth: 44, margin: 0, flex: 
 const contributeLink: CSSProperties = { display: "inline-flex", alignItems: "center", minHeight: 44, minWidth: 44, padding: 8, boxSizing: "border-box" };
 
 export interface PackFindersPageProps { source: PackSource; lang?: FinderLang }
+
+function resultCountMessage(result: PackFinderResult, lang: FinderLang): string {
+  if (result.kind === "changing" || result.unknownRows.length > 0) {
+    return finderFill("finder.pack.count-groups", lang, {
+      known: packGroupCountPhrase(result.rows.length, "known", lang),
+      unknown: packGroupCountPhrase(result.unknownRows.length, "unknown", lang),
+    });
+  }
+  return finderFill("finder.pack.count", lang, { count: result.count });
+}
+
 
 function ResultList({ rows, lang, headingLevel = 2 }: { rows: PackFinderRow[]; lang: FinderLang; headingLevel?: 2 | 3 }) {
   const Heading = headingLevel === 3 ? "h3" : "h2";
@@ -87,7 +98,7 @@ export function PackFindersPage({ source, lang = "en" }: PackFindersPageProps) {
     </form>
     {kind === "washroom" && <p>{finderCopy("finder.pack.availability", lang)}</p>}
     {kind === "parking" && <p>{finderCopy("finder.pack.parking-notice", lang)}</p>}
-    <div role="status" aria-live="polite">{loading ? finderCopy("finder.pack.loading", lang) : error ? finderCopy("finder.pack.error", lang) : result ? finderFill("finder.pack.count", lang, { count: result.count }) : null}</div>
+    <div role="status" aria-live="polite">{loading ? finderCopy("finder.pack.loading", lang) : error ? finderCopy("finder.pack.error", lang) : result ? resultCountMessage(result, lang) : null}</div>
     {empty && <p>{finderCopy("finder.pack.empty", lang)} <a href="/contribute" style={contributeLink}>{finderCopy("finder.pack.contribute", lang)}</a></p>}
     {!loading && !error && result && result.rows.length > 0 && (kind === "changing"
       ? <section data-pack-known-yes="" aria-labelledby="pack-known-yes">

@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { EquipmentProfile } from "../profile.js";
 import { fetchCommonsPhoto, commonsTitle, type CommonsPhoto } from "../pack/commons.js";
 import { copy } from "../i18n.js";
+import { DOOR_WIDTH_KEYS } from "../pack/alias-resolve.js";
 import { fitItemLine, packFieldLabel, photoCreditLine, recordedLine, sourceIdIsOsm } from "../pack/catalog.js";
 import { fitWithProfile } from "../pack/fit.js";
 import type { PackField, PackRecord, PackSourceEntry } from "../pack/pack-types.js";
@@ -50,8 +51,8 @@ function Evidence({ detail, lang }: { detail: PackDetail; lang: Lang }) {
   return (
     <span>
       {source?.name ?? field.source_id ?? copy("pack.source-missing", lang)} · {licence} · {field.retrieved_at || source?.retrieved || copy("pack.unknown", lang)} · {copy("pack.tier", lang)} {String(field.tier ?? copy("pack.unknown", lang))}
-      {source?.licenceUrl?.startsWith("https://") ? <>{" "}<a href={source.licenceUrl} rel="noopener noreferrer">{copy("pack.licence", lang)}</a></> : null}
-      {isOsm(source, field) ? <>{" · "}<a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer">{copy("pack.osm", lang)}</a></> : null}
+      {source?.licenceUrl?.startsWith("https://") ? <>{" "}<a href={source.licenceUrl} rel="noopener noreferrer" style={targetStyle}>{copy("pack.licence", lang)}</a></> : null}
+      {isOsm(source, field) ? <>{" · "}<a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer" style={targetStyle}>{copy("pack.osm", lang)}</a></> : null}
     </span>
   );
 }
@@ -106,7 +107,7 @@ function PhotoPanel({ record, lang, request }: { record: PackRecord; lang: Lang;
       {state === "ready" && photo ? (
         <figure>
           <a href={photo.pageUrl} rel="noopener noreferrer" target="_blank"><img src={photo.thumbUrl} alt={photo.title.slice(5)} loading="lazy" /></a>
-          <figcaption>{photoCreditLine(photo.author || copy("pack.commons-credit", lang), lang)}. <a href={photo.licenceUrl} rel="noopener noreferrer">{photo.licence}</a></figcaption>
+          <figcaption>{photoCreditLine(photo.author || copy("pack.commons-credit", lang), lang)}. <a href={photo.licenceUrl} rel="noopener noreferrer" style={targetStyle}>{photo.licence}</a></figcaption>
         </figure>
       ) : null}
     </section>
@@ -120,8 +121,14 @@ export function PackPlaceView({ record, sources, lang = "en", profile = null, ph
   const place = fromPackRecord(visibleRecord, visibleSources);
   const fit = fitWithProfile(place, profile);
   const present = new Set(place.allDetails.map((item) => item.key));
-  const coreDetails = Object.values(place.facts).filter((detail) => present.has(detail.key));
-  const showDetails = [...coreDetails, ...Object.values(place.facts).filter((detail) => !present.has(detail.key))];
+  const doorWidthConflict = place.facts.doorWidth.field === null && place.facts.doorWidth.value === null
+    && place.allDetails.some((item) => (DOOR_WIDTH_KEYS as readonly string[]).includes(item.key) && item.value !== null);
+  const coreDetails = Object.values(place.facts).filter((detail) => present.has(detail.key) && detail.field);
+  const conflictWidths = doorWidthConflict
+    ? place.allDetails.filter((item) => (DOOR_WIDTH_KEYS as readonly string[]).includes(item.key))
+    : [];
+  const missingFacts = Object.values(place.facts).filter((detail) => !present.has(detail.key) && detail.key !== "doorWidth");
+  const showDetails = [...coreDetails, ...conflictWidths, ...missingFacts];
   const category = copy(record.tranche === "washroom" ? "pack.washroom" : record.tranche === "transit" ? "pack.transit" : record.tranche === "path" ? "pack.path" : "pack.venue", lang);
   const osm = place.allDetails.some((detail) => isOsm(detail.source, detail.field)) || sources.some((source) => sourceIdIsOsm(source.sourceId));
   return (
@@ -129,7 +136,7 @@ export function PackPlaceView({ record, sources, lang = "en", profile = null, ph
       <header>
         <h1>{place.name ?? copy("pack.unnamed", lang)}</h1>
         <p>{category} · {place.region} · {recordedLine(place.id, lang)}</p>
-        {osm ? <p><a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer">{copy("pack.osm", lang)}</a></p> : null}
+        {osm ? <p><a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer" style={targetStyle}>{copy("pack.osm", lang)}</a></p> : null}
       </header>
       <section aria-labelledby="pack-fit-heading">
         <h2 id="pack-fit-heading">{copy("pack.fit", lang)}</h2>
@@ -141,7 +148,7 @@ export function PackPlaceView({ record, sources, lang = "en", profile = null, ph
           </li>
         ))}</ul>
       </section>
-      <section aria-labelledby="pack-detail-heading">
+      <section aria-labelledby="pack-detail-heading" id={doorWidthConflict ? "pack-field-doorWidth" : undefined}>
         <h2 id="pack-detail-heading">{copy("pack.details", lang)}</h2>
         <FactTable rows={showDetails} title={copy("pack.details", lang)} lang={lang} />
       </section>

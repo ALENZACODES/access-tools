@@ -2,8 +2,9 @@ import "@testing-library/jest-dom/vitest";
 import { createElement } from "react";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import axe from "axe-core";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { packFieldLabel } from "../src/i18n.js";
+import { packFieldLabel, packGroupCountPhrase } from "../src/i18n.js";
 import { createFindersModule } from "../src/react/pack-module.js";
 import { PackFindersPage } from "../src/react/PackFindersPage.js";
 import type { PackManifest, PackRecord, PackSource, PackSourceEntry, Tranche } from "../src/pack-types.js";
@@ -77,5 +78,70 @@ describe("PackFindersPage honesty and labels", () => {
     await userEvent.click(screen.getByRole("button", { name: "Search" }));
     const contribute = await screen.findByRole("link", { name: "Contribute information" });
     expect(contribute).toHaveStyle({ minHeight: "44px", minWidth: "44px" });
+  });
+
+  it("names known and unknown counts instead of Results: 0 when only the Unknown group is shown", async () => {
+    const onlyUnknown: PackRecord[] = [
+      record("generic-yes", "washroom", { name: "Public toilet", changing_table: "yes" }),
+    ];
+    const source: PackSource = {
+      ...fixtureSource(),
+      async *records(tranche) { for (const value of onlyUnknown) if (value.tranche === tranche) yield value; },
+      get: async (id) => onlyUnknown.find((value) => value.id === id) ?? null,
+    };
+    render(<PackFindersPage source={source} lang="en" />);
+    await userEvent.selectOptions(await screen.findByLabelText("Finder"), "changing");
+    const status = await screen.findByRole("status");
+    await waitFor(() => expect(status).toHaveTextContent("Results: 0 known, 1 unknown"));
+    expect(status).not.toHaveTextContent(/^Results: 0$/);
+    expect(screen.getByRole("region", { name: "Unknown" })).toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "Known adult change tables" })).not.toBeInTheDocument();
+  });
+
+  it("names both groups in the changing-finder status, including French typography", async () => {
+    render(<PackFindersPage source={fixtureSource()} lang="en" />);
+    await userEvent.selectOptions(await screen.findByLabelText("Finder"), "changing");
+    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("Results: 1 known, 1 unknown"));
+
+    cleanup();
+    render(<PackFindersPage source={fixtureSource()} lang="fr" />);
+    await userEvent.selectOptions(await screen.findByLabelText("Recherche"), "changing");
+    const status = await screen.findByRole("status");
+    await waitFor(() => expect(status.textContent ?? "").toBe("Résultats\u00A0: 1 connu, 1 inconnu"));
+    expect(status.textContent ?? "").toContain("\u00A0:");
+    expect(status.textContent ?? "").not.toMatch(/[^\u00A0]:/);
+  });
+
+  it("marks an uncatalogued pack field label as English only and replaces colons", () => {
+    expect(packFieldLabel("unlisted_field", "en")).toBe("unlisted field (English only)");
+    expect(packFieldLabel("unlisted_field", "fr")).toBe("unlisted field (en anglais seulement)");
+    expect(packFieldLabel("foo:bar_baz", "fr")).toBe("foo bar baz (en anglais seulement)");
+    expect(packFieldLabel("foo:bar_baz", "en")).toBe("foo bar baz (English only)");
+  });
+
+  it("pluralizes French known and unknown counts (1 connu, 2 connus)", () => {
+    expect(packGroupCountPhrase(0, "known", "fr")).toBe("0 connus");
+    expect(packGroupCountPhrase(1, "known", "fr")).toBe("1 connu");
+    expect(packGroupCountPhrase(2, "known", "fr")).toBe("2 connus");
+    expect(packGroupCountPhrase(0, "unknown", "fr")).toBe("0 inconnus");
+    expect(packGroupCountPhrase(1, "unknown", "fr")).toBe("1 inconnu");
+    expect(packGroupCountPhrase(2, "unknown", "fr")).toBe("2 inconnus");
+    expect(packGroupCountPhrase(2, "known", "en")).toBe("2 known");
+    expect(packGroupCountPhrase(2, "unknown", "en")).toBe("2 unknown");
+  });
+
+  it("passes axe on the changing-tables grouped headings in English and French", async () => {
+    for (const lang of ["en", "fr"] as const) {
+      const labels = lang === "fr"
+        ? { kind: "Recherche", known: "Tables à langer pour adultes connues", unknown: "Inconnu" }
+        : { kind: "Finder", known: "Known adult change tables", unknown: "Unknown" };
+      const { container, unmount } = render(<PackFindersPage source={fixtureSource()} lang={lang} />);
+      await userEvent.selectOptions(await screen.findByLabelText(labels.kind), "changing");
+      await screen.findByRole("region", { name: labels.known });
+      expect(screen.getByRole("region", { name: labels.unknown })).toBeInTheDocument();
+      const results = await axe.run(container);
+      expect(results.violations.map((violation) => `${violation.id}: ${violation.help}`)).toEqual([]);
+      unmount();
+    }
   });
 });

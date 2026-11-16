@@ -1,6 +1,14 @@
+import {
+  DOOR_WIDTH_KEYS,
+  explicitDoorWidthsDisagree,
+  isKnown,
+  resolveAliasKey,
+  type PackFactName,
+} from "./alias-resolve.js";
 import type { PackField, PackRecord, PackSourceEntry } from "./pack-types.js";
 
-export type PackFactName = "name" | "address" | "stepFree" | "washroom" | "doorWidth" | "changeTable" | "parking";
+export type { PackFactName } from "./alias-resolve.js";
+export { explicitDoorWidthsDisagree, isKnown, resolveAliasKey } from "./alias-resolve.js";
 
 export interface PackDetail {
   id: string;
@@ -19,20 +27,6 @@ export interface PackPlaceProjection {
   otherDetails: PackDetail[];
   /** Every original field, with its original evidence, remains available for the full record table. */
   allDetails: PackDetail[];
-}
-
-const FIELD_ALIASES: Record<PackFactName, readonly string[]> = {
-  name: ["name", "name:en", "official_name", "ref"],
-  address: ["addr:full", "address", "addr:street"],
-  stepFree: ["entrance:step_free", "step_free", "wheelchair:entrance", "wheelchair"],
-  washroom: ["toilets:wheelchair", "wheelchair:toilet", "accessible_toilet", "washroom_accessible"],
-  doorWidth: ["door:width", "entrance:width", "door_clear_width_mm", "door_width_mm"],
-  changeTable: ["changing_table:adult", "adult_changing_table", "adult_change_table"],
-  parking: ["parking:wheelchair", "disabled:parking", "accessible_parking", "parking:access"],
-};
-
-export function isKnown(value: unknown): boolean {
-  return value !== null && value !== undefined && value !== "UNKNOWN" && value !== "";
 }
 
 function sourceFor(field: PackField | null, sources: PackSourceEntry[]): PackSourceEntry | null {
@@ -57,11 +51,21 @@ function detail(key: string, field: PackField | null, sources: PackSourceEntry[]
 export function fromPackRecord(record: PackRecord, sources: PackSourceEntry[]): PackPlaceProjection {
   const used = new Set<string>();
   const facts = {} as Record<PackFactName, PackDetail>;
-  (Object.keys(FIELD_ALIASES) as PackFactName[]).forEach((name) => {
-    const key = FIELD_ALIASES[name].find((candidate) => candidate in record.fields);
-    if (key) used.add(key);
-    facts[name] = detail(key ?? name, key ? record.fields[key] ?? null : null, sources);
-  });
+  const factNames: PackFactName[] = ["name", "address", "stepFree", "washroom", "doorWidth", "changeTable", "parking"];
+  for (const name of factNames) {
+    const key = resolveAliasKey(name, record);
+    const projected = detail(key ?? name, key ? record.fields[key] ?? null : null, sources);
+    if (name === "doorWidth" && explicitDoorWidthsDisagree(record)) {
+      // Keep both original measurements visible; do not display a nulled yes.
+      for (const alias of DOOR_WIDTH_KEYS) {
+        if (alias in record.fields) used.add(alias);
+      }
+      facts[name] = { id: "doorWidth", key: "doorWidth", field: null, value: null, source: null };
+    } else {
+      if (key) used.add(key);
+      facts[name] = projected;
+    }
+  }
   const allDetails = Object.keys(record.fields)
     .sort((a, b) => a.localeCompare(b))
     .map((key) => detail(key, record.fields[key] ?? null, sources));

@@ -54,6 +54,7 @@ const FIELD_LABELS: Record<string, CopyKey> = {
   accessible_toilet: "pack.field-key.accessible-toilet",
   washroom_accessible: "pack.field-key.washroom-accessible",
   "door:width": "pack.field-key.door-width",
+  doorWidth: "pack.field-key.door-width",
   "entrance:width": "pack.field-key.entrance-width",
   door_clear_width_mm: "pack.field-key.door-clear-width-mm",
   door_width_mm: "pack.field-key.door-width-mm",
@@ -73,5 +74,7 @@ const FIELD_LABELS: Record<string, CopyKey> = {
 
 export function packFieldLabel(key: string, lang: Lang): string {
   const catalogKey = FIELD_LABELS[key];
-  return catalogKey ? copy(catalogKey, lang) : key.replaceAll("_", " ").replaceAll(":", " ");
+  if (catalogKey) return copy(catalogKey, lang);
+  const english = key.replaceAll("_", " ").replaceAll(":", " ");
+  return `${english} (${copy("pack.english-only-note", lang)})`;
 }
