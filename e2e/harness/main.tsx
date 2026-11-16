@@ -6,8 +6,9 @@ import { GamesApp, defaultSettings, type GamesRound, type GamesSettings } from "
 import { PlaceDemo } from "../../packages/place/src/demo/main.js";
 import { SearchDemo } from "../../packages/search/src/demo/main.js";
 import { FinderDemo } from "../../packages/finders/src/demo/main.js";
+import { PackFindersDemo } from "./PackFindersDemo.js";
 
-type Tab = "directory" | "timing" | "games" | "place" | "search" | "finders" | "paratransit";
+type Tab = "directory" | "timing" | "games" | "place" | "search" | "finders" | "pack-finders" | "paratransit";
 
 function Harness() {
   const [tab, setTab] = useState<Tab>("directory");
@@ -44,6 +45,9 @@ function Harness() {
         <button type="button" style={tabStyle} aria-current={tab === "finders" ? "page" : undefined} onClick={() => setTab("finders")}>
           Finders
         </button>
+        <button type="button" style={tabStyle} aria-current={tab === "pack-finders" ? "page" : undefined} onClick={() => setTab("pack-finders")}>
+          Pack finders
+        </button>
         <button type="button" style={tabStyle} aria-current={tab === "paratransit" ? "page" : undefined} onClick={() => setTab("paratransit")}>
           Paratransit
         </button>
@@ -65,6 +69,7 @@ function Harness() {
       {tab === "place" ? <div data-screen="place"><PlaceDemo /></div> : null}
       {tab === "search" ? <div data-screen="search"><SearchDemo /></div> : null}
       {tab === "finders" ? <div data-screen="finders"><FinderDemo /></div> : null}
+      {tab === "pack-finders" ? <PackFindersDemo /> : null}
       {tab === "paratransit" ? <div data-screen="paratransit"><ParatransitDirectory /></div> : null}
       {tab === "games" ? (
         <GamesApp

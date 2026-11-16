@@ -275,6 +275,89 @@ export const FINDER_COPY = {
     en: "Hours are unknown, so this record is not shown as open.",
     fr: "Les heures sont inconnues, donc cette fiche n'est pas affichée comme ouverte.",
   },
+  "finder.pack.title": { en: "Find accessible facilities", fr: "Trouver des installations accessibles" },
+  "finder.pack.kind": { en: "Finder", fr: "Recherche" },
+  "finder.pack.search": { en: "Search", fr: "Rechercher" },
+  "finder.pack.near": { en: "Near this place", fr: "Près de cet endroit" },
+  "finder.pack.lat": { en: "Latitude", fr: "Latitude" },
+  "finder.pack.lon": { en: "Longitude", fr: "Longitude" },
+  "finder.pack.radius": { en: "Radius (metres)", fr: "Rayon (mètres)" },
+  "finder.pack.broaden": { en: "Broaden results", fr: "Élargir les résultats" },
+  "finder.pack.count": { en: "Results: {count}", fr: "Résultats\u00A0: {count}" },
+  "finder.pack.empty": {
+    en: "No sourced records for this finder in the searched area (0). Try broadening the area or change the filters.",
+    fr: "Aucune fiche sourcée pour cette recherche dans la zone (0). Essayez d’élargir la zone ou changez les filtres.",
+  },
+  "finder.pack.contribute": { en: "Contribute information", fr: "Contribuer des renseignements" },
+  "finder.pack.source": { en: "Source", fr: "Source" },
+  "finder.pack.licence": { en: "Licence", fr: "Licence" },
+  "finder.pack.retrieved": { en: "Retrieved", fr: "Date de récupération" },
+  "finder.pack.tier": { en: "Verification tier", fr: "Niveau de vérification" },
+  "finder.pack.profile": { en: "Profile needs (comma-separated field names)", fr: "Besoins du profil (noms de champs séparés par des virgules)" },
+  "finder.pack.summary": {
+    en: "Known yes: {yes}; Known no: {no}; Unknown needs: {unknown}",
+    fr: "Oui connu\u00A0: {yes}\u202F; Non connu\u00A0: {no}\u202F; Besoins inconnus\u00A0: {unknown}",
+  },
+  "finder.pack.fact-meta": {
+    en: "Source: {source}; Licence: {licence}; Retrieved: {retrieved}; Verification tier: {tier}. {attribution}",
+    fr: "Source\u00A0: {source}\u202F; Licence\u00A0: {licence}\u202F; Date de récupération\u00A0: {retrieved}\u202F; Niveau de vérification\u00A0: {tier}. {attribution}",
+  },
+  "finder.pack.availability": {
+    en: "Washroom availability, openness and cleanliness are not shown. Records are not live status.",
+    fr: "La disponibilité, l’ouverture et la propreté des toilettes ne sont pas indiquées. Il ne s’agit pas d’une indication instantanée.",
+  },
+  "finder.pack.parking-notice": {
+    en: "Spaces the data says exist, not free now.",
+    fr: "Places indiquées dans les données, pas places libres en ce moment.",
+  },
+  "finder.pack.error": { en: "Unable to load finder data", fr: "Impossible de charger les données" },
+  "finder.pack.loading": { en: "Loading sourced records", fr: "Chargement des fiches sourcées" },
+  "finder.pack.osm": { en: "© OpenStreetMap contributors, ODbL", fr: "© contributeurs OpenStreetMap, ODbL" },
+  "finder.pack.kind.washroom": { en: "Washrooms", fr: "Toilettes" },
+  "finder.pack.kind.parking": { en: "Parking", fr: "Stationnement" },
+  "finder.pack.kind.changing": { en: "Changing tables", fr: "Tables à langer et de changement" },
+  "finder.pack.kind.charging": { en: "Charging", fr: "Recharge" },
+  "finder.pack.kind.repair": { en: "Repair and supplies", fr: "Réparation et fournitures" },
+
+  "finder.pack.known-yes": { en: "Known adult change tables", fr: "Tables à langer pour adultes connues" },
+  "finder.pack.unknown-group": { en: "Unknown", fr: "Inconnu" },
+  "finder.pack.unknown-group-note": {
+    en: "These records do not have a known adult change table. Unknown is not a yes.",
+    fr: "Ces fiches n’ont pas de table à langer pour adultes connue. Inconnu n’est pas un oui.",
+  },
+  "finder.pack.field.name": { en: "Name", fr: "Nom" },
+  "finder.pack.field.wheelchair": { en: "Wheelchair access", fr: "Accès en fauteuil roulant" },
+  "finder.pack.field.access": { en: "Access", fr: "Accès" },
+  "finder.pack.field.door_width": { en: "Door width", fr: "Largeur de porte" },
+  "finder.pack.field.turning_diameter": { en: "Turning diameter", fr: "Diamètre de virage" },
+  "finder.pack.field.transfer_side": { en: "Transfer side", fr: "Côté de transfert" },
+  "finder.pack.field.grab_rails": { en: "Grab rails", fr: "Barres d’appui" },
+  "finder.pack.field.toilet_height": { en: "Toilet height", fr: "Hauteur de la toilette" },
+  "finder.pack.field.sink_height": { en: "Sink height", fr: "Hauteur du lavabo" },
+  "finder.pack.field.step_free": { en: "Step-free", fr: "Sans marche" },
+  "finder.pack.field.changing_table": { en: "Changing table", fr: "Table à langer" },
+  "finder.pack.field.adult_changing_table": { en: "Adult change table", fr: "Table à langer pour adultes" },
+  "finder.pack.field.adult_change_table": { en: "Adult change table", fr: "Table à langer pour adultes" },
+  "finder.pack.field.change_table": { en: "Changing table", fr: "Table à langer" },
+  "finder.pack.field.hoist": { en: "Hoist", fr: "Lève-personne" },
+  "finder.pack.field.opening_hours": { en: "Opening hours", fr: "Heures d’ouverture" },
+  "finder.pack.field.amenity": { en: "Amenity", fr: "Équipement" },
+  "finder.pack.field.parking": { en: "Parking", fr: "Stationnement" },
+  "finder.pack.field.capacity_disabled": { en: "Designated accessible spaces", fr: "Places désignées accessibles" },
+  "finder.pack.field.surface": { en: "Surface", fr: "Surface" },
+  "finder.pack.field.fee": { en: "Fee", fr: "Frais" },
+  "finder.pack.field.wheelchair_charging": { en: "Wheelchair charging", fr: "Recharge de fauteuil roulant" },
+  "finder.pack.field.mobility_device_charging": { en: "Mobility device charging", fr: "Recharge d’appareil de mobilité" },
+  "finder.pack.field.charging_point": { en: "Charging point", fr: "Point de recharge" },
+  "finder.pack.field.power_supply": { en: "Power supply", fr: "Alimentation" },
+  "finder.pack.field.socket": { en: "Socket", fr: "Prise" },
+  "finder.pack.field.wheelchair_repair": { en: "Wheelchair repair", fr: "Réparation de fauteuil roulant" },
+  "finder.pack.field.mobility_device_repair": { en: "Mobility device repair", fr: "Réparation d’appareil de mobilité" },
+  "finder.pack.field.repair": { en: "Repair", fr: "Réparation" },
+  "finder.pack.field.service": { en: "Service", fr: "Service" },
+  "finder.pack.field.shop": { en: "Shop", fr: "Commerce" },
+
+
   "finder.coverage-sentence": {
     en: "This pack names {count} municipalities: {list}. Ontario has 444 municipalities. This pack does not describe provincial coverage.",
     fr: "Ce paquet nomme {count} municipalité(s)\u00A0: {list}. L'Ontario compte 444 municipalités. Ce paquet ne décrit pas la couverture provinciale.",
@@ -290,4 +373,12 @@ export function finderCopy(key: FinderKey, lang: Lang): string {
 
 export function finderFill(key: FinderKey, lang: Lang, values: Record<string, string | number>): string {
   return fill(finderCopy(key, lang), values);
+}
+
+export function packFieldLabel(key: string, lang: Lang): string {
+  const catalogKey = `finder.pack.field.${key}`;
+  if (Object.prototype.hasOwnProperty.call(FINDER_COPY, catalogKey)) {
+    return finderCopy(catalogKey as FinderKey, lang);
+  }
+  return key.replaceAll("_", " ");
 }
