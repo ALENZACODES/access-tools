@@ -113,9 +113,9 @@ test("Day 14: the five Day 14 games play by keyboard with visible focus, and Pai
   }
 });
 
-test("Day 15: all nineteen games play by tap with the network turned off", async ({ page, context }) => {
+test("Day 15: all twenty-five games play by tap with the network turned off", async ({ page, context }) => {
   test.setTimeout(180_000);
-  expect(GAME_LIBRARY).toHaveLength(19);
+  expect(GAME_LIBRARY).toHaveLength(25);
   await openGames(page);
   await context.setOffline(true);
   const requests: string[] = [];

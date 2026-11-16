@@ -23,16 +23,21 @@ export function surpriseGame(favourites: readonly string[], seed: number): GameM
   return pick(mulberry32(seed), pool);
 }
 
-/** Each date starts three places after the previous one. Three shares no factor with a library of nineteen, so the rotation reaches every game. */
+/**
+ * Each date starts three places after the previous one. Three shares no factor
+ * with a library of twenty-five, so the rotation reaches every game. A library
+ * whose size is a multiple of three would need another stride; the tests check
+ * that every game gets the same share.
+ */
 const DAILY_STRIDE = 3;
 
 /**
  * Daily set of three games from the whole library. The UTC day number picks
  * the first game, three places on from the day before, and the next two follow
  * in library order, wrapping at the end. The same date always returns the same
- * three. With nineteen games, six dates in a row show eighteen different games
- * and a seventh date reaches the last one, and any nineteen dates in a row
- * show every game exactly three times.
+ * three. With twenty-five games, eight dates in a row show twenty-four
+ * different games and a ninth date reaches the last one, and any twenty-five
+ * dates in a row show every game exactly three times.
  */
 export function buildDailySet(date: string): GameMeta[] {
   const day = Math.floor(Date.parse(`${date}T00:00:00Z`) / 86_400_000);

@@ -7,6 +7,15 @@ import {
   solveBatchTwo,
   startBatchTwo,
 } from "./batch2/index.js";
+import {
+  BATCH_THREE_FAMILY_LABEL,
+  applyBatchThree,
+  batchThreeMetaById,
+  describeBatchThree,
+  isBatchThreeGame,
+  solveBatchThree,
+  startBatchThree,
+} from "./batch3/index.js";
 import { PRACTICE_DONE, ROUND_DONE } from "./boundaries.js";
 import { gameCopy, gamePhrase, type GameCopyKey } from "./i18n.js";
 import { mulberry32, shuffle } from "./rng.js";
@@ -36,6 +45,7 @@ export const TASK_FAMILY_LABEL: Record<TaskFamily, Record<Language, string>> = {
   spatial_assembly: pair("family.spatial_assembly"),
   running_inventory: pair("family.running_inventory"),
   ...BATCH_TWO_FAMILY_LABEL,
+  ...BATCH_THREE_FAMILY_LABEL,
 };
 
 function meta(
@@ -132,7 +142,7 @@ const GOAL = 8;
 const BUDGET = 6;
 
 export function metaById(id: string): GameMeta {
-  const found = CATALOG.find((game) => game.id === id) ?? batchTwoMeta(id);
+  const found = CATALOG.find((game) => game.id === id) ?? batchTwoMeta(id) ?? batchThreeMetaById(id);
   if (!found) throw new Error(`Unknown game ${id}`);
   return found;
 }
@@ -178,6 +188,7 @@ function initialData(id: string, seed: number): GameData {
       return { kind: "order-keeper", index: 0, list: ["bread", "milk"] };
     default:
       if (isBatchTwoGame(id)) return { kind: "batch-two", state: startBatchTwo(id, seed) };
+      if (isBatchThreeGame(id)) return { kind: "batch-three", state: startBatchThree(id, seed) };
       throw new Error(`Unknown game ${id}`);
   }
 }
@@ -261,6 +272,8 @@ export function solutionIds(session: GameSession): string[] {
       return ["correct"];
     case "batch-two":
       return solveBatchTwo(data.state);
+    case "batch-three":
+      return solveBatchThree(data.state);
     default:
       return [];
   }
@@ -315,6 +328,8 @@ function apply(session: GameSession, choiceId: string): GameSession {
       return applyOrder(session, data, choiceId);
     case "batch-two":
       return applyBatchTwo(session, data.state, choiceId);
+    case "batch-three":
+      return applyBatchThree(session, data.state, choiceId);
     default:
       return session;
   }
@@ -472,6 +487,8 @@ function describe(session: GameSession): { prompt: string; detail: string; choic
       return describeOrder(language, data);
     case "batch-two":
       return describeBatchTwo(data.state, language);
+    case "batch-three":
+      return describeBatchThree(data.state, language);
     default:
       return { prompt: "", detail: "", choices: [] };
   }

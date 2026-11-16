@@ -114,7 +114,7 @@ function scanChoose(label: string): void {
 }
 
 describe("second batch on the hub", () => {
-  it("lists all nineteen games with the same card parts, and passes the automated accessibility check", async () => {
+  it("lists every game in the library with the same card parts, and passes the automated accessibility check", async () => {
     const { container } = render(<Harness />);
     for (const game of GAME_LIBRARY) {
       const card = screen.getByRole("heading", { level: 2, name: game.name }).closest("li");

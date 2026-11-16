@@ -1,4 +1,5 @@
 import type { BatchTwoFamily, BatchTwoState } from "./batch2/types.js";
+import type { BatchThreeFamily, BatchThreeState } from "./batch3/types.js";
 
 export type Language = "en" | "fr";
 export type Pace = "relaxed" | "standard" | "brisk";
@@ -15,7 +16,8 @@ export type TaskFamily =
   | "task_switching"
   | "spatial_assembly"
   | "running_inventory"
-  | BatchTwoFamily;
+  | BatchTwoFamily
+  | BatchThreeFamily;
 
 export interface Choice {
   id: string;
@@ -69,7 +71,8 @@ export type GameData =
   | { kind: "switch-rules"; index: number }
   | { kind: "shape-assembly"; selected: string | null; rotation: number; placed: Array<string | null> }
   | { kind: "order-keeper"; index: number; list: string[] }
-  | { kind: "batch-two"; state: BatchTwoState };
+  | { kind: "batch-two"; state: BatchTwoState }
+  | { kind: "batch-three"; state: BatchThreeState };
 
 export interface GameSession {
   metaId: string;
