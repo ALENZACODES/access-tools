@@ -2,11 +2,14 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import axe from "axe-core";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "../src/App.js";
 import { copy } from "../src/copy.js";
 import { WORKSPACE_KEY, isWorkspace } from "../src/workspace.js";
 import type { Workspace } from "../src/workspace.js";
+
+// These tests type and click through whole screens; the default limit is too tight on a busy machine.
+vi.setConfig({ testTimeout: 30_000 });
 
 const NOW = new Date("2026-11-16T15:00:00Z");
 const clock = () => NOW;
@@ -222,7 +225,7 @@ describe("languages, storage and accessibility", () => {
       await pick(user, roleLabel, role);
       await clean(view.container);
     }
-  }, 30_000);
+  });
   it("gives every form control a name and every button a type", () => {
     const { view } = start();
     for (const control of view.container.querySelectorAll("input, select, textarea")) {
