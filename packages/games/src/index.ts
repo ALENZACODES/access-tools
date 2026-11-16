@@ -1,6 +1,8 @@
 export { DAILY_NOTE, GAMES_BOUNDARY, GRACE_RULE, PRACTICE_BANNER, PRACTICE_DONE, ROUND_DONE } from "./boundaries.js";
+export { BANNED_CLAIMS, GAMES_COPY_CATALOGUES, allGamesCopy, healthClaimHits, type ClaimHit } from "./claims.js";
 export {
   CATALOG,
+  OPTIONAL_TIMER_GAME_ID,
   TASK_FAMILY_LABEL,
   choose,
   createSession,
@@ -24,7 +26,7 @@ export {
   writeRound,
   writeSettings,
 } from "./store.js";
-export { GamesApp } from "./ui/GamesApp.js";
+export { GamesApp, MOTION_CSS } from "./ui/GamesApp.js";
 export { SHELL_CONTRACT_VERSION, gamesShellModule, listGamesForShell, toShellActivity } from "./shell.js";
 export type { GamesShellResult, ShellActivity } from "./shell.js";
 export type {

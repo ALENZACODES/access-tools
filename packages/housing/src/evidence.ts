@@ -119,7 +119,7 @@ export function clearEvidence(storage: Pick<Storage, "removeItem">): void {
 
 export type Cells<K extends string> = Record<K, number | null>;
 
-/** Primary suppression only: a count below the threshold (including zero) is withheld. */
+/** Primary suppression only: a count below the threshold (including zero) is withheld. Use it only for counts published without a total. */
 export function suppressCounts<K extends string>(counts: Record<K, number>, threshold = SUPPRESSION_THRESHOLD): Cells<K> {
   const cells = {} as Cells<K>;
   for (const key of Object.keys(counts) as K[]) cells[key] = counts[key] >= threshold ? counts[key] : null;
@@ -144,6 +144,30 @@ export function suppressPartition<K extends string>(counts: Record<K, number>, t
   return cells;
 }
 
+/**
+ * Suppression for cells that can overlap, beside a total: each cell counts the
+ * reports that named one choice, and a report can name several, so the cells
+ * do not add up to the total.
+ *
+ * Subtracting a published cell from the published total gives the number of
+ * reports that did not name that choice. A cell is therefore published only
+ * when its own count reaches the threshold and that remainder is either zero
+ * or also reaches the threshold. When the total itself is withheld, every cell
+ * is withheld. A count that is not a whole number from zero to the total is
+ * withheld.
+ */
+export function suppressOverlapping<K extends string>(counts: Record<K, number>, total: number, threshold = SUPPRESSION_THRESHOLD): Cells<K> {
+  const cells = {} as Cells<K>;
+  const totalShown = Number.isInteger(total) && total >= threshold;
+  for (const key of Object.keys(counts) as K[]) {
+    const count = counts[key];
+    const whole = Number.isInteger(count) && count >= 0 && count <= total;
+    const rest = total - count;
+    cells[key] = totalShown && whole && count >= threshold && (rest === 0 || rest >= threshold) ? count : null;
+  }
+  return cells;
+}
+
 function tally<K extends string>(keys: readonly K[]): Record<K, number> {
   return Object.fromEntries(keys.map((key) => [key, 0])) as Record<K, number>;
 }
@@ -156,7 +180,11 @@ export interface EvidenceAggregate {
   byCategory: Cells<BarrierCategory>;
   bySetting: Cells<EvidenceSetting>;
   byWaitBand: Cells<WaitBand>;
-  /** A report can name several barriers, so these cells do not add up to the total. */
+  /**
+   * A report can name several barriers, so these cells do not add up to the total.
+   * A cell is withheld when it is small, and also when the total minus the cell
+   * would be a small count of reports that did not name that barrier.
+   */
   byBarrier: Cells<BarrierType>;
 }
 
@@ -180,6 +208,6 @@ export function aggregateEvidence(reports: readonly EvidenceReport[], threshold 
     byCategory: suppressPartition(category, k),
     bySetting: suppressPartition(setting, k),
     byWaitBand: suppressPartition(wait, k),
-    byBarrier: suppressCounts(barrier, k),
+    byBarrier: suppressOverlapping(barrier, total, k),
   };
 }

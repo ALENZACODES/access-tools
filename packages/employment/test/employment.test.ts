@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { catalog as CATALOG } from "../src/catalog.js";
 import { DEMONSTRATION_LISTINGS } from "../src/data.js";
 import { commuteStatus, joinWorkplace } from "../src/join.js";
 import { assertListing, listingErrors } from "../src/validate.js";
@@ -43,5 +44,18 @@ describe("workplace and commute boundaries", () => {
     expect(joinWorkplace(record, [])).toBeUndefined();
     const fact = record.access.stepFreeEntry;
     expect(joinWorkplace(record, [{ placeId: "demo-place", stepFreeEntry: fact, accessibleWashroom: fact, workstation: fact }])?.placeId).toBe("demo-place");
+  });
+});
+
+describe("hand-off wording", () => {
+  it("names a partner organisation's employment programme in English and French, and no other kind of organisation", () => {
+    expect(CATALOG.en.handoffIntro).toContain("A partner organisation’s employment programme");
+    expect(CATALOG.fr.handoffIntro).toContain("le programme d’emploi d’un organisme partenaire");
+    for (const listing of DEMONSTRATION_LISTINGS) {
+      expect(listing.handoff.note.en).toContain("a partner organisation’s employment programme");
+      expect(listing.handoff.note.fr).toContain("le programme d’emploi d’un organisme partenaire");
+    }
+    const shown = JSON.stringify([CATALOG, DEMONSTRATION_LISTINGS.map((listing) => listing.handoff.note)]);
+    expect(shown).not.toMatch(/SCI organisation|organisme SCI/);
   });
 });

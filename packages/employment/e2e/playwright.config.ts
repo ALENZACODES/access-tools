@@ -5,7 +5,9 @@ export default defineConfig({
   testMatch: "*.spec.ts",
   use: { baseURL: "http://127.0.0.1:4179" },
   webServer: {
-    command: "npx vite packages/employment --host 127.0.0.1 --port 4179 --strictPort",
+    // Runs from the package folder, where vite.config.ts sets the demo root.
+    command: "npx vite --config vite.config.ts --host 127.0.0.1 --port 4179 --strictPort",
+    cwd: "..",
     url: "http://127.0.0.1:4179",
     reuseExistingServer: !process.env.CI,
     timeout: 30_000,
