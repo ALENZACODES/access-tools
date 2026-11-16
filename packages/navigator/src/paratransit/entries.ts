@@ -15,10 +15,22 @@ const LICENCE: ParatransitEntry["licenceNote"] = {
 
 const RETRIEVED_ON = "2026-11-14";
 
-function entry(partial: Omit<ParatransitEntry, "schemaVersion" | "retrievedOn" | "verificationTier" | "licenceNote" | "notEligibilityAdvice">): ParatransitEntry {
+/** Entries read on a later UTC date carry that date. */
+const RETRIEVED_ON_2026_11_16 = "2026-11-16";
+
+/** Used when the page that was read does not describe the service area. Nothing is inferred from the agency's name. */
+const AREA_NOT_STATED: ParatransitEntry["serviceArea"] = {
+  en: "Not stated on the page that was read",
+  fr: "Non précisé sur la page consultée",
+};
+
+function entry(
+  partial: Omit<ParatransitEntry, "schemaVersion" | "retrievedOn" | "verificationTier" | "licenceNote" | "notEligibilityAdvice">,
+  retrievedOn: string = RETRIEVED_ON,
+): ParatransitEntry {
   return {
     schemaVersion: "paratransit-entry-1.0.0",
-    retrievedOn: RETRIEVED_ON,
+    retrievedOn,
     verificationTier: "administrator_page",
     licenceNote: LICENCE,
     notEligibilityAdvice: true,
@@ -27,8 +39,11 @@ function entry(partial: Omit<ParatransitEntry, "schemaVersion" | "retrievedOn" |
 }
 
 /**
- * Read from each agency's own site on 14 November 2026 (UTC).
- * OC Transpo Para Transpo stays out. A retry of https://www.octranspo.com/en/para-transpo/ on that UTC date returned HTTP 403, so the phone and booking link were not read.
+ * The first six entries were read from each agency's own site on 14 November 2026 (UTC).
+ * Para Transpo, MobilityPLUS and GOVA Plus were read on 16 November 2026 (UTC) and carry that date.
+ * The Para Transpo page names an online booking system and does not print its address, so the booking link is the page itself.
+ * The MobilityPLUS and GOVA Plus pages do not describe a service area, so none is stored.
+ * Kingston Access Bus stays out: the Kingston Transit accessibility page read on 16 November 2026 gives no booking phone for it.
  * No booking window is stored.
  */
 export const PARATRANSIT: readonly ParatransitEntry[] = [
@@ -98,4 +113,40 @@ export const PARATRANSIT: readonly ParatransitEntry[] = [
     sourceUrl: "https://www.londontransit.ca/booking-specialized-transit-services/",
     sourceName: "London Transit Commission booking page",
   }),
+  entry({
+    id: "ottawa-para-transpo",
+    agencyName: "Para Transpo",
+    publisher: "OC Transpo",
+    serviceArea: {
+      en: "Ottawa's urban communities, as the page describes it",
+      fr: "Les collectivités urbaines d'Ottawa, selon la page",
+    },
+    websiteUrl: "https://octranspo.com/en/para-transpo/",
+    bookingUrl: "https://octranspo.com/en/para-transpo/",
+    phone: "613-560-5000",
+    sourceUrl: "https://octranspo.com/en/para-transpo/",
+    sourceName: "OC Transpo Para Transpo page",
+  }, RETRIEVED_ON_2026_11_16),
+  entry({
+    id: "waterloo-mobilityplus",
+    agencyName: "MobilityPLUS",
+    publisher: "Grand River Transit",
+    serviceArea: AREA_NOT_STATED,
+    websiteUrl: "https://www.grt.ca/mobilityplus/mobilityplus-booking-riding-and-notifications/booking-mobilityplus-trips/",
+    bookingUrl: "https://mplus.grt.ca/Account/Login",
+    phone: "519-744-2241",
+    sourceUrl: "https://www.grt.ca/mobilityplus/mobilityplus-booking-riding-and-notifications/booking-mobilityplus-trips/",
+    sourceName: "Grand River Transit MobilityPLUS booking page",
+  }, RETRIEVED_ON_2026_11_16),
+  entry({
+    id: "sudbury-gova-plus",
+    agencyName: "GOVA Plus Specialized Transit",
+    publisher: "City of Greater Sudbury",
+    serviceArea: AREA_NOT_STATED,
+    websiteUrl: "https://www.greatersudbury.ca/live/transit/gova-plus-specialized-transit/riding-gova-plus/booking-your-trip/",
+    bookingUrl: "https://book.govaplus.rideco.com/",
+    phone: "705-670-2300",
+    sourceUrl: "https://www.greatersudbury.ca/live/transit/gova-plus-specialized-transit/riding-gova-plus/booking-your-trip/",
+    sourceName: "City of Greater Sudbury GOVA Plus booking page",
+  }, RETRIEVED_ON_2026_11_16),
 ];

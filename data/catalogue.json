@@ -167,7 +167,7 @@
         "pathways_or_levels_files": 0
       },
       "accessibilityFields": "wheelchair_boarding (0 or empty = UNKNOWN; 1 = some accessible boarding per agency; 2 = not possible per agency). Child stops inherit only when the parent says so and are marked derived.",
-      "coveredBy": null,
+      "coveredBy": "Not imported. On 2026-11-16 the City of Ottawa open-data item for the schedules linked the Open Data Licence Version 2.0, and the zip returned HTTP 403. Listed in access-maps sources/gaps.json.",
       "lane": "H1",
       "inTotal": true,
       "importPlan": "Lane H1: streaming stops.txt reader; licence must be confirmed (status 'verify'/'unknown' feeds are imported only into a local, git-ignored output until a person records the licence).",
@@ -1068,7 +1068,7 @@
         "AUDIBLEPEDSIGNAL=null": 1130
       },
       "accessibilityFields": "AUDIBLEPEDSIGNAL (1 = APS present per city; -1 and null stay UNKNOWN), APS_OPERATION, PEDWALKSPEED, ACTIVATIONDATE",
-      "coveredBy": null,
+      "coveredBy": "Imported on 2026-11-16 as access-maps source toronto-traffic-signals: 2,563 venue records, tier 0. AUDIBLEPEDSIGNAL 1 is stored as speech_output yes (1,407); blank and -1 stay UNKNOWN (1,156). access-maps pull request #48 (branch claude/real-data-imports).",
       "lane": "H2",
       "inTotal": true,
       "importPlan": "Lane H2: page the CKAN datastore_search API (limit 1000/page) or stream the 4326 GeoJSON; map listed fields only; everything else UNKNOWN.",
@@ -1101,7 +1101,7 @@
       },
       "breakdown": {},
       "accessibilityFields": "None (location and type only; accessibility UNKNOWN)",
-      "coveredBy": null,
+      "coveredBy": "Retrieved on 2026-11-16 and not imported: the resource has no accessibility column. Listed in access-maps sources/gaps.json.",
       "lane": "H2",
       "inTotal": true,
       "importPlan": "Lane H2: page the CKAN datastore_search API (limit 1000/page) or stream the 4326 GeoJSON; map listed fields only; everything else UNKNOWN.",
@@ -1158,8 +1158,9 @@
         "id": "OGL-Toronto-1.0",
         "name": "Open Government Licence – Toronto",
         "url": "https://open.toronto.ca/open-data-licence/",
-        "status": "verify",
-        "note": "CKAN license_title is empty for this dataset; the portal default is OGL-Toronto. Confirm on the dataset page before import."
+        "status": "open-recorded",
+        "note": "CKAN license_title is empty for this dataset; the portal default is OGL-Toronto. Confirm on the dataset page before import.",
+        "checkedOn": "2026-11-16"
       },
       "cadence": "Monthly",
       "counted": {
@@ -1171,7 +1172,7 @@
       },
       "breakdown": {},
       "accessibilityFields": "AMENITIES text only. Do not parse words like 'accessible' into a wheelchair fact; keep raw text, fact UNKNOWN.",
-      "coveredBy": null,
+      "coveredBy": "Imported on 2026-11-16 as access-maps source toronto-parks-recreation-facilities: 1,801 venue records, tier 0, every accessibility field UNKNOWN. access-maps pull request #48 (branch claude/real-data-imports).",
       "lane": "H2",
       "inTotal": true,
       "importPlan": "Lane H2: page the CKAN datastore_search API (limit 1000/page) or stream the 4326 GeoJSON; map listed fields only; everything else UNKNOWN.",
@@ -1204,7 +1205,7 @@
       },
       "breakdown": {},
       "accessibilityFields": "AODA_TYPE (stall type per city)",
-      "coveredBy": null,
+      "coveredBy": "Imported on 2026-11-16 as access-maps source toronto-accessible-parking-stalls: 669 venue records, tier 0, AODA_TYPE stored as published. access-maps pull request #48 (branch claude/real-data-imports).",
       "lane": "H5",
       "inTotal": true,
       "importPlan": "Lane H5: page the CKAN datastore_search API (limit 1000/page) or stream the 4326 GeoJSON; map listed fields only; everything else UNKNOWN.",
@@ -1237,7 +1238,7 @@
       },
       "breakdown": {},
       "accessibilityFields": "SIDEWALK_CODE, SIDEWALK_DESCRIPTION, CROSSWALK, CROSSWALK_TYPE, PX",
-      "coveredBy": null,
+      "coveredBy": "Imported in part on 2026-11-16 as access-maps source toronto-pedestrian-network: 70,749 path records, tier 0. 16,356 segments published with no sidewalk, a partial sidewalk or no description on a road were left out. access-maps pull request #48 (branch claude/real-data-imports).",
       "lane": "H4",
       "inTotal": true,
       "importPlan": "Lane H4: stream the 4326 GeoJSON (or page datastore), emit chunked NDJSON partitions ≤ 20 MB gzip as release assets; never commit full outputs.",
@@ -1290,9 +1291,11 @@
       "licence": {
         "id": null,
         "name": "City of Ottawa Open Data Licence v2.0",
-        "url": "https://open.ottawa.ca/pages/open-data-licence",
-        "status": "verify",
-        "note": "OGL-style municipal licence; hub item licence shows 'custom'. Confirm text before import."
+        "url": "https://www.ottawa.ca/opendata",
+        "status": "open-recorded",
+        "note": "OGL-style municipal licence; hub item licence shows 'custom'. Confirm text before import.",
+        "checkedOn": "2026-11-16",
+        "attribution": "Contains information licensed under the Open Government Licence – City of Ottawa."
       },
       "cadence": "As updated by the city (MODIFIED_DATE per feature)",
       "counted": {
@@ -1317,7 +1320,7 @@
         "splash_pads": 161
       },
       "accessibilityFields": "ACCESSIBLE (city's own value; mapped verbatim to yes/no only when the value is an explicit yes/no; anything else UNKNOWN), names in EN and FR",
-      "coveredBy": null,
+      "coveredBy": "Imported in part on 2026-11-16 as access-maps source ottawa-parks-inventory: 7,916 venue records from 20 point layers, tier 0, with the City ACCESSIBLE flag stored as published. Layers 5, 7, 8, 23 and 24 were not imported. access-maps pull request #48 (branch claude/real-data-imports).",
       "lane": "H3",
       "inTotal": true,
       "importPlan": "Lane H3: page each layer with resultOffset/resultRecordCount (2,000) and outSR=4326; keep EN and FR names; ACCESSIBLE stays raw and maps only exact yes/no values.",
@@ -1337,9 +1340,11 @@
       "licence": {
         "id": null,
         "name": "City of Ottawa Open Data Licence v2.0",
-        "url": "https://open.ottawa.ca/pages/open-data-licence",
-        "status": "verify",
-        "note": "OGL-style municipal licence; hub item licence shows 'custom'. Confirm text before import."
+        "url": "https://www.ottawa.ca/opendata",
+        "status": "open-recorded",
+        "note": "OGL-style municipal licence; hub item licence shows 'custom'. Confirm text before import.",
+        "checkedOn": "2026-11-16",
+        "attribution": "Contains information licensed under the Open Government Licence – City of Ottawa."
       },
       "cadence": "As updated",
       "counted": {
@@ -1350,7 +1355,7 @@
         "date": "2026-11-15"
       },
       "accessibilityFields": "WALK_TYPE, TYPE_EN/TYPE_FR (no width or slope)",
-      "coveredBy": null,
+      "coveredBy": "Licence read on 2026-11-16. Not imported: the layer has no surface, width, slope or curb column and was not mapped. Listed in access-maps sources/gaps.json.",
       "lane": "H4",
       "inTotal": true,
       "importPlan": "Lane H4: paged ArcGIS query, chunked NDJSON output.",
@@ -1756,9 +1761,11 @@
       "licence": {
         "id": null,
         "name": "City of Ottawa Open Data Licence v2.0",
-        "url": "https://open.ottawa.ca/pages/open-data-licence",
-        "status": "verify",
-        "note": "OGL-style municipal licence; hub item licence shows 'custom'. Confirm text before import."
+        "url": "https://www.ottawa.ca/opendata",
+        "status": "open-recorded",
+        "note": "OGL-style municipal licence; hub item licence shows 'custom'. Confirm text before import.",
+        "checkedOn": "2026-11-16",
+        "attribution": "Contains information licensed under the Open Government Licence – City of Ottawa."
       },
       "cadence": "As updated",
       "counted": {
@@ -1769,7 +1776,7 @@
         "date": "2026-11-15"
       },
       "accessibilityFields": "ACCESSIBLE_PARKING_CAPACITY, ACCESSIBLE",
-      "coveredBy": null,
+      "coveredBy": "Imported on 2026-11-16 as access-maps source ottawa-park-parking: 408 venue records, tier 0, ACCESSIBLE_PARKING_CAPACITY stored as capacity_disabled. One row has no usable coordinate. access-maps pull request #48 (branch claude/real-data-imports).",
       "lane": "H5",
       "inTotal": true,
       "importPlan": "Lane H5.",
@@ -2116,5 +2123,177 @@
         "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
       }
     }
-  ]
+  ],
+  "imports": {
+    "recordedOn": "2026-11-16",
+    "note": "Real records live in access-maps, not in this repository. This list records what access-maps imported from the publishers on 2026-11-16. Every record is tier 0 (open-data import). None is verified. The totals above are the 2026-11-15 survey and were not recounted.",
+    "pullRequest": "https://github.com/ALENZACODES/access-maps/pull/48",
+    "imported": [
+      {
+        "accessMapsSourceId": "toronto-accessible-parking-stalls",
+        "catalogueId": "toronto-accessible-stalls",
+        "publisher": "City of Toronto",
+        "url": "https://open.toronto.ca/dataset/off-street-parking-surface-lots-accessible-stalls/",
+        "licence": "Open Government Licence – Toronto",
+        "retrievedOn": "2026-11-16",
+        "records": 669,
+        "tier": 0
+      },
+      {
+        "accessMapsSourceId": "toronto-traffic-signals",
+        "catalogueId": "toronto-traffic-signals-aps",
+        "publisher": "City of Toronto",
+        "url": "https://open.toronto.ca/dataset/traffic-signals-tabular/",
+        "licence": "Open Government Licence – Toronto",
+        "retrievedOn": "2026-11-16",
+        "records": 2563,
+        "tier": 0
+      },
+      {
+        "accessMapsSourceId": "toronto-library-branches",
+        "catalogueId": null,
+        "publisher": "City of Toronto (Toronto Public Library)",
+        "url": "https://open.toronto.ca/dataset/library-branch-general-information/",
+        "licence": "Open Government Licence – Toronto",
+        "retrievedOn": "2026-11-16",
+        "records": 182,
+        "tier": 0
+      },
+      {
+        "accessMapsSourceId": "toronto-drinking-fountains",
+        "catalogueId": null,
+        "publisher": "City of Toronto",
+        "url": "https://open.toronto.ca/dataset/parks-drinking-fountains/",
+        "licence": "Open Government Licence – Toronto",
+        "retrievedOn": "2026-11-16",
+        "records": 802,
+        "tier": 0
+      },
+      {
+        "accessMapsSourceId": "toronto-parks-recreation-facilities",
+        "catalogueId": "toronto-parks-rec-facilities",
+        "publisher": "City of Toronto",
+        "url": "https://open.toronto.ca/dataset/parks-and-recreation-facilities/",
+        "licence": "Open Government Licence – Toronto",
+        "retrievedOn": "2026-11-16",
+        "records": 1801,
+        "tier": 0
+      },
+      {
+        "accessMapsSourceId": "toronto-community-centre-washrooms",
+        "catalogueId": null,
+        "publisher": "City of Toronto",
+        "url": "https://open.toronto.ca/dataset/association-of-community-centres/",
+        "licence": "Open Government Licence – Toronto",
+        "retrievedOn": "2026-11-16",
+        "records": 9,
+        "tier": 0
+      },
+      {
+        "accessMapsSourceId": "toronto-pedestrian-network",
+        "catalogueId": "toronto-pedestrian-network",
+        "publisher": "City of Toronto",
+        "url": "https://open.toronto.ca/dataset/pedestrian-network/",
+        "licence": "Open Government Licence – Toronto",
+        "retrievedOn": "2026-11-16",
+        "records": 70749,
+        "tier": 0
+      },
+      {
+        "accessMapsSourceId": "toronto-park-washrooms",
+        "catalogueId": null,
+        "publisher": "City of Toronto",
+        "url": "https://open.toronto.ca/dataset/washroom-facilities/",
+        "licence": "Open Government Licence – Toronto",
+        "retrievedOn": "2026-11-16",
+        "records": 355,
+        "tier": 0,
+        "refreshOf": "2026-11-13"
+      },
+      {
+        "accessMapsSourceId": "toronto-street-washrooms",
+        "catalogueId": null,
+        "publisher": "City of Toronto",
+        "url": "https://ckan0.cf.opendata.inter.prod-toronto.ca/dataset/street-furniture-public-washroom",
+        "licence": "Open Government Licence – Toronto",
+        "retrievedOn": "2026-11-16",
+        "records": 4,
+        "tier": 0,
+        "refreshOf": "2026-11-13"
+      },
+      {
+        "accessMapsSourceId": "toronto-crem-washrooms",
+        "catalogueId": null,
+        "publisher": "City of Toronto",
+        "url": "https://open.toronto.ca/dataset/corporate-real-estate-management-portfolio-washrooms/",
+        "licence": "Open Government Licence – Toronto",
+        "retrievedOn": "2026-11-16",
+        "records": 119,
+        "tier": 0,
+        "refreshOf": "2026-11-13"
+      },
+      {
+        "accessMapsSourceId": "ottawa-public-washrooms",
+        "catalogueId": null,
+        "publisher": "City of Ottawa",
+        "url": "https://maps.ottawa.ca/arcgis/rest/services/PublicWashrooms/MapServer/0",
+        "licence": "Open Data Licence Version 2.0 (Open Government Licence – City of Ottawa)",
+        "retrievedOn": "2026-11-16",
+        "records": 186,
+        "tier": 0
+      },
+      {
+        "accessMapsSourceId": "ottawa-parks-inventory",
+        "catalogueId": "ottawa-parks-inventory",
+        "publisher": "City of Ottawa",
+        "url": "https://maps.ottawa.ca/arcgis/rest/services/Parks_Inventory/MapServer",
+        "licence": "Open Data Licence Version 2.0 (Open Government Licence – City of Ottawa)",
+        "retrievedOn": "2026-11-16",
+        "records": 7916,
+        "tier": 0
+      },
+      {
+        "accessMapsSourceId": "ottawa-park-parking",
+        "catalogueId": "ottawa-parks-parking",
+        "publisher": "City of Ottawa",
+        "url": "https://maps.ottawa.ca/arcgis/rest/services/Parks_Inventory/MapServer/14",
+        "licence": "Open Data Licence Version 2.0 (Open Government Licence – City of Ottawa)",
+        "retrievedOn": "2026-11-16",
+        "records": 408,
+        "tier": 0
+      }
+    ],
+    "notImported": [
+      {
+        "name": "Kaggle datasets on Ontario accessibility",
+        "url": "https://www.kaggle.com/datasets/johnnykhan1/toronto-accessibility-and-disability-data",
+        "reason": "The relevant dataset repackages City of Toronto open data. The same files were imported from the publisher instead. Nothing was taken from Kaggle."
+      },
+      {
+        "name": "City of Toronto Museums and Cultural Centres washrooms",
+        "url": "https://open.toronto.ca/dataset/museums-and-cultural-centres/",
+        "reason": "The file has no coordinates and the pipeline does not geocode."
+      },
+      {
+        "name": "City of Toronto Traffic Beacon and Pedestrian Crossover resources",
+        "url": "https://open.toronto.ca/dataset/traffic-signals-tabular/",
+        "reason": "No accessibility column."
+      },
+      {
+        "name": "OC Transpo static GTFS",
+        "url": "https://www.octranspo.com/files/google_transit.zip",
+        "reason": "The zip returned HTTP 403 on 2026-11-16."
+      },
+      {
+        "name": "City of Ottawa Pedestrian Network, Sidewalks, parks layers 5, 7, 8, 23 and 24, drinking fountains, recreation facilities",
+        "url": "https://maps.ottawa.ca/arcgis/rest/services/",
+        "reason": "Licence read on 2026-11-16. Not mapped in this pass."
+      },
+      {
+        "name": "Other sources in this catalogue",
+        "url": "https://github.com/ALENZACODES/access-maps/blob/main/sources/gaps.json",
+        "reason": "Not retrieved on 2026-11-16. access-maps sources/gaps.json gives the reason for each."
+      }
+    ]
+  }
 }

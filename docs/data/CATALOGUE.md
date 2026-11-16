@@ -20,6 +20,39 @@ This is a survey of free, openly licensed data that can add real records to the 
 - Counted and not yet imported anywhere: 636,816.
 - Left out of the total: StatCan datapoints (118,764), OSM building footprints (3,128,244), Wikidata items without P2846 (85,284), and not-counted sources.
 
+## Imports recorded on 2026-11-16
+
+Real records live in access-maps, not in this repository. This list records what access-maps imported from the publishers on 2026-11-16. Every record is tier 0 (open-data import). None is verified. The totals above are the 2026-11-15 survey and were not recounted.
+
+Pull request: https://github.com/ALENZACODES/access-maps/pull/48
+
+| access-maps source | Publisher | Source | Licence | Retrieved | Records | Tier |
+| --- | --- | --- | --- | --- | ---: | ---: |
+| `toronto-accessible-parking-stalls` | City of Toronto | [open.toronto.ca](https://open.toronto.ca/dataset/off-street-parking-surface-lots-accessible-stalls/) | Open Government Licence – Toronto | 2026-11-16 | 669 | 0 |
+| `toronto-traffic-signals` | City of Toronto | [open.toronto.ca](https://open.toronto.ca/dataset/traffic-signals-tabular/) | Open Government Licence – Toronto | 2026-11-16 | 2,563 | 0 |
+| `toronto-library-branches` | City of Toronto (Toronto Public Library) | [open.toronto.ca](https://open.toronto.ca/dataset/library-branch-general-information/) | Open Government Licence – Toronto | 2026-11-16 | 182 | 0 |
+| `toronto-drinking-fountains` | City of Toronto | [open.toronto.ca](https://open.toronto.ca/dataset/parks-drinking-fountains/) | Open Government Licence – Toronto | 2026-11-16 | 802 | 0 |
+| `toronto-parks-recreation-facilities` | City of Toronto | [open.toronto.ca](https://open.toronto.ca/dataset/parks-and-recreation-facilities/) | Open Government Licence – Toronto | 2026-11-16 | 1,801 | 0 |
+| `toronto-community-centre-washrooms` | City of Toronto | [open.toronto.ca](https://open.toronto.ca/dataset/association-of-community-centres/) | Open Government Licence – Toronto | 2026-11-16 | 9 | 0 |
+| `toronto-pedestrian-network` | City of Toronto | [open.toronto.ca](https://open.toronto.ca/dataset/pedestrian-network/) | Open Government Licence – Toronto | 2026-11-16 | 70,749 | 0 |
+| `toronto-park-washrooms` | City of Toronto | [open.toronto.ca](https://open.toronto.ca/dataset/washroom-facilities/) | Open Government Licence – Toronto | 2026-11-16 | 355 | 0 |
+| `toronto-street-washrooms` | City of Toronto | [ckan0.cf.opendata.inter.prod-toronto.ca](https://ckan0.cf.opendata.inter.prod-toronto.ca/dataset/street-furniture-public-washroom) | Open Government Licence – Toronto | 2026-11-16 | 4 | 0 |
+| `toronto-crem-washrooms` | City of Toronto | [open.toronto.ca](https://open.toronto.ca/dataset/corporate-real-estate-management-portfolio-washrooms/) | Open Government Licence – Toronto | 2026-11-16 | 119 | 0 |
+| `ottawa-public-washrooms` | City of Ottawa | [maps.ottawa.ca](https://maps.ottawa.ca/arcgis/rest/services/PublicWashrooms/MapServer/0) | Open Data Licence Version 2.0 (Open Government Licence – City of Ottawa) | 2026-11-16 | 186 | 0 |
+| `ottawa-parks-inventory` | City of Ottawa | [maps.ottawa.ca](https://maps.ottawa.ca/arcgis/rest/services/Parks_Inventory/MapServer) | Open Data Licence Version 2.0 (Open Government Licence – City of Ottawa) | 2026-11-16 | 7,916 | 0 |
+| `ottawa-park-parking` | City of Ottawa | [maps.ottawa.ca](https://maps.ottawa.ca/arcgis/rest/services/Parks_Inventory/MapServer/14) | Open Data Licence Version 2.0 (Open Government Licence – City of Ottawa) | 2026-11-16 | 408 | 0 |
+
+Records in this list: 85,763. The three washroom rows marked as a refresh replace files first imported on 2026-11-13.
+
+Not imported on 2026-11-16:
+
+- [Kaggle datasets on Ontario accessibility](https://www.kaggle.com/datasets/johnnykhan1/toronto-accessibility-and-disability-data): The relevant dataset repackages City of Toronto open data. The same files were imported from the publisher instead. Nothing was taken from Kaggle.
+- [City of Toronto Museums and Cultural Centres washrooms](https://open.toronto.ca/dataset/museums-and-cultural-centres/): The file has no coordinates and the pipeline does not geocode.
+- [City of Toronto Traffic Beacon and Pedestrian Crossover resources](https://open.toronto.ca/dataset/traffic-signals-tabular/): No accessibility column.
+- [OC Transpo static GTFS](https://www.octranspo.com/files/google_transit.zip): The zip returned HTTP 403 on 2026-11-16.
+- [City of Ottawa Pedestrian Network, Sidewalks, parks layers 5, 7, 8, 23 and 24, drinking fountains, recreation facilities](https://maps.ottawa.ca/arcgis/rest/services/): Licence read on 2026-11-16. Not mapped in this pass.
+- [Other sources in this catalogue](https://github.com/ALENZACODES/access-maps/blob/main/sources/gaps.json): Not retrieved on 2026-11-16. access-maps sources/gaps.json gives the reason for each.
+
 ## Sources
 
 | Source | Licence (status) | Counted | Count kind | Lane or owner | Cadence |
@@ -51,12 +84,12 @@ This is a survey of free, openly licensed data that can add real records to the 
 | [Traffic signals with accessible pedestrian signal (APS) flag](https://open.toronto.ca/dataset/traffic-signals-tabular/) | Open Government Licence – Toronto (open) | 2,563  | counted | H2 | As available |
 | [Pedestrian crossovers](https://open.toronto.ca/dataset/traffic-signals-tabular/) | Open Government Licence – Toronto (open) | 496  | counted | H2 | As available |
 | [Privately owned publicly-accessible spaces (POPS)](https://open.toronto.ca/dataset/privately-owned-publicly-available-spaces/) | Open Government Licence – Toronto (open) | 308  | counted | H2 | As available |
-| [Parks and recreation facilities](https://open.toronto.ca/dataset/parks-and-recreation-facilities/) | Open Government Licence – Toronto (verify) | 1,801  | counted | H2 | Monthly |
+| [Parks and recreation facilities](https://open.toronto.ca/dataset/parks-and-recreation-facilities/) | Open Government Licence – Toronto (open-recorded) | 1,801  | counted | H2 | Monthly |
 | [Off-street surface lots: accessible stalls](https://open.toronto.ca/dataset/off-street-parking-surface-lots-accessible-stalls/) | Open Government Licence – Toronto (open) | 669  | counted | H5 | Annually |
 | [Pedestrian network (sidewalk and crosswalk segments)](https://open.toronto.ca/dataset/pedestrian-network/) | Open Government Licence – Toronto (open) | 87,105  | counted | H4 | As available |
 | [Topographic mapping: physical area of sidewalks](https://open.toronto.ca/dataset/topographic-mapping-physical-area-of-sidewalks/) | Open Government Licence – Toronto (open) | 14,116  | counted | H4 | Quarterly |
-| [Parks inventory layers with a bilingual ACCESSIBLE field (benches, play structures, sports fields, rinks, splash pads, parks and greenspace and more)](https://maps.ottawa.ca/arcgis/rest/services/Parks_Inventory/MapServer) | City of Ottawa Open Data Licence v2.0 (verify) | 11,391  | counted | H3 | As updated by the city (MODIFIED_DATE per feature) |
-| [Pedestrian network (Pedestrian Plan)](https://maps.ottawa.ca/arcgis/rest/services/Pedestrian_Plan/MapServer/0) | City of Ottawa Open Data Licence v2.0 (verify) | 20,298  | counted | H4 | As updated |
+| [Parks inventory layers with a bilingual ACCESSIBLE field (benches, play structures, sports fields, rinks, splash pads, parks and greenspace and more)](https://maps.ottawa.ca/arcgis/rest/services/Parks_Inventory/MapServer) | City of Ottawa Open Data Licence v2.0 (open-recorded) | 11,391  | counted | H3 | As updated by the city (MODIFIED_DATE per feature) |
+| [Pedestrian network (Pedestrian Plan)](https://maps.ottawa.ca/arcgis/rest/services/Pedestrian_Plan/MapServer/0) | City of Ottawa Open Data Licence v2.0 (open-recorded) | 20,298  | counted | H4 | As updated |
 | [City-owned parking facilities (Accessible space count)](https://services6.arcgis.com/hM5ymMLbxIyWTjn2/arcgis/rest/services/City_Owned_Parkng_Facilities/FeatureServer/0) | City of Mississauga Open Data Terms of Use (verify) | 282  | counted | H5 | As updated |
 | [City public washrooms](https://services6.arcgis.com/hM5ymMLbxIyWTjn2/arcgis/rest/services/City_Public_Washrooms/FeatureServer/1) | City of Mississauga Open Data Terms of Use (verify) | 48  | counted | deferred | As updated |
 | [Sidewalk segments](https://services3.arcgis.com/rl7ACuZkiFsmDA2g/arcgis/rest/services/Sidewalks/FeatureServer/0) | Creative Commons Attribution 4.0 (per Brampton GeoHub item) (open) | 429,007  | counted | H4 | As updated |
@@ -69,7 +102,7 @@ This is a survey of free, openly licensed data that can add real records to the 
 | [Kitchener sidewalks and active-transport segments (WIDTH_M, GRADE, CURBCUT, SURFACE_CONDITION)](https://services1.arcgis.com/qAo1OsXi67t7XgmS/arcgis/rest/services/Sidewalks/FeatureServer/0) | City of Kitchener Open Data licence (verify) | 17,111  | counted | H4 | As updated (STATUS_DATE, CONDITION_DATE per feature) |
 | [City of Waterloo sidewalks](https://services.arcgis.com/ZpeBVw5o1kjit7LT/arcgis/rest/services/Sidewalks/FeatureServer/0) | City of Waterloo Open Data licence (verify) | 5,262  | counted | H4 | As updated |
 | [City of Waterloo city-operated parking lots (ACCESSIBLE)](https://services.arcgis.com/ZpeBVw5o1kjit7LT/arcgis/rest/services/ParkingLots/FeatureServer/0) | City of Waterloo Open Data licence (verify) | 31  | counted | H5 | As updated |
-| [Parks inventory: parking (ACCESSIBLE_PARKING_CAPACITY)](https://maps.ottawa.ca/arcgis/rest/services/Parks_Inventory/MapServer/14) | City of Ottawa Open Data Licence v2.0 (verify) | 409  | counted | H5 | As updated |
+| [Parks inventory: parking (ACCESSIBLE_PARKING_CAPACITY)](https://maps.ottawa.ca/arcgis/rest/services/Parks_Inventory/MapServer/14) | City of Ottawa Open Data Licence v2.0 (open-recorded) | 409  | counted | H5 | As updated |
 | [Hamilton, York Region, Vaughan, Durham hubs](https://open.hamilton.ca/) | Not checked (unknown) | —  | not-counted | deferred | Unknown |
 | [Ministry of Health service provider locations (MOHSERLO)](https://data.ontario.ca/dataset/ministry-of-health-service-provider-locations-mohserlo) | Open Government Licence – Ontario (open) | 11,625  | counted | deferred | Yearly |
 | [Approved functional assessment centres for drivers](https://data.ontario.ca/dataset/approved-functional-assessment-centres-for-drivers) | Open Government Licence – Ontario (open) | 46  | counted | deferred | Yearly |
@@ -115,6 +148,7 @@ This is a survey of free, openly licensed data that can add real records to the 
 - **Breakdown:** stops_location_type_0: 5,781; wheelchair_boarding_1_or_2_on_stops: 0; share_set_pct: 0.0; wheelchair_boarding_values: {'': 5798, '0': 44}; pathways_or_levels_files: 0
 - **Accessibility fields:** wheelchair_boarding (0 or empty = UNKNOWN; 1 = some accessible boarding per agency; 2 = not possible per agency). Child stops inherit only when the parent says so and are marked derived.
 - **Place schema mapping:** source → Provenance.sourceName = "OC Transpo (Ottawa): OC Transpo (Ottawa) GTFS stops"; sourceId = "gtfs-oc-transpo" plus the upstream feature id; sourceUrl = dataset URL; licence → Provenance.licence = "City of Ottawa / OC Transpo developer terms"; retrievedOn → Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none; tier → Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import.
+- **Import status (2026-11-16):** Not imported. On 2026-11-16 the City of Ottawa open-data item for the schedules linked the Open Data Licence Version 2.0, and the zip returned HTTP 403. Listed in access-maps sources/gaps.json.
 - **Import plan:** Lane H1: streaming stops.txt reader; licence must be confirmed (status 'verify'/'unknown' feeds are imported only into a local, git-ignored output until a person records the licence).
 
 ### York Region Transit GTFS stops
@@ -343,6 +377,7 @@ This is a survey of free, openly licensed data that can add real records to the 
 - **Breakdown:** AUDIBLEPEDSIGNAL=1: 1,407; AUDIBLEPEDSIGNAL=-1: 26; AUDIBLEPEDSIGNAL=null: 1,130
 - **Accessibility fields:** AUDIBLEPEDSIGNAL (1 = APS present per city; -1 and null stay UNKNOWN), APS_OPERATION, PEDWALKSPEED, ACTIVATIONDATE
 - **Place schema mapping:** source → Provenance.sourceName = "City of Toronto: Traffic signals with accessible pedestrian signal (APS) flag"; sourceId = "toronto-traffic-signals-aps" plus the upstream feature id; sourceUrl = dataset URL; licence → Provenance.licence = "Open Government Licence – Toronto"; retrievedOn → Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none; tier → Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import.
+- **Import status (2026-11-16):** Imported on 2026-11-16 as access-maps source toronto-traffic-signals: 2,563 venue records, tier 0. AUDIBLEPEDSIGNAL 1 is stored as speech_output yes (1,407); blank and -1 stay UNKNOWN (1,156). access-maps pull request #48 (branch claude/real-data-imports).
 - **Import plan:** Lane H2: page the CKAN datastore_search API (limit 1000/page) or stream the 4326 GeoJSON; map listed fields only; everything else UNKNOWN.
 
 ### Pedestrian crossovers
@@ -352,6 +387,7 @@ This is a survey of free, openly licensed data that can add real records to the 
 - **Count:** 496 records (counted, 2026-11-15). Method: CKAN datastore_search total
 - **Accessibility fields:** None (location and type only; accessibility UNKNOWN)
 - **Place schema mapping:** source → Provenance.sourceName = "City of Toronto: Pedestrian crossovers"; sourceId = "toronto-pedestrian-crossovers" plus the upstream feature id; sourceUrl = dataset URL; licence → Provenance.licence = "Open Government Licence – Toronto"; retrievedOn → Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none; tier → Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import.
+- **Import status (2026-11-16):** Retrieved on 2026-11-16 and not imported: the resource has no accessibility column. Listed in access-maps sources/gaps.json.
 - **Import plan:** Lane H2: page the CKAN datastore_search API (limit 1000/page) or stream the 4326 GeoJSON; map listed fields only; everything else UNKNOWN.
 
 ### Privately owned publicly-accessible spaces (POPS)
@@ -367,10 +403,11 @@ This is a survey of free, openly licensed data that can add real records to the 
 ### Parks and recreation facilities
 
 - **ID:** `toronto-parks-rec-facilities` · **Publisher:** City of Toronto · **URL:** https://open.toronto.ca/dataset/parks-and-recreation-facilities/
-- **Licence:** Open Government Licence – Toronto (https://open.toronto.ca/open-data-licence/) · status `verify`. CKAN license_title is empty for this dataset; the portal default is OGL-Toronto. Confirm on the dataset page before import.
+- **Licence:** Open Government Licence – Toronto (https://open.toronto.ca/open-data-licence/) · status `open-recorded`, licence text read 2026-11-16. CKAN license_title is empty for this dataset; the portal default is OGL-Toronto. Confirm on the dataset page before import.
 - **Count:** 1,801 records (counted, 2026-11-15). Method: CKAN datastore_search total
 - **Accessibility fields:** AMENITIES text only. Do not parse words like 'accessible' into a wheelchair fact; keep raw text, fact UNKNOWN.
 - **Place schema mapping:** source → Provenance.sourceName = "City of Toronto: Parks and recreation facilities"; sourceId = "toronto-parks-rec-facilities" plus the upstream feature id; sourceUrl = dataset URL; licence → Provenance.licence = "Open Government Licence – Toronto"; retrievedOn → Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none; tier → Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import.
+- **Import status (2026-11-16):** Imported on 2026-11-16 as access-maps source toronto-parks-recreation-facilities: 1,801 venue records, tier 0, every accessibility field UNKNOWN. access-maps pull request #48 (branch claude/real-data-imports).
 - **Import plan:** Lane H2: page the CKAN datastore_search API (limit 1000/page) or stream the 4326 GeoJSON; map listed fields only; everything else UNKNOWN.
 
 ### Off-street surface lots: accessible stalls
@@ -380,6 +417,7 @@ This is a survey of free, openly licensed data that can add real records to the 
 - **Count:** 669 records (counted, 2026-11-15). Method: CKAN datastore_search total
 - **Accessibility fields:** AODA_TYPE (stall type per city)
 - **Place schema mapping:** source → Provenance.sourceName = "City of Toronto: Off-street surface lots: accessible stalls"; sourceId = "toronto-accessible-stalls" plus the upstream feature id; sourceUrl = dataset URL; licence → Provenance.licence = "Open Government Licence – Toronto"; retrievedOn → Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none; tier → Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import.
+- **Import status (2026-11-16):** Imported on 2026-11-16 as access-maps source toronto-accessible-parking-stalls: 669 venue records, tier 0, AODA_TYPE stored as published. access-maps pull request #48 (branch claude/real-data-imports).
 - **Import plan:** Lane H5: page the CKAN datastore_search API (limit 1000/page) or stream the 4326 GeoJSON; map listed fields only; everything else UNKNOWN.
 
 ### Pedestrian network (sidewalk and crosswalk segments)
@@ -389,6 +427,7 @@ This is a survey of free, openly licensed data that can add real records to the 
 - **Count:** 87,105 records (counted, 2026-11-15). Method: CKAN datastore_search total
 - **Accessibility fields:** SIDEWALK_CODE, SIDEWALK_DESCRIPTION, CROSSWALK, CROSSWALK_TYPE, PX
 - **Place schema mapping:** source → Provenance.sourceName = "City of Toronto: Pedestrian network (sidewalk and crosswalk segments)"; sourceId = "toronto-pedestrian-network" plus the upstream feature id; sourceUrl = dataset URL; licence → Provenance.licence = "Open Government Licence – Toronto"; retrievedOn → Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none; tier → Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import.
+- **Import status (2026-11-16):** Imported in part on 2026-11-16 as access-maps source toronto-pedestrian-network: 70,749 path records, tier 0. 16,356 segments published with no sidewalk, a partial sidewalk or no description on a road were left out. access-maps pull request #48 (branch claude/real-data-imports).
 - **Import plan:** Lane H4: stream the 4326 GeoJSON (or page datastore), emit chunked NDJSON partitions ≤ 20 MB gzip as release assets; never commit full outputs.
 
 ### Topographic mapping: physical area of sidewalks
@@ -403,20 +442,22 @@ This is a survey of free, openly licensed data that can add real records to the 
 ### Parks inventory layers with a bilingual ACCESSIBLE field (benches, play structures, sports fields, rinks, splash pads, parks and greenspace and more)
 
 - **ID:** `ottawa-parks-inventory` · **Publisher:** City of Ottawa · **URL:** https://maps.ottawa.ca/arcgis/rest/services/Parks_Inventory/MapServer
-- **Licence:** City of Ottawa Open Data Licence v2.0 (https://open.ottawa.ca/pages/open-data-licence) · status `verify`. OGL-style municipal licence; hub item licence shows 'custom'. Confirm text before import.
+- **Licence:** City of Ottawa Open Data Licence v2.0 (https://open.ottawa.ca/pages/open-data-licence) · status `open-recorded`, licence text read 2026-11-16. OGL-style municipal licence; hub item licence shows 'custom'. Confirm text before import.
 - **Count:** 11,391 records (counted, 2026-11-15). Method: ArcGIS returnCountOnly on every Parks_Inventory layer that has an ACCESSIBLE field (26 layers = 11,800), minus layer 14 Parking (409, assigned to H5).
 - **Breakdown:** layers_total_with_access_field: 11,800; non_null_ACCESSIBLE_all_layers: 9,922; benches: 3,318; play_structures: 1,719; parks_and_greenspace: 1,378; dogs_in_parks: 1,092; pathway_links: 609; sports_fields: 526; basketball: 308; ball_diamonds: 281; outdoor_rinks: 270; splash_pads: 161
 - **Accessibility fields:** ACCESSIBLE (city's own value; mapped verbatim to yes/no only when the value is an explicit yes/no; anything else UNKNOWN), names in EN and FR
 - **Place schema mapping:** source → Provenance.sourceName = "City of Ottawa: Parks inventory layers with a bilingual ACCESSIBLE field (benches, play structures, sports fields, rinks, splash pads, parks and greenspace and more)"; sourceId = "ottawa-parks-inventory" plus the upstream feature id; sourceUrl = dataset URL; licence → Provenance.licence = "City of Ottawa Open Data Licence v2.0"; retrievedOn → Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none; tier → Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import.
+- **Import status (2026-11-16):** Imported in part on 2026-11-16 as access-maps source ottawa-parks-inventory: 7,916 venue records from 20 point layers, tier 0, with the City ACCESSIBLE flag stored as published. Layers 5, 7, 8, 23 and 24 were not imported. access-maps pull request #48 (branch claude/real-data-imports).
 - **Import plan:** Lane H3: page each layer with resultOffset/resultRecordCount (2,000) and outSR=4326; keep EN and FR names; ACCESSIBLE stays raw and maps only exact yes/no values.
 
 ### Pedestrian network (Pedestrian Plan)
 
 - **ID:** `ottawa-pedestrian-network` · **Publisher:** City of Ottawa · **URL:** https://maps.ottawa.ca/arcgis/rest/services/Pedestrian_Plan/MapServer/0
-- **Licence:** City of Ottawa Open Data Licence v2.0 (https://open.ottawa.ca/pages/open-data-licence) · status `verify`. OGL-style municipal licence; hub item licence shows 'custom'. Confirm text before import.
+- **Licence:** City of Ottawa Open Data Licence v2.0 (https://open.ottawa.ca/pages/open-data-licence) · status `open-recorded`, licence text read 2026-11-16. OGL-style municipal licence; hub item licence shows 'custom'. Confirm text before import.
 - **Count:** 20,298 records (counted, 2026-11-15). Method: ArcGIS returnCountOnly
 - **Accessibility fields:** WALK_TYPE, TYPE_EN/TYPE_FR (no width or slope)
 - **Place schema mapping:** source → Provenance.sourceName = "City of Ottawa: Pedestrian network (Pedestrian Plan)"; sourceId = "ottawa-pedestrian-network" plus the upstream feature id; sourceUrl = dataset URL; licence → Provenance.licence = "City of Ottawa Open Data Licence v2.0"; retrievedOn → Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none; tier → Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import.
+- **Import status (2026-11-16):** Licence read on 2026-11-16. Not imported: the layer has no surface, width, slope or curb column and was not mapped. Listed in access-maps sources/gaps.json.
 - **Import plan:** Lane H4: paged ArcGIS query, chunked NDJSON output.
 
 ### City-owned parking facilities (Accessible space count)
@@ -530,10 +571,11 @@ This is a survey of free, openly licensed data that can add real records to the 
 ### Parks inventory: parking (ACCESSIBLE_PARKING_CAPACITY)
 
 - **ID:** `ottawa-parks-parking` · **Publisher:** City of Ottawa · **URL:** https://maps.ottawa.ca/arcgis/rest/services/Parks_Inventory/MapServer/14
-- **Licence:** City of Ottawa Open Data Licence v2.0 (https://open.ottawa.ca/pages/open-data-licence) · status `verify`. OGL-style municipal licence; hub item licence shows 'custom'. Confirm text before import.
+- **Licence:** City of Ottawa Open Data Licence v2.0 (https://open.ottawa.ca/pages/open-data-licence) · status `open-recorded`, licence text read 2026-11-16. OGL-style municipal licence; hub item licence shows 'custom'. Confirm text before import.
 - **Count:** 409 records (counted, 2026-11-15). Method: ArcGIS returnCountOnly (all 409 have a non-null ACCESSIBLE value)
 - **Accessibility fields:** ACCESSIBLE_PARKING_CAPACITY, ACCESSIBLE
 - **Place schema mapping:** source → Provenance.sourceName = "City of Ottawa: Parks inventory: parking (ACCESSIBLE_PARKING_CAPACITY)"; sourceId = "ottawa-parks-parking" plus the upstream feature id; sourceUrl = dataset URL; licence → Provenance.licence = "City of Ottawa Open Data Licence v2.0"; retrievedOn → Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none; tier → Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import.
+- **Import status (2026-11-16):** Imported on 2026-11-16 as access-maps source ottawa-park-parking: 408 venue records, tier 0, ACCESSIBLE_PARKING_CAPACITY stored as capacity_disabled. One row has no usable coordinate. access-maps pull request #48 (branch claude/real-data-imports).
 - **Import plan:** Lane H5.
 
 ### Hamilton, York Region, Vaughan, Durham hubs
