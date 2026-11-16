@@ -1,0 +1,2120 @@
+{
+  "title": "Open-data catalogue for the App",
+  "countedOn": "2026-11-15",
+  "timezone": "America/Toronto",
+  "rules": [
+    "Open licences only; status 'verify' or 'unknown' means no import into git until a person records the licence text",
+    "Unknown stays UNKNOWN; accessibility is never inferred",
+    "Large outputs go to release assets or chunked files, never into git",
+    "Counts are record counts, not coverage claims or verified facts"
+  ],
+  "totals": {
+    "countedRecordsAllSources": 2200917,
+    "alreadyCoveredByAccessMapsPR1": 1564101,
+    "countedNotYetImported": 636816,
+    "countedByLane": {
+      "H1": 20144,
+      "H2": 5168,
+      "H5": 1561,
+      "H4": 584560,
+      "H3": 11391,
+      "D1": 71,
+      "D2": 276
+    },
+    "excludedFromTotal": "StatCan datapoints (118,764), OSM building footprints (3,128,244), Wikidata items without P2846 (85,284), and not-counted sources"
+  },
+  "sources": [
+    {
+      "id": "osm-ontario-a11y-tags",
+      "group": "OpenStreetMap",
+      "name": "OpenStreetMap Ontario: objects with accessibility tags",
+      "publisher": "OpenStreetMap contributors (Geofabrik Ontario extract)",
+      "url": "https://download.geofabrik.de/north-america/canada/ontario.html",
+      "licence": {
+        "id": "ODbL-1.0",
+        "name": "Open Database License 1.0",
+        "url": "https://opendatacommons.org/licenses/odbl/1-0/",
+        "status": "open",
+        "attribution": "© OpenStreetMap contributors"
+      },
+      "shareAlike": "ODbL share-alike: any public derived database built from OSM (including tiles' underlying data) must be offered under ODbL; keep OSM-derived records in their own partition with attribution; produced works (rendered maps) need attribution only.",
+      "cadence": "Daily extract (Geofabrik); upstream continuous",
+      "counted": {
+        "value": 162066,
+        "unit": "records",
+        "kind": "counted",
+        "method": "pyosmium 4 KeyFilter stream over ontario-261114.osm.pbf (1,017,668,533 bytes, Last-Modified 2026-11-15 05:34 UTC); object counted once if it has any of wheelchair, toilets:wheelchair, kerb, tactile_paving, ramp:wheelchair, highway=elevator, parking_space=disabled, capacity:disabled, automatic_door. File deleted after counting.",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "wheelchair=*": 46835,
+        "wheelchair values": {
+          "yes": 39566,
+          "no": 4931,
+          "limited": 2157,
+          "designated": 148,
+          "2": 8,
+          "bad": 8,
+          "3": 5,
+          "ramp": 3
+        },
+        "toilets:wheelchair=*": 1346,
+        "amenity=toilets": 4086,
+        "entrance=*": 17649,
+        "kerb=*": 63530,
+        "kerb values": {
+          "lowered": 48141,
+          "flush": 9831,
+          "raised": 4117,
+          "yes": 1190,
+          "no": 156,
+          "rolled": 83,
+          "regular": 4,
+          "height=*": 3
+        },
+        "tactile_paving=*": 101546,
+        "parking_space=disabled": 11516,
+        "capacity:disabled=*": 3511,
+        "highway=elevator": 517,
+        "step_count=*": 2046,
+        "ramp:wheelchair=*": 137,
+        "automatic_door=*": 57
+      },
+      "accessibilityFields": "wheelchair, toilets:wheelchair, entrance, kerb, tactile_paving, step_count, ramp:wheelchair, parking_space=disabled, capacity:disabled, highway=elevator, automatic_door",
+      "coveredBy": "access-maps #1 (cursor/ontario-open-data-pipeline-986f) already imports OSM Ontario venues, washrooms and paths. No new lane.",
+      "lane": null,
+      "inTotal": true,
+      "importPlan": "Covered by access-maps #1. Do not re-import in access-tools. Values other than yes/no/limited/designated (for example wheelchair=2, bad, ramp) stay UNKNOWN and are listed as unmapped.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"OpenStreetMap contributors (Geofabrik Ontario extract): OpenStreetMap Ontario: objects with accessibility tags\"; sourceId = \"osm-ontario-a11y-tags\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Open Database License 1.0\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "osm-ontario-base",
+      "group": "OpenStreetMap",
+      "name": "OpenStreetMap Ontario: base places and pedestrian network (accessibility UNKNOWN unless tagged)",
+      "publisher": "OpenStreetMap contributors",
+      "url": "https://download.geofabrik.de/north-america/canada/ontario.html",
+      "licence": {
+        "id": "ODbL-1.0",
+        "name": "Open Database License 1.0",
+        "url": "https://opendatacommons.org/licenses/odbl/1-0/",
+        "status": "open",
+        "attribution": "© OpenStreetMap contributors"
+      },
+      "shareAlike": "ODbL share-alike: any public derived database built from OSM (including tiles' underlying data) must be offered under ODbL; keep OSM-derived records in their own partition with attribution; produced works (rendered maps) need attribution only.",
+      "cadence": "Daily extract",
+      "counted": {
+        "value": 1378279,
+        "unit": "records",
+        "kind": "counted",
+        "method": "Same stream as above: POIs (amenity/shop/tourism/leisure/healthcare/office) + pedestrian ways (footway/pedestrian/path/steps/cycleway/living_street) + highway=crossing nodes + bus stops/platforms.",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "pois": 540620,
+        "pois_named": 172111,
+        "pois_with_wheelchair": 12208,
+        "pedestrian_ways": 575813,
+        "of_which_footway=sidewalk": 198006,
+        "crossing_nodes": 221934,
+        "transit_platforms_or_bus_stops": 39912,
+        "building_footprints_not_in_total": 3128244
+      },
+      "accessibilityFields": "None by default. Every accessibility field stays UNKNOWN unless an explicit tag exists.",
+      "coveredBy": "access-maps #1 (540,944 venues and 846,525 path records in its counts). No new lane.",
+      "lane": null,
+      "inTotal": true,
+      "importPlan": "Covered by access-maps #1. 3,128,244 building footprints are listed for context and not counted as place records.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"OpenStreetMap contributors: OpenStreetMap Ontario: base places and pedestrian network (accessibility UNKNOWN unless tagged)\"; sourceId = \"osm-ontario-base\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Open Database License 1.0\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "gtfs-oc-transpo",
+      "group": "GTFS static",
+      "name": "OC Transpo (Ottawa) GTFS stops",
+      "publisher": "OC Transpo (Ottawa)",
+      "url": "https://www.octranspo.com/en/plan-your-trip/travel-tools/developers/",
+      "licence": {
+        "id": null,
+        "name": "City of Ottawa / OC Transpo developer terms",
+        "url": "https://www.octranspo.com/en/plan-your-trip/travel-tools/developers/",
+        "status": "verify"
+      },
+      "cadence": "Per service change (typically every 6–12 weeks)",
+      "counted": {
+        "value": 5842,
+        "unit": "stops.txt rows",
+        "kind": "counted",
+        "method": "stops.txt rows streamed from the agency download URL; zip deleted after counting.",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "stops_location_type_0": 5781,
+        "wheelchair_boarding_1_or_2_on_stops": 0,
+        "share_set_pct": 0.0,
+        "wheelchair_boarding_values": {
+          "": 5798,
+          "0": 44
+        },
+        "pathways_or_levels_files": 0
+      },
+      "accessibilityFields": "wheelchair_boarding (0 or empty = UNKNOWN; 1 = some accessible boarding per agency; 2 = not possible per agency). Child stops inherit only when the parent says so and are marked derived.",
+      "coveredBy": null,
+      "lane": "H1",
+      "inTotal": true,
+      "importPlan": "Lane H1: streaming stops.txt reader; licence must be confirmed (status 'verify'/'unknown' feeds are imported only into a local, git-ignored output until a person records the licence).",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"OC Transpo (Ottawa): OC Transpo (Ottawa) GTFS stops\"; sourceId = \"gtfs-oc-transpo\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"City of Ottawa / OC Transpo developer terms\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "gtfs-yrt",
+      "group": "GTFS static",
+      "name": "York Region Transit GTFS stops",
+      "publisher": "York Region Transit",
+      "url": "https://www.yrt.ca/en/about-us/open-data-licence-agreement.aspx",
+      "licence": {
+        "id": null,
+        "name": "YRT Open Data Licence Agreement",
+        "url": "https://www.yrt.ca/en/about-us/open-data-licence-agreement.aspx",
+        "status": "verify"
+      },
+      "cadence": "Per service change (typically every 6–12 weeks)",
+      "counted": {
+        "value": 4827,
+        "unit": "stops.txt rows",
+        "kind": "counted",
+        "method": "stops.txt rows streamed from the agency download URL; zip deleted after counting.",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "stops_location_type_0": 4809,
+        "wheelchair_boarding_1_or_2_on_stops": 4809,
+        "share_set_pct": 100.0,
+        "wheelchair_boarding_values": {
+          "1": 3847,
+          "2": 980
+        },
+        "pathways_or_levels_files": 0
+      },
+      "accessibilityFields": "wheelchair_boarding (0 or empty = UNKNOWN; 1 = some accessible boarding per agency; 2 = not possible per agency). Child stops inherit only when the parent says so and are marked derived.",
+      "coveredBy": null,
+      "lane": "H1",
+      "inTotal": true,
+      "importPlan": "Lane H1: streaming stops.txt reader; licence must be confirmed (status 'verify'/'unknown' feeds are imported only into a local, git-ignored output until a person records the licence).",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"York Region Transit: York Region Transit GTFS stops\"; sourceId = \"gtfs-yrt\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"YRT Open Data Licence Agreement\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "gtfs-durham-drt",
+      "group": "GTFS static",
+      "name": "Durham Region Transit GTFS stops",
+      "publisher": "Durham Region Transit",
+      "url": "https://opendata.durham.ca/",
+      "licence": {
+        "id": null,
+        "name": "Region of Durham Open Data Licence",
+        "url": "https://opendata.durham.ca/",
+        "status": "verify"
+      },
+      "cadence": "Per service change (typically every 6–12 weeks)",
+      "counted": {
+        "value": 1912,
+        "unit": "stops.txt rows",
+        "kind": "counted",
+        "method": "stops.txt rows streamed from the agency download URL; zip deleted after counting.",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "stops_location_type_0": 1912,
+        "wheelchair_boarding_1_or_2_on_stops": 1912,
+        "share_set_pct": 100.0,
+        "wheelchair_boarding_values": {
+          "1": 1889,
+          "2": 23
+        },
+        "pathways_or_levels_files": 0
+      },
+      "accessibilityFields": "wheelchair_boarding (0 or empty = UNKNOWN; 1 = some accessible boarding per agency; 2 = not possible per agency). Child stops inherit only when the parent says so and are marked derived.",
+      "coveredBy": null,
+      "lane": "H1",
+      "inTotal": true,
+      "importPlan": "Lane H1: streaming stops.txt reader; licence must be confirmed (status 'verify'/'unknown' feeds are imported only into a local, git-ignored output until a person records the licence).",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"Durham Region Transit: Durham Region Transit GTFS stops\"; sourceId = \"gtfs-durham-drt\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Region of Durham Open Data Licence\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "gtfs-kingston-transit",
+      "group": "GTFS static",
+      "name": "Kingston Transit GTFS stops",
+      "publisher": "Kingston Transit",
+      "url": "https://opendatakingston.cityofkingston.ca/",
+      "licence": {
+        "id": null,
+        "name": "Open Data Licence – City of Kingston 1.0",
+        "url": "https://opendatakingston.cityofkingston.ca/",
+        "status": "open-recorded"
+      },
+      "cadence": "Per service change (typically every 6–12 weeks)",
+      "counted": {
+        "value": 770,
+        "unit": "stops.txt rows",
+        "kind": "counted",
+        "method": "stops.txt rows streamed from the agency download URL; zip deleted after counting.",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "stops_location_type_0": 770,
+        "wheelchair_boarding_1_or_2_on_stops": 0,
+        "share_set_pct": 0.0,
+        "wheelchair_boarding_values": {
+          "0": 770
+        },
+        "pathways_or_levels_files": 0
+      },
+      "accessibilityFields": "wheelchair_boarding (0 or empty = UNKNOWN; 1 = some accessible boarding per agency; 2 = not possible per agency). Child stops inherit only when the parent says so and are marked derived.",
+      "coveredBy": null,
+      "lane": "H1",
+      "inTotal": true,
+      "importPlan": "Lane H1: streaming stops.txt reader; licence must be confirmed (status 'verify'/'unknown' feeds are imported only into a local, git-ignored output until a person records the licence).",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"Kingston Transit: Kingston Transit GTFS stops\"; sourceId = \"gtfs-kingston-transit\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Open Data Licence – City of Kingston 1.0\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "gtfs-barrie-transit",
+      "group": "GTFS static",
+      "name": "Barrie Transit GTFS stops",
+      "publisher": "Barrie Transit",
+      "url": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/barrie-gtfs",
+      "licence": {
+        "id": null,
+        "name": "City of Barrie open data terms",
+        "url": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/barrie-gtfs",
+        "status": "verify"
+      },
+      "cadence": "Per service change (typically every 6–12 weeks)",
+      "counted": {
+        "value": 559,
+        "unit": "stops.txt rows",
+        "kind": "counted",
+        "method": "stops.txt rows streamed from the Mobility Database mirror of the latest feed (agency URL returned HTTP 500 or was not used); zip deleted after counting.",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "stops_location_type_0": 558,
+        "wheelchair_boarding_1_or_2_on_stops": 0,
+        "share_set_pct": 0.0,
+        "wheelchair_boarding_values": {
+          "": 1,
+          "0": 558
+        },
+        "pathways_or_levels_files": 0
+      },
+      "accessibilityFields": "wheelchair_boarding (0 or empty = UNKNOWN; 1 = some accessible boarding per agency; 2 = not possible per agency). Child stops inherit only when the parent says so and are marked derived.",
+      "coveredBy": null,
+      "lane": "H1",
+      "inTotal": true,
+      "importPlan": "Lane H1: streaming stops.txt reader; licence must be confirmed (status 'verify'/'unknown' feeds are imported only into a local, git-ignored output until a person records the licence).",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"Barrie Transit: Barrie Transit GTFS stops\"; sourceId = \"gtfs-barrie-transit\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"City of Barrie open data terms\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "gtfs-burlington-transit",
+      "group": "GTFS static",
+      "name": "Burlington Transit GTFS stops",
+      "publisher": "Burlington Transit",
+      "url": "https://opendata.burlington.ca/",
+      "licence": {
+        "id": null,
+        "name": "City of Burlington Open Data Terms of Use",
+        "url": "https://opendata.burlington.ca/",
+        "status": "verify"
+      },
+      "cadence": "Per service change (typically every 6–12 weeks)",
+      "counted": {
+        "value": 787,
+        "unit": "stops.txt rows",
+        "kind": "counted",
+        "method": "stops.txt rows streamed from the agency download URL; zip deleted after counting.",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "stops_location_type_0": 787,
+        "wheelchair_boarding_1_or_2_on_stops": 787,
+        "share_set_pct": 100.0,
+        "wheelchair_boarding_values": {
+          "1": 712,
+          "2": 75
+        },
+        "pathways_or_levels_files": 0
+      },
+      "accessibilityFields": "wheelchair_boarding (0 or empty = UNKNOWN; 1 = some accessible boarding per agency; 2 = not possible per agency). Child stops inherit only when the parent says so and are marked derived.",
+      "coveredBy": null,
+      "lane": "H1",
+      "inTotal": true,
+      "importPlan": "Lane H1: streaming stops.txt reader; licence must be confirmed (status 'verify'/'unknown' feeds are imported only into a local, git-ignored output until a person records the licence).",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"Burlington Transit: Burlington Transit GTFS stops\"; sourceId = \"gtfs-burlington-transit\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"City of Burlington Open Data Terms of Use\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "gtfs-oakville-transit",
+      "group": "GTFS static",
+      "name": "Oakville Transit GTFS stops",
+      "publisher": "Oakville Transit",
+      "url": "http://www.oakville.ca/data/oakville-transit-route-information.html",
+      "licence": {
+        "id": null,
+        "name": "Town of Oakville open data licence",
+        "url": "http://www.oakville.ca/data/oakville-transit-route-information.html",
+        "status": "verify"
+      },
+      "cadence": "Per service change (typically every 6–12 weeks)",
+      "counted": {
+        "value": 1163,
+        "unit": "stops.txt rows",
+        "kind": "counted",
+        "method": "stops.txt rows streamed from the agency download URL; zip deleted after counting.",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "stops_location_type_0": 1163,
+        "wheelchair_boarding_1_or_2_on_stops": 0,
+        "share_set_pct": 0.0,
+        "wheelchair_boarding_values": {
+          "0": 1163
+        },
+        "pathways_or_levels_files": 0
+      },
+      "accessibilityFields": "wheelchair_boarding (0 or empty = UNKNOWN; 1 = some accessible boarding per agency; 2 = not possible per agency). Child stops inherit only when the parent says so and are marked derived.",
+      "coveredBy": null,
+      "lane": "H1",
+      "inTotal": true,
+      "importPlan": "Lane H1: streaming stops.txt reader; licence must be confirmed (status 'verify'/'unknown' feeds are imported only into a local, git-ignored output until a person records the licence).",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"Oakville Transit: Oakville Transit GTFS stops\"; sourceId = \"gtfs-oakville-transit\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Town of Oakville open data licence\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "gtfs-transit-windsor",
+      "group": "GTFS static",
+      "name": "Transit Windsor GTFS stops",
+      "publisher": "Transit Windsor",
+      "url": "https://opendata.citywindsor.ca/",
+      "licence": {
+        "id": null,
+        "name": "City of Windsor open data terms",
+        "url": "https://opendata.citywindsor.ca/",
+        "status": "verify"
+      },
+      "cadence": "Per service change (typically every 6–12 weeks)",
+      "counted": {
+        "value": 1464,
+        "unit": "stops.txt rows",
+        "kind": "counted",
+        "method": "stops.txt rows streamed from the agency download URL; zip deleted after counting.",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "stops_location_type_0": 1464,
+        "wheelchair_boarding_1_or_2_on_stops": 1464,
+        "share_set_pct": 100.0,
+        "wheelchair_boarding_values": {
+          "1": 1464
+        },
+        "pathways_or_levels_files": 0
+      },
+      "accessibilityFields": "wheelchair_boarding (0 or empty = UNKNOWN; 1 = some accessible boarding per agency; 2 = not possible per agency). Child stops inherit only when the parent says so and are marked derived.",
+      "coveredBy": null,
+      "lane": "H1",
+      "inTotal": true,
+      "importPlan": "Lane H1: streaming stops.txt reader; licence must be confirmed (status 'verify'/'unknown' feeds are imported only into a local, git-ignored output until a person records the licence).",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"Transit Windsor: Transit Windsor GTFS stops\"; sourceId = \"gtfs-transit-windsor\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"City of Windsor open data terms\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "gtfs-thunder-bay",
+      "group": "GTFS static",
+      "name": "Thunder Bay Transit GTFS stops",
+      "publisher": "Thunder Bay Transit",
+      "url": "http://api.nextlift.ca/gtfs.zip",
+      "licence": {
+        "id": null,
+        "name": "No licence text found with the feed",
+        "url": "http://api.nextlift.ca/gtfs.zip",
+        "status": "unknown"
+      },
+      "cadence": "Per service change (typically every 6–12 weeks)",
+      "counted": {
+        "value": 732,
+        "unit": "stops.txt rows",
+        "kind": "counted",
+        "method": "stops.txt rows streamed from the Mobility Database mirror of the latest feed (agency URL returned HTTP 500 or was not used); zip deleted after counting.",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "stops_location_type_0": 732,
+        "wheelchair_boarding_1_or_2_on_stops": 480,
+        "share_set_pct": 65.6,
+        "wheelchair_boarding_values": {
+          "1": 480,
+          "0": 252
+        },
+        "pathways_or_levels_files": 0
+      },
+      "accessibilityFields": "wheelchair_boarding (0 or empty = UNKNOWN; 1 = some accessible boarding per agency; 2 = not possible per agency). Child stops inherit only when the parent says so and are marked derived.",
+      "coveredBy": null,
+      "lane": "H1",
+      "inTotal": true,
+      "importPlan": "Lane H1: streaming stops.txt reader; licence must be confirmed (status 'verify'/'unknown' feeds are imported only into a local, git-ignored output until a person records the licence).",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"Thunder Bay Transit: Thunder Bay Transit GTFS stops\"; sourceId = \"gtfs-thunder-bay\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"No licence text found with the feed\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "gtfs-sudbury-gova",
+      "group": "GTFS static",
+      "name": "GOVA Transit (Greater Sudbury) GTFS stops",
+      "publisher": "GOVA Transit (Greater Sudbury)",
+      "url": "https://www.greatersudbury.ca/",
+      "licence": {
+        "id": null,
+        "name": "Open Data Licence – City of Greater Sudbury",
+        "url": "https://www.greatersudbury.ca/",
+        "status": "open-recorded"
+      },
+      "cadence": "Per service change (typically every 6–12 weeks)",
+      "counted": {
+        "value": 1121,
+        "unit": "stops.txt rows",
+        "kind": "counted",
+        "method": "stops.txt rows streamed from the agency download URL; zip deleted after counting.",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "stops_location_type_0": 1121,
+        "wheelchair_boarding_1_or_2_on_stops": 0,
+        "share_set_pct": 0.0,
+        "wheelchair_boarding_values": {
+          "0": 1121
+        },
+        "pathways_or_levels_files": 0
+      },
+      "accessibilityFields": "wheelchair_boarding (0 or empty = UNKNOWN; 1 = some accessible boarding per agency; 2 = not possible per agency). Child stops inherit only when the parent says so and are marked derived.",
+      "coveredBy": null,
+      "lane": "H1",
+      "inTotal": true,
+      "importPlan": "Lane H1: streaming stops.txt reader; licence must be confirmed (status 'verify'/'unknown' feeds are imported only into a local, git-ignored output until a person records the licence).",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"GOVA Transit (Greater Sudbury): GOVA Transit (Greater Sudbury) GTFS stops\"; sourceId = \"gtfs-sudbury-gova\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Open Data Licence – City of Greater Sudbury\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "gtfs-milton-transit",
+      "group": "GTFS static",
+      "name": "Milton Transit GTFS stops",
+      "publisher": "Milton Transit",
+      "url": "https://discover-milton.hub.arcgis.com/pages/disclaimer-and-terms-of-use",
+      "licence": {
+        "id": null,
+        "name": "Town of Milton terms of use",
+        "url": "https://discover-milton.hub.arcgis.com/pages/disclaimer-and-terms-of-use",
+        "status": "verify"
+      },
+      "cadence": "Per service change (typically every 6–12 weeks)",
+      "counted": {
+        "value": 414,
+        "unit": "stops.txt rows",
+        "kind": "counted",
+        "method": "stops.txt rows streamed from the Mobility Database mirror of the latest feed (agency URL returned HTTP 500 or was not used); zip deleted after counting.",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "stops_location_type_0": 414,
+        "wheelchair_boarding_1_or_2_on_stops": 0,
+        "share_set_pct": 0.0,
+        "wheelchair_boarding_values": {
+          "0": 414
+        },
+        "pathways_or_levels_files": 0
+      },
+      "accessibilityFields": "wheelchair_boarding (0 or empty = UNKNOWN; 1 = some accessible boarding per agency; 2 = not possible per agency). Child stops inherit only when the parent says so and are marked derived.",
+      "coveredBy": null,
+      "lane": "H1",
+      "inTotal": true,
+      "importPlan": "Lane H1: streaming stops.txt reader; licence must be confirmed (status 'verify'/'unknown' feeds are imported only into a local, git-ignored output until a person records the licence).",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"Milton Transit: Milton Transit GTFS stops\"; sourceId = \"gtfs-milton-transit\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Town of Milton terms of use\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "gtfs-belleville-transit",
+      "group": "GTFS static",
+      "name": "Belleville Transit GTFS stops",
+      "publisher": "Belleville Transit",
+      "url": "https://metrolinx.tmix.se/gtfs/gtfs-belleville.zip",
+      "licence": {
+        "id": null,
+        "name": "No licence text found with the feed",
+        "url": "https://metrolinx.tmix.se/gtfs/gtfs-belleville.zip",
+        "status": "unknown"
+      },
+      "cadence": "Per service change (typically every 6–12 weeks)",
+      "counted": {
+        "value": 245,
+        "unit": "stops.txt rows",
+        "kind": "counted",
+        "method": "stops.txt rows streamed from the agency download URL; zip deleted after counting.",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "stops_location_type_0": 245,
+        "wheelchair_boarding_1_or_2_on_stops": 0,
+        "share_set_pct": 0.0,
+        "wheelchair_boarding_values": {
+          "0": 245
+        },
+        "pathways_or_levels_files": 0
+      },
+      "accessibilityFields": "wheelchair_boarding (0 or empty = UNKNOWN; 1 = some accessible boarding per agency; 2 = not possible per agency). Child stops inherit only when the parent says so and are marked derived.",
+      "coveredBy": null,
+      "lane": "H1",
+      "inTotal": true,
+      "importPlan": "Lane H1: streaming stops.txt reader; licence must be confirmed (status 'verify'/'unknown' feeds are imported only into a local, git-ignored output until a person records the licence).",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"Belleville Transit: Belleville Transit GTFS stops\"; sourceId = \"gtfs-belleville-transit\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"No licence text found with the feed\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "gtfs-cornwall-transit",
+      "group": "GTFS static",
+      "name": "Cornwall Transit GTFS stops",
+      "publisher": "Cornwall Transit",
+      "url": "http://metrolinx.tmix.se/gtfs/gtfs-cornwall.zip",
+      "licence": {
+        "id": null,
+        "name": "No licence text found with the feed",
+        "url": "http://metrolinx.tmix.se/gtfs/gtfs-cornwall.zip",
+        "status": "unknown"
+      },
+      "cadence": "Per service change (typically every 6–12 weeks)",
+      "counted": {
+        "value": 308,
+        "unit": "stops.txt rows",
+        "kind": "counted",
+        "method": "stops.txt rows streamed from the Mobility Database mirror of the latest feed (agency URL returned HTTP 500 or was not used); zip deleted after counting.",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "stops_location_type_0": 308,
+        "wheelchair_boarding_1_or_2_on_stops": 0,
+        "share_set_pct": 0.0,
+        "wheelchair_boarding_values": {
+          "0": 308
+        },
+        "pathways_or_levels_files": 0
+      },
+      "accessibilityFields": "wheelchair_boarding (0 or empty = UNKNOWN; 1 = some accessible boarding per agency; 2 = not possible per agency). Child stops inherit only when the parent says so and are marked derived.",
+      "coveredBy": null,
+      "lane": "H1",
+      "inTotal": true,
+      "importPlan": "Lane H1: streaming stops.txt reader; licence must be confirmed (status 'verify'/'unknown' feeds are imported only into a local, git-ignored output until a person records the licence).",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"Cornwall Transit: Cornwall Transit GTFS stops\"; sourceId = \"gtfs-cornwall-transit\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"No licence text found with the feed\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "gtfs-ttc",
+      "group": "GTFS static",
+      "name": "TTC GTFS stops",
+      "publisher": "TTC",
+      "url": "https://open.toronto.ca/dataset/ttc-routes-and-schedules/",
+      "licence": {
+        "id": null,
+        "name": "Open Government Licence – Toronto",
+        "url": "https://open.toronto.ca/dataset/ttc-routes-and-schedules/",
+        "status": "open-recorded"
+      },
+      "cadence": "Per service change (typically every 6–12 weeks)",
+      "counted": {
+        "value": 9368,
+        "unit": "stops.txt rows",
+        "kind": "counted",
+        "method": "stops.txt rows streamed from the Mobility Database mirror of the latest feed (agency URL returned HTTP 500 or was not used); zip deleted after counting.",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "stops_location_type_0": 9368,
+        "wheelchair_boarding_1_or_2_on_stops": 9368,
+        "share_set_pct": 100.0,
+        "wheelchair_boarding_values": {
+          "1": 8064,
+          "2": 1304
+        },
+        "pathways_or_levels_files": 0
+      },
+      "accessibilityFields": "wheelchair_boarding (0 or empty = UNKNOWN; 1 = some accessible boarding per agency; 2 = not possible per agency). Child stops inherit only when the parent says so and are marked derived.",
+      "coveredBy": "access-maps #1 already imports this feed.",
+      "lane": null,
+      "inTotal": true,
+      "importPlan": "Covered by access-maps #1.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"TTC: TTC GTFS stops\"; sourceId = \"gtfs-ttc\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Open Government Licence – Toronto\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "gtfs-go-transit",
+      "group": "GTFS static",
+      "name": "GO Transit GTFS stops",
+      "publisher": "GO Transit",
+      "url": "https://www.metrolinx.com/en/about-us/open-data",
+      "licence": {
+        "id": null,
+        "name": "Open Government Licence – Ontario – Metrolinx (held in access-maps #1 as revocable)",
+        "url": "https://www.metrolinx.com/en/about-us/open-data",
+        "status": "held"
+      },
+      "cadence": "Per service change (typically every 6–12 weeks)",
+      "counted": {
+        "value": 889,
+        "unit": "stops.txt rows",
+        "kind": "counted",
+        "method": "stops.txt rows streamed from the agency download URL; zip deleted after counting.",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "stops_location_type_0": 889,
+        "wheelchair_boarding_1_or_2_on_stops": 889,
+        "share_set_pct": 100.0,
+        "wheelchair_boarding_values": {
+          "1": 769,
+          "2": 120
+        },
+        "pathways_or_levels_files": 0
+      },
+      "accessibilityFields": "wheelchair_boarding (0 or empty = UNKNOWN; 1 = some accessible boarding per agency; 2 = not possible per agency). Child stops inherit only when the parent says so and are marked derived.",
+      "coveredBy": "access-maps #1 already imports this feed.",
+      "lane": null,
+      "inTotal": true,
+      "importPlan": "Covered by access-maps #1.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"GO Transit: GO Transit GTFS stops\"; sourceId = \"gtfs-go-transit\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Open Government Licence – Ontario – Metrolinx (held in access-maps #1 as revocable)\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "gtfs-up-express",
+      "group": "GTFS static",
+      "name": "UP Express GTFS stops",
+      "publisher": "UP Express",
+      "url": "https://www.metrolinx.com/en/about-us/open-data",
+      "licence": {
+        "id": null,
+        "name": "Open Government Licence – Ontario – Metrolinx (held in access-maps #1)",
+        "url": "https://www.metrolinx.com/en/about-us/open-data",
+        "status": "held"
+      },
+      "cadence": "Per service change (typically every 6–12 weeks)",
+      "counted": {
+        "value": 5,
+        "unit": "stops.txt rows",
+        "kind": "counted",
+        "method": "stops.txt rows streamed from the agency download URL; zip deleted after counting.",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "stops_location_type_0": 5,
+        "wheelchair_boarding_1_or_2_on_stops": 5,
+        "share_set_pct": 100.0,
+        "wheelchair_boarding_values": {
+          "1": 5
+        },
+        "pathways_or_levels_files": 0
+      },
+      "accessibilityFields": "wheelchair_boarding (0 or empty = UNKNOWN; 1 = some accessible boarding per agency; 2 = not possible per agency). Child stops inherit only when the parent says so and are marked derived.",
+      "coveredBy": "access-maps #1 already imports this feed.",
+      "lane": null,
+      "inTotal": true,
+      "importPlan": "Covered by access-maps #1.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"UP Express: UP Express GTFS stops\"; sourceId = \"gtfs-up-express\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Open Government Licence – Ontario – Metrolinx (held in access-maps #1)\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "gtfs-miway",
+      "group": "GTFS static",
+      "name": "MiWay GTFS stops",
+      "publisher": "MiWay",
+      "url": "https://www.mississauga.ca/miway-transit/developer-download/",
+      "licence": {
+        "id": null,
+        "name": "City of Mississauga Terms of Use (held in access-maps #1)",
+        "url": "https://www.mississauga.ca/miway-transit/developer-download/",
+        "status": "held"
+      },
+      "cadence": "Per service change (typically every 6–12 weeks)",
+      "counted": {
+        "value": 4066,
+        "unit": "stops.txt rows",
+        "kind": "counted",
+        "method": "stops.txt rows streamed from the agency download URL; zip deleted after counting.",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "stops_location_type_0": 3124,
+        "wheelchair_boarding_1_or_2_on_stops": 3124,
+        "share_set_pct": 100.0,
+        "wheelchair_boarding_values": {
+          "1": 3027,
+          "2": 97,
+          "0": 942
+        },
+        "pathways_or_levels_files": 0
+      },
+      "accessibilityFields": "wheelchair_boarding (0 or empty = UNKNOWN; 1 = some accessible boarding per agency; 2 = not possible per agency). Child stops inherit only when the parent says so and are marked derived.",
+      "coveredBy": "access-maps #1 already imports this feed.",
+      "lane": null,
+      "inTotal": true,
+      "importPlan": "Covered by access-maps #1.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"MiWay: MiWay GTFS stops\"; sourceId = \"gtfs-miway\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"City of Mississauga Terms of Use (held in access-maps #1)\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "gtfs-brampton-transit",
+      "group": "GTFS static",
+      "name": "Brampton Transit GTFS stops",
+      "publisher": "Brampton Transit",
+      "url": "https://www.arcgis.com/home/item.html?id=a355aabd5a8c490186bdce559c9c75fb",
+      "licence": {
+        "id": null,
+        "name": "CC BY",
+        "url": "https://www.arcgis.com/home/item.html?id=a355aabd5a8c490186bdce559c9c75fb",
+        "status": "open-recorded"
+      },
+      "cadence": "Per service change (typically every 6–12 weeks)",
+      "counted": {
+        "value": 2872,
+        "unit": "stops.txt rows",
+        "kind": "counted",
+        "method": "stops.txt rows streamed from the agency download URL; zip deleted after counting.",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "stops_location_type_0": 2849,
+        "wheelchair_boarding_1_or_2_on_stops": 2469,
+        "share_set_pct": 86.7,
+        "wheelchair_boarding_values": {
+          "1": 2492,
+          "0": 380
+        },
+        "pathways_or_levels_files": 0
+      },
+      "accessibilityFields": "wheelchair_boarding (0 or empty = UNKNOWN; 1 = some accessible boarding per agency; 2 = not possible per agency). Child stops inherit only when the parent says so and are marked derived.",
+      "coveredBy": "access-maps #1 already imports this feed.",
+      "lane": null,
+      "inTotal": true,
+      "importPlan": "Covered by access-maps #1.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"Brampton Transit: Brampton Transit GTFS stops\"; sourceId = \"gtfs-brampton-transit\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"CC BY\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "gtfs-grt",
+      "group": "GTFS static",
+      "name": "Grand River Transit (bus) GTFS stops",
+      "publisher": "Grand River Transit (bus)",
+      "url": "https://www.grt.ca/about-grt/open-data/",
+      "licence": {
+        "id": null,
+        "name": "Region of Waterloo Open Data Licence 2.0",
+        "url": "https://www.grt.ca/about-grt/open-data/",
+        "status": "open-recorded"
+      },
+      "cadence": "Per service change (typically every 6–12 weeks)",
+      "counted": {
+        "value": 2265,
+        "unit": "stops.txt rows",
+        "kind": "counted",
+        "method": "stops.txt rows streamed from the agency download URL; zip deleted after counting.",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "stops_location_type_0": 2251,
+        "wheelchair_boarding_1_or_2_on_stops": 2251,
+        "share_set_pct": 100.0,
+        "wheelchair_boarding_values": {
+          "1": 1791,
+          "2": 460,
+          "": 14
+        },
+        "pathways_or_levels_files": 0
+      },
+      "accessibilityFields": "wheelchair_boarding (0 or empty = UNKNOWN; 1 = some accessible boarding per agency; 2 = not possible per agency). Child stops inherit only when the parent says so and are marked derived.",
+      "coveredBy": "access-maps #1 already imports this feed.",
+      "lane": null,
+      "inTotal": true,
+      "importPlan": "Covered by access-maps #1.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"Grand River Transit (bus): Grand River Transit (bus) GTFS stops\"; sourceId = \"gtfs-grt\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Region of Waterloo Open Data Licence 2.0\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "gtfs-ltc-london",
+      "group": "GTFS static",
+      "name": "London Transit Commission GTFS stops",
+      "publisher": "London Transit Commission",
+      "url": "https://www.londontransit.ca/open-data/",
+      "licence": {
+        "id": null,
+        "name": "LTC Open Data Terms of Use (held in access-maps #1)",
+        "url": "https://www.londontransit.ca/open-data/",
+        "status": "held"
+      },
+      "cadence": "Per service change (typically every 6–12 weeks)",
+      "counted": {
+        "value": 1938,
+        "unit": "stops.txt rows",
+        "kind": "counted",
+        "method": "stops.txt rows streamed from the Mobility Database mirror of the latest feed (agency URL returned HTTP 500 or was not used); zip deleted after counting.",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "stops_location_type_0": 1938,
+        "wheelchair_boarding_1_or_2_on_stops": 0,
+        "share_set_pct": 0.0,
+        "wheelchair_boarding_values": {
+          "0": 1938
+        },
+        "pathways_or_levels_files": 0
+      },
+      "accessibilityFields": "wheelchair_boarding (0 or empty = UNKNOWN; 1 = some accessible boarding per agency; 2 = not possible per agency). Child stops inherit only when the parent says so and are marked derived.",
+      "coveredBy": "access-maps #1 already imports this feed.",
+      "lane": null,
+      "inTotal": true,
+      "importPlan": "Covered by access-maps #1.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"London Transit Commission: London Transit Commission GTFS stops\"; sourceId = \"gtfs-ltc-london\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"LTC Open Data Terms of Use (held in access-maps #1)\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "gtfs-hsr-hamilton",
+      "group": "GTFS static",
+      "name": "Hamilton Street Railway GTFS stops",
+      "publisher": "Hamilton Street Railway",
+      "url": "https://www.hamilton.ca/city-council/data-maps/open-data/open-data-licence-terms-and-conditions",
+      "licence": {
+        "id": null,
+        "name": "City of Hamilton Open Data Licence",
+        "url": "https://www.hamilton.ca/city-council/data-maps/open-data/open-data-licence-terms-and-conditions",
+        "status": "open-recorded"
+      },
+      "cadence": "Per service change (typically every 6–12 weeks)",
+      "counted": {
+        "value": 2353,
+        "unit": "stops.txt rows",
+        "kind": "counted",
+        "method": "stops.txt rows streamed from the agency download URL; zip deleted after counting.",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "stops_location_type_0": 2350,
+        "wheelchair_boarding_1_or_2_on_stops": 0,
+        "share_set_pct": 0.0,
+        "wheelchair_boarding_values": {
+          "0": 2353
+        },
+        "pathways_or_levels_files": 0
+      },
+      "accessibilityFields": "wheelchair_boarding (0 or empty = UNKNOWN; 1 = some accessible boarding per agency; 2 = not possible per agency). Child stops inherit only when the parent says so and are marked derived.",
+      "coveredBy": "access-maps #1 already imports this feed.",
+      "lane": null,
+      "inTotal": true,
+      "importPlan": "Covered by access-maps #1.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"Hamilton Street Railway: Hamilton Street Railway GTFS stops\"; sourceId = \"gtfs-hsr-hamilton\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"City of Hamilton Open Data Licence\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "gtfs-rt-elevator-status",
+      "group": "GTFS-RT",
+      "name": "GTFS-RT elevator / accessibility alerts (TTC, GO, OC Transpo)",
+      "publisher": "Agencies",
+      "url": "https://open.toronto.ca/dataset/ttc-gtfs-realtime-gtfs-rt/",
+      "licence": {
+        "id": null,
+        "name": "Per agency; GO and OC Transpo real-time need a registered key",
+        "url": null,
+        "status": "keyed-or-held"
+      },
+      "cadence": "Real-time",
+      "counted": {
+        "value": null,
+        "unit": "records",
+        "kind": "not-counted",
+        "method": "Not counted: live status is never stored as a place fact (tier 4 needs observedAt and expiresAt). TTC alerts are handled in access-maps #1 and #5.",
+        "date": "2026-11-15"
+      },
+      "accessibilityFields": "Elevator/escalator outage alerts",
+      "coveredBy": "access-maps #1 and #5",
+      "lane": null,
+      "inTotal": false,
+      "importPlan": "No new lane. Live status is shown with expiry, never stored.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"Agencies: GTFS-RT elevator / accessibility alerts (TTC, GO, OC Transpo)\"; sourceId = \"gtfs-rt-elevator-status\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Per agency; GO and OC Transpo real-time need a registered key\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "toronto-traffic-signals-aps",
+      "group": "Municipal: Toronto",
+      "name": "Traffic signals with accessible pedestrian signal (APS) flag",
+      "publisher": "City of Toronto",
+      "url": "https://open.toronto.ca/dataset/traffic-signals-tabular/",
+      "licence": {
+        "id": "OGL-Toronto-1.0",
+        "name": "Open Government Licence – Toronto",
+        "url": "https://open.toronto.ca/open-data-licence/",
+        "status": "open"
+      },
+      "cadence": "As available",
+      "counted": {
+        "value": 2563,
+        "unit": "records",
+        "kind": "counted",
+        "method": "CKAN datastore_search total for resource 'Traffic Signal'; full 2,563 rows tallied for AUDIBLEPEDSIGNAL.",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "AUDIBLEPEDSIGNAL=1": 1407,
+        "AUDIBLEPEDSIGNAL=-1": 26,
+        "AUDIBLEPEDSIGNAL=null": 1130
+      },
+      "accessibilityFields": "AUDIBLEPEDSIGNAL (1 = APS present per city; -1 and null stay UNKNOWN), APS_OPERATION, PEDWALKSPEED, ACTIVATIONDATE",
+      "coveredBy": null,
+      "lane": "H2",
+      "inTotal": true,
+      "importPlan": "Lane H2: page the CKAN datastore_search API (limit 1000/page) or stream the 4326 GeoJSON; map listed fields only; everything else UNKNOWN.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"City of Toronto: Traffic signals with accessible pedestrian signal (APS) flag\"; sourceId = \"toronto-traffic-signals-aps\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Open Government Licence – Toronto\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "toronto-pedestrian-crossovers",
+      "group": "Municipal: Toronto",
+      "name": "Pedestrian crossovers",
+      "publisher": "City of Toronto",
+      "url": "https://open.toronto.ca/dataset/traffic-signals-tabular/",
+      "licence": {
+        "id": "OGL-Toronto-1.0",
+        "name": "Open Government Licence – Toronto",
+        "url": "https://open.toronto.ca/open-data-licence/",
+        "status": "open"
+      },
+      "cadence": "As available",
+      "counted": {
+        "value": 496,
+        "unit": "records",
+        "kind": "counted",
+        "method": "CKAN datastore_search total",
+        "date": "2026-11-15"
+      },
+      "breakdown": {},
+      "accessibilityFields": "None (location and type only; accessibility UNKNOWN)",
+      "coveredBy": null,
+      "lane": "H2",
+      "inTotal": true,
+      "importPlan": "Lane H2: page the CKAN datastore_search API (limit 1000/page) or stream the 4326 GeoJSON; map listed fields only; everything else UNKNOWN.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"City of Toronto: Pedestrian crossovers\"; sourceId = \"toronto-pedestrian-crossovers\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Open Government Licence – Toronto\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "toronto-pops",
+      "group": "Municipal: Toronto",
+      "name": "Privately owned publicly-accessible spaces (POPS)",
+      "publisher": "City of Toronto",
+      "url": "https://open.toronto.ca/dataset/privately-owned-publicly-available-spaces/",
+      "licence": {
+        "id": "OGL-Toronto-1.0",
+        "name": "Open Government Licence – Toronto",
+        "url": "https://open.toronto.ca/open-data-licence/",
+        "status": "open"
+      },
+      "cadence": "As available",
+      "counted": {
+        "value": 308,
+        "unit": "records",
+        "kind": "counted",
+        "method": "CKAN datastore_search totals: 238 points + 70 polygons",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "points": 238,
+        "polygons": 70
+      },
+      "accessibilityFields": "None (public-access status is not wheelchair access; stays UNKNOWN)",
+      "coveredBy": null,
+      "lane": "H2",
+      "inTotal": true,
+      "importPlan": "Lane H2: page the CKAN datastore_search API (limit 1000/page) or stream the 4326 GeoJSON; map listed fields only; everything else UNKNOWN.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"City of Toronto: Privately owned publicly-accessible spaces (POPS)\"; sourceId = \"toronto-pops\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Open Government Licence – Toronto\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "toronto-parks-rec-facilities",
+      "group": "Municipal: Toronto",
+      "name": "Parks and recreation facilities",
+      "publisher": "City of Toronto",
+      "url": "https://open.toronto.ca/dataset/parks-and-recreation-facilities/",
+      "licence": {
+        "id": "OGL-Toronto-1.0",
+        "name": "Open Government Licence – Toronto",
+        "url": "https://open.toronto.ca/open-data-licence/",
+        "status": "verify",
+        "note": "CKAN license_title is empty for this dataset; the portal default is OGL-Toronto. Confirm on the dataset page before import."
+      },
+      "cadence": "Monthly",
+      "counted": {
+        "value": 1801,
+        "unit": "records",
+        "kind": "counted",
+        "method": "CKAN datastore_search total",
+        "date": "2026-11-15"
+      },
+      "breakdown": {},
+      "accessibilityFields": "AMENITIES text only. Do not parse words like 'accessible' into a wheelchair fact; keep raw text, fact UNKNOWN.",
+      "coveredBy": null,
+      "lane": "H2",
+      "inTotal": true,
+      "importPlan": "Lane H2: page the CKAN datastore_search API (limit 1000/page) or stream the 4326 GeoJSON; map listed fields only; everything else UNKNOWN.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"City of Toronto: Parks and recreation facilities\"; sourceId = \"toronto-parks-rec-facilities\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Open Government Licence – Toronto\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "toronto-accessible-stalls",
+      "group": "Municipal: Toronto",
+      "name": "Off-street surface lots: accessible stalls",
+      "publisher": "City of Toronto",
+      "url": "https://open.toronto.ca/dataset/off-street-parking-surface-lots-accessible-stalls/",
+      "licence": {
+        "id": "OGL-Toronto-1.0",
+        "name": "Open Government Licence – Toronto",
+        "url": "https://open.toronto.ca/open-data-licence/",
+        "status": "open"
+      },
+      "cadence": "Annually",
+      "counted": {
+        "value": 669,
+        "unit": "records",
+        "kind": "counted",
+        "method": "CKAN datastore_search total",
+        "date": "2026-11-15"
+      },
+      "breakdown": {},
+      "accessibilityFields": "AODA_TYPE (stall type per city)",
+      "coveredBy": null,
+      "lane": "H5",
+      "inTotal": true,
+      "importPlan": "Lane H5: page the CKAN datastore_search API (limit 1000/page) or stream the 4326 GeoJSON; map listed fields only; everything else UNKNOWN.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"City of Toronto: Off-street surface lots: accessible stalls\"; sourceId = \"toronto-accessible-stalls\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Open Government Licence – Toronto\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "toronto-pedestrian-network",
+      "group": "Municipal: Toronto",
+      "name": "Pedestrian network (sidewalk and crosswalk segments)",
+      "publisher": "City of Toronto",
+      "url": "https://open.toronto.ca/dataset/pedestrian-network/",
+      "licence": {
+        "id": "OGL-Toronto-1.0",
+        "name": "Open Government Licence – Toronto",
+        "url": "https://open.toronto.ca/open-data-licence/",
+        "status": "open"
+      },
+      "cadence": "As available",
+      "counted": {
+        "value": 87105,
+        "unit": "records",
+        "kind": "counted",
+        "method": "CKAN datastore_search total",
+        "date": "2026-11-15"
+      },
+      "breakdown": {},
+      "accessibilityFields": "SIDEWALK_CODE, SIDEWALK_DESCRIPTION, CROSSWALK, CROSSWALK_TYPE, PX",
+      "coveredBy": null,
+      "lane": "H4",
+      "inTotal": true,
+      "importPlan": "Lane H4: stream the 4326 GeoJSON (or page datastore), emit chunked NDJSON partitions ≤ 20 MB gzip as release assets; never commit full outputs.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"City of Toronto: Pedestrian network (sidewalk and crosswalk segments)\"; sourceId = \"toronto-pedestrian-network\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Open Government Licence – Toronto\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "toronto-topo-sidewalks",
+      "group": "Municipal: Toronto",
+      "name": "Topographic mapping: physical area of sidewalks",
+      "publisher": "City of Toronto",
+      "url": "https://open.toronto.ca/dataset/topographic-mapping-physical-area-of-sidewalks/",
+      "licence": {
+        "id": "OGL-Toronto-1.0",
+        "name": "Open Government Licence – Toronto",
+        "url": "https://open.toronto.ca/open-data-licence/",
+        "status": "open"
+      },
+      "cadence": "Quarterly",
+      "counted": {
+        "value": 14116,
+        "unit": "records",
+        "kind": "counted",
+        "method": "CKAN datastore_search total",
+        "date": "2026-11-15"
+      },
+      "breakdown": {},
+      "accessibilityFields": "SUBTYPE_DESC (polygon footprint; no width or slope)",
+      "coveredBy": null,
+      "lane": "H4",
+      "inTotal": true,
+      "importPlan": "Lane H4: stream the 4326 GeoJSON (or page datastore), emit chunked NDJSON partitions ≤ 20 MB gzip as release assets; never commit full outputs.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"City of Toronto: Topographic mapping: physical area of sidewalks\"; sourceId = \"toronto-topo-sidewalks\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Open Government Licence – Toronto\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "ottawa-parks-inventory",
+      "group": "Municipal: Ottawa",
+      "name": "Parks inventory layers with a bilingual ACCESSIBLE field (benches, play structures, sports fields, rinks, splash pads, parks and greenspace and more)",
+      "publisher": "City of Ottawa",
+      "url": "https://maps.ottawa.ca/arcgis/rest/services/Parks_Inventory/MapServer",
+      "licence": {
+        "id": null,
+        "name": "City of Ottawa Open Data Licence v2.0",
+        "url": "https://open.ottawa.ca/pages/open-data-licence",
+        "status": "verify",
+        "note": "OGL-style municipal licence; hub item licence shows 'custom'. Confirm text before import."
+      },
+      "cadence": "As updated by the city (MODIFIED_DATE per feature)",
+      "counted": {
+        "value": 11391,
+        "unit": "records",
+        "kind": "counted",
+        "method": "ArcGIS returnCountOnly on every Parks_Inventory layer that has an ACCESSIBLE field (26 layers = 11,800), minus layer 14 Parking (409, assigned to H5).",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "layers_total_with_access_field": 11800,
+        "non_null_ACCESSIBLE_all_layers": 9922,
+        "benches": 3318,
+        "play_structures": 1719,
+        "parks_and_greenspace": 1378,
+        "dogs_in_parks": 1092,
+        "pathway_links": 609,
+        "sports_fields": 526,
+        "basketball": 308,
+        "ball_diamonds": 281,
+        "outdoor_rinks": 270,
+        "splash_pads": 161
+      },
+      "accessibilityFields": "ACCESSIBLE (city's own value; mapped verbatim to yes/no only when the value is an explicit yes/no; anything else UNKNOWN), names in EN and FR",
+      "coveredBy": null,
+      "lane": "H3",
+      "inTotal": true,
+      "importPlan": "Lane H3: page each layer with resultOffset/resultRecordCount (2,000) and outSR=4326; keep EN and FR names; ACCESSIBLE stays raw and maps only exact yes/no values.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"City of Ottawa: Parks inventory layers with a bilingual ACCESSIBLE field (benches, play structures, sports fields, rinks, splash pads, parks and greenspace and more)\"; sourceId = \"ottawa-parks-inventory\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"City of Ottawa Open Data Licence v2.0\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "ottawa-pedestrian-network",
+      "group": "Municipal: Ottawa",
+      "name": "Pedestrian network (Pedestrian Plan)",
+      "publisher": "City of Ottawa",
+      "url": "https://maps.ottawa.ca/arcgis/rest/services/Pedestrian_Plan/MapServer/0",
+      "licence": {
+        "id": null,
+        "name": "City of Ottawa Open Data Licence v2.0",
+        "url": "https://open.ottawa.ca/pages/open-data-licence",
+        "status": "verify",
+        "note": "OGL-style municipal licence; hub item licence shows 'custom'. Confirm text before import."
+      },
+      "cadence": "As updated",
+      "counted": {
+        "value": 20298,
+        "unit": "records",
+        "kind": "counted",
+        "method": "ArcGIS returnCountOnly",
+        "date": "2026-11-15"
+      },
+      "accessibilityFields": "WALK_TYPE, TYPE_EN/TYPE_FR (no width or slope)",
+      "coveredBy": null,
+      "lane": "H4",
+      "inTotal": true,
+      "importPlan": "Lane H4: paged ArcGIS query, chunked NDJSON output.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"City of Ottawa: Pedestrian network (Pedestrian Plan)\"; sourceId = \"ottawa-pedestrian-network\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"City of Ottawa Open Data Licence v2.0\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "mississauga-parking-facilities",
+      "group": "Municipal: Mississauga",
+      "name": "City-owned parking facilities (Accessible space count)",
+      "publisher": "City of Mississauga",
+      "url": "https://services6.arcgis.com/hM5ymMLbxIyWTjn2/arcgis/rest/services/City_Owned_Parkng_Facilities/FeatureServer/0",
+      "licence": {
+        "id": null,
+        "name": "City of Mississauga Open Data Terms of Use",
+        "url": "https://data.mississauga.ca/",
+        "status": "verify",
+        "note": "access-maps #1 holds MiWay under these terms as not a plain open grant."
+      },
+      "cadence": "As updated",
+      "counted": {
+        "value": 282,
+        "unit": "records",
+        "kind": "counted",
+        "method": "ArcGIS returnCountOnly",
+        "date": "2026-11-15"
+      },
+      "accessibilityFields": "Accessible (count of accessible spaces per city)",
+      "coveredBy": null,
+      "lane": "H5",
+      "inTotal": true,
+      "importPlan": "Lane H5, held output until licence confirmed.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"City of Mississauga: City-owned parking facilities (Accessible space count)\"; sourceId = \"mississauga-parking-facilities\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"City of Mississauga Open Data Terms of Use\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "mississauga-washrooms",
+      "group": "Municipal: Mississauga",
+      "name": "City public washrooms",
+      "publisher": "City of Mississauga",
+      "url": "https://services6.arcgis.com/hM5ymMLbxIyWTjn2/arcgis/rest/services/City_Public_Washrooms/FeatureServer/1",
+      "licence": {
+        "id": null,
+        "name": "City of Mississauga Open Data Terms of Use",
+        "url": "https://data.mississauga.ca/",
+        "status": "verify",
+        "note": "access-maps #1 holds MiWay under these terms as not a plain open grant."
+      },
+      "cadence": "As updated",
+      "counted": {
+        "value": 48,
+        "unit": "records",
+        "kind": "counted",
+        "method": "ArcGIS returnCountOnly",
+        "date": "2026-11-15"
+      },
+      "accessibilityFields": "None (location only; accessibility UNKNOWN)",
+      "coveredBy": null,
+      "lane": null,
+      "inTotal": true,
+      "importPlan": "Deferred: licence held; washroom import lives in access-maps.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"City of Mississauga: City public washrooms\"; sourceId = \"mississauga-washrooms\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"City of Mississauga Open Data Terms of Use\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "brampton-sidewalks",
+      "group": "Municipal: Brampton",
+      "name": "Sidewalk segments",
+      "publisher": "City of Brampton",
+      "url": "https://services3.arcgis.com/rl7ACuZkiFsmDA2g/arcgis/rest/services/Sidewalks/FeatureServer/0",
+      "licence": {
+        "id": "CC-BY-4.0",
+        "name": "Creative Commons Attribution 4.0 (per Brampton GeoHub item)",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "status": "open"
+      },
+      "cadence": "As updated",
+      "counted": {
+        "value": 429007,
+        "unit": "records",
+        "kind": "counted",
+        "method": "ArcGIS returnCountOnly",
+        "date": "2026-11-15"
+      },
+      "accessibilityFields": "DESCR only (no width, slope or curb cut); all accessibility UNKNOWN",
+      "coveredBy": null,
+      "lane": "H4",
+      "inTotal": true,
+      "importPlan": "Lane H4: paged query, chunked NDJSON; largest single municipal source.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"City of Brampton: Sidewalk segments\"; sourceId = \"brampton-sidewalks\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Creative Commons Attribution 4.0 (per Brampton GeoHub item)\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "brampton-parks",
+      "group": "Municipal: Brampton",
+      "name": "Parks",
+      "publisher": "City of Brampton",
+      "url": "https://services3.arcgis.com/rl7ACuZkiFsmDA2g/arcgis/rest/services/Planning_Parks/FeatureServer/1",
+      "licence": {
+        "id": "CC-BY-4.0",
+        "name": "Creative Commons Attribution 4.0 (per Brampton GeoHub item)",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "status": "open"
+      },
+      "cadence": "As updated",
+      "counted": {
+        "value": 869,
+        "unit": "records",
+        "kind": "counted",
+        "method": "ArcGIS returnCountOnly",
+        "date": "2026-11-15"
+      },
+      "accessibilityFields": "ACCESS_POINTS (count of access points, not wheelchair access)",
+      "coveredBy": null,
+      "lane": null,
+      "inTotal": true,
+      "importPlan": "Deferred to a later parks lane.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"City of Brampton: Parks\"; sourceId = \"brampton-parks\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Creative Commons Attribution 4.0 (per Brampton GeoHub item)\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "london-sidewalks",
+      "group": "Municipal: London",
+      "name": "Sidewalks (Width, Material)",
+      "publisher": "City of London",
+      "url": "https://maps.london.ca/server/rest/services/OpenData/OpenData_Transportation/MapServer/4",
+      "licence": {
+        "id": null,
+        "name": "City of London Open Data licence",
+        "url": "https://opendata.london.ca/",
+        "status": "verify"
+      },
+      "cadence": "As updated",
+      "counted": {
+        "value": 11196,
+        "unit": "records",
+        "kind": "counted",
+        "method": "ArcGIS returnCountOnly",
+        "date": "2026-11-15"
+      },
+      "accessibilityFields": "Width, Material",
+      "coveredBy": null,
+      "lane": "H4",
+      "inTotal": true,
+      "importPlan": "Lane H4.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"City of London: Sidewalks (Width, Material)\"; sourceId = \"london-sidewalks\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"City of London Open Data licence\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "london-walkways",
+      "group": "Municipal: London",
+      "name": "Walkways",
+      "publisher": "City of London",
+      "url": "https://maps.london.ca/server/rest/services/OpenData/OpenData_Transportation/MapServer/6",
+      "licence": {
+        "id": null,
+        "name": "City of London Open Data licence",
+        "url": "https://opendata.london.ca/",
+        "status": "verify"
+      },
+      "cadence": "As updated",
+      "counted": {
+        "value": 465,
+        "unit": "records",
+        "kind": "counted",
+        "method": "ArcGIS returnCountOnly",
+        "date": "2026-11-15"
+      },
+      "accessibilityFields": "None",
+      "coveredBy": null,
+      "lane": "H4",
+      "inTotal": true,
+      "importPlan": "Lane H4.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"City of London: Walkways\"; sourceId = \"london-walkways\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"City of London Open Data licence\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "london-parking",
+      "group": "Municipal: London",
+      "name": "Parking inventory (CountDisabledSpaces)",
+      "publisher": "City of London",
+      "url": "https://maps.london.ca/server/rest/services/OpenData/OpenData_Transportation/MapServer/1",
+      "licence": {
+        "id": null,
+        "name": "City of London Open Data licence",
+        "url": "https://opendata.london.ca/",
+        "status": "verify"
+      },
+      "cadence": "As updated",
+      "counted": {
+        "value": 170,
+        "unit": "records",
+        "kind": "counted",
+        "method": "ArcGIS returnCountOnly",
+        "date": "2026-11-15"
+      },
+      "accessibilityFields": "CountDisabledSpaces",
+      "coveredBy": null,
+      "lane": "H5",
+      "inTotal": true,
+      "importPlan": "Lane H5.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"City of London: Parking inventory (CountDisabledSpaces)\"; sourceId = \"london-parking\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"City of London Open Data licence\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "london-signals",
+      "group": "Municipal: London",
+      "name": "Signalized intersections",
+      "publisher": "City of London",
+      "url": "https://maps.london.ca/server/rest/services/OpenData/OpenData_Transportation/MapServer/14",
+      "licence": {
+        "id": null,
+        "name": "City of London Open Data licence",
+        "url": "https://opendata.london.ca/",
+        "status": "verify"
+      },
+      "cadence": "As updated",
+      "counted": {
+        "value": 448,
+        "unit": "records",
+        "kind": "counted",
+        "method": "ArcGIS returnCountOnly",
+        "date": "2026-11-15"
+      },
+      "accessibilityFields": "None (no APS field)",
+      "coveredBy": null,
+      "lane": null,
+      "inTotal": true,
+      "importPlan": "Deferred.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"City of London: Signalized intersections\"; sourceId = \"london-signals\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"City of London Open Data licence\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "london-parks",
+      "group": "Municipal: London",
+      "name": "Parks",
+      "publisher": "City of London",
+      "url": "https://maps.london.ca/server/rest/services/OpenData/OpenData_Recreation/MapServer/3",
+      "licence": {
+        "id": null,
+        "name": "City of London Open Data licence",
+        "url": "https://opendata.london.ca/",
+        "status": "verify"
+      },
+      "cadence": "As updated",
+      "counted": {
+        "value": 609,
+        "unit": "records",
+        "kind": "counted",
+        "method": "ArcGIS returnCountOnly",
+        "date": "2026-11-15"
+      },
+      "accessibilityFields": "Facility counts only",
+      "coveredBy": null,
+      "lane": null,
+      "inTotal": true,
+      "importPlan": "Deferred.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"City of London: Parks\"; sourceId = \"london-parks\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"City of London Open Data licence\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "kitchener-sidewalks",
+      "group": "Municipal: Waterloo Region",
+      "name": "Kitchener sidewalks and active-transport segments (WIDTH_M, GRADE, CURBCUT, SURFACE_CONDITION)",
+      "publisher": "City of Kitchener",
+      "url": "https://services1.arcgis.com/qAo1OsXi67t7XgmS/arcgis/rest/services/Sidewalks/FeatureServer/0",
+      "licence": {
+        "id": null,
+        "name": "City of Kitchener Open Data licence",
+        "url": "https://open-kitchenergis.opendata.arcgis.com/",
+        "status": "verify"
+      },
+      "cadence": "As updated (STATUS_DATE, CONDITION_DATE per feature)",
+      "counted": {
+        "value": 17111,
+        "unit": "records",
+        "kind": "counted",
+        "method": "ArcGIS returnCountOnly",
+        "date": "2026-11-15"
+      },
+      "accessibilityFields": "WIDTH_M, GRADE, CURBCUT, RAILING, SURFACE_MATERIAL, SURFACE_CONDITION",
+      "coveredBy": null,
+      "lane": "H4",
+      "inTotal": true,
+      "importPlan": "Lane H4: the richest sidewalk attributes found; sourceDate from CONDITION_DATE where present.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"City of Kitchener: Kitchener sidewalks and active-transport segments (WIDTH_M, GRADE, CURBCUT, SURFACE_CONDITION)\"; sourceId = \"kitchener-sidewalks\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"City of Kitchener Open Data licence\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "waterloo-sidewalks",
+      "group": "Municipal: Waterloo Region",
+      "name": "City of Waterloo sidewalks",
+      "publisher": "City of Waterloo",
+      "url": "https://services.arcgis.com/ZpeBVw5o1kjit7LT/arcgis/rest/services/Sidewalks/FeatureServer/0",
+      "licence": {
+        "id": null,
+        "name": "City of Waterloo Open Data licence",
+        "url": "https://data.waterloo.ca/",
+        "status": "verify"
+      },
+      "cadence": "As updated",
+      "counted": {
+        "value": 5262,
+        "unit": "records",
+        "kind": "counted",
+        "method": "ArcGIS returnCountOnly",
+        "date": "2026-11-15"
+      },
+      "accessibilityFields": "SURFACE, PATH_TYPE, CLEARED_BY",
+      "coveredBy": null,
+      "lane": "H4",
+      "inTotal": true,
+      "importPlan": "Lane H4.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"City of Waterloo: City of Waterloo sidewalks\"; sourceId = \"waterloo-sidewalks\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"City of Waterloo Open Data licence\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "waterloo-parking-lots",
+      "group": "Municipal: Waterloo Region",
+      "name": "City of Waterloo city-operated parking lots (ACCESSIBLE)",
+      "publisher": "City of Waterloo",
+      "url": "https://services.arcgis.com/ZpeBVw5o1kjit7LT/arcgis/rest/services/ParkingLots/FeatureServer/0",
+      "licence": {
+        "id": null,
+        "name": "City of Waterloo Open Data licence",
+        "url": "https://data.waterloo.ca/",
+        "status": "verify"
+      },
+      "cadence": "As updated",
+      "counted": {
+        "value": 31,
+        "unit": "records",
+        "kind": "counted",
+        "method": "ArcGIS returnCountOnly",
+        "date": "2026-11-15"
+      },
+      "accessibilityFields": "ACCESSIBLE",
+      "coveredBy": null,
+      "lane": "H5",
+      "inTotal": true,
+      "importPlan": "Lane H5.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"City of Waterloo: City of Waterloo city-operated parking lots (ACCESSIBLE)\"; sourceId = \"waterloo-parking-lots\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"City of Waterloo Open Data licence\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "ottawa-parks-parking",
+      "group": "Municipal: Ottawa",
+      "name": "Parks inventory: parking (ACCESSIBLE_PARKING_CAPACITY)",
+      "publisher": "City of Ottawa",
+      "url": "https://maps.ottawa.ca/arcgis/rest/services/Parks_Inventory/MapServer/14",
+      "licence": {
+        "id": null,
+        "name": "City of Ottawa Open Data Licence v2.0",
+        "url": "https://open.ottawa.ca/pages/open-data-licence",
+        "status": "verify",
+        "note": "OGL-style municipal licence; hub item licence shows 'custom'. Confirm text before import."
+      },
+      "cadence": "As updated",
+      "counted": {
+        "value": 409,
+        "unit": "records",
+        "kind": "counted",
+        "method": "ArcGIS returnCountOnly (all 409 have a non-null ACCESSIBLE value)",
+        "date": "2026-11-15"
+      },
+      "accessibilityFields": "ACCESSIBLE_PARKING_CAPACITY, ACCESSIBLE",
+      "coveredBy": null,
+      "lane": "H5",
+      "inTotal": true,
+      "importPlan": "Lane H5.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"City of Ottawa: Parks inventory: parking (ACCESSIBLE_PARKING_CAPACITY)\"; sourceId = \"ottawa-parks-parking\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"City of Ottawa Open Data Licence v2.0\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "hamilton-york-other-hubs",
+      "group": "Municipal: others",
+      "name": "Hamilton, York Region, Vaughan, Durham hubs",
+      "publisher": "Various",
+      "url": "https://open.hamilton.ca/",
+      "licence": {
+        "id": null,
+        "name": "Not checked",
+        "url": null,
+        "status": "unknown"
+      },
+      "cadence": "Unknown",
+      "counted": {
+        "value": null,
+        "unit": "records",
+        "kind": "not-counted",
+        "method": "Not counted: Hamilton and Vaughan hub search APIs errored from the box; York Region and Durham searches returned no accessibility layers.",
+        "date": "2026-11-15"
+      },
+      "accessibilityFields": "Unknown",
+      "coveredBy": null,
+      "lane": null,
+      "inTotal": false,
+      "importPlan": "Follow-up survey.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"Various: Hamilton, York Region, Vaughan, Durham hubs\"; sourceId = \"hamilton-york-other-hubs\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Not checked\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "ontario-moh-service-locations",
+      "group": "Ontario Data Catalogue",
+      "name": "Ministry of Health service provider locations (MOHSERLO)",
+      "publisher": "Government of Ontario",
+      "url": "https://data.ontario.ca/dataset/ministry-of-health-service-provider-locations-mohserlo",
+      "licence": {
+        "id": "OGL-Ontario-1.0",
+        "name": "Open Government Licence – Ontario",
+        "url": "https://www.ontario.ca/page/open-government-licence-ontario",
+        "status": "open"
+      },
+      "cadence": "Yearly",
+      "counted": {
+        "value": 11625,
+        "unit": "records",
+        "kind": "counted",
+        "method": "ArcGIS returnCountOnly on LIO_Open09/MapServer/26",
+        "date": "2026-11-15"
+      },
+      "accessibilityFields": "None (names EN/FR, address, service type). Accessibility UNKNOWN.",
+      "coveredBy": null,
+      "lane": null,
+      "inTotal": true,
+      "importPlan": "Deferred: directory-only use needs a clinical-boundary review first (no medical advice).",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"Government of Ontario: Ministry of Health service provider locations (MOHSERLO)\"; sourceId = \"ontario-moh-service-locations\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Open Government Licence – Ontario\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "ontario-functional-assessment-centres",
+      "group": "Ontario Data Catalogue",
+      "name": "Approved functional assessment centres for drivers",
+      "publisher": "Government of Ontario",
+      "url": "https://data.ontario.ca/dataset/approved-functional-assessment-centres-for-drivers",
+      "licence": {
+        "id": "OGL-Ontario-1.0",
+        "name": "Open Government Licence – Ontario",
+        "url": "https://www.ontario.ca/page/open-government-licence-ontario",
+        "status": "open"
+      },
+      "cadence": "Yearly",
+      "counted": {
+        "value": 46,
+        "unit": "records",
+        "kind": "counted",
+        "method": "CKAN datastore_search total (EN resource)",
+        "date": "2026-11-15"
+      },
+      "accessibilityFields": "'Services available in French' only",
+      "coveredBy": null,
+      "lane": null,
+      "inTotal": true,
+      "importPlan": "Deferred: directory link only, belongs with the navigator package.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"Government of Ontario: Approved functional assessment centres for drivers\"; sourceId = \"ontario-functional-assessment-centres\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Open Government Licence – Ontario\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "ontario-catalogue-accessibility-search",
+      "group": "Ontario Data Catalogue",
+      "name": "Catalogue search for accessibility place data",
+      "publisher": "Government of Ontario",
+      "url": "https://data.ontario.ca/",
+      "licence": {
+        "id": "OGL-Ontario-1.0",
+        "name": "Open Government Licence – Ontario",
+        "url": "https://www.ontario.ca/page/open-government-licence-ontario",
+        "status": "open"
+      },
+      "cadence": "n/a",
+      "counted": {
+        "value": null,
+        "unit": "records",
+        "kind": "not-counted",
+        "method": "CKAN package_search 'accessibility' returned 301 datasets; none found is a place-level accessibility layer (grant recipients, compliance reports, complaints). MTO picnic parks is already in access-maps #1.",
+        "date": "2026-11-15"
+      },
+      "accessibilityFields": "n/a",
+      "coveredBy": "access-maps #1 (mto-picnic-parks)",
+      "lane": null,
+      "inTotal": false,
+      "importPlan": "None.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"Government of Ontario: Catalogue search for accessibility place data\"; sourceId = \"ontario-catalogue-accessibility-search\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Open Government Licence – Ontario\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "pspc-building-accessibility",
+      "group": "Federal",
+      "name": "Total Accessibility Score of PSPC owned and lease-purchased buildings (CSA B651-18)",
+      "publisher": "Public Services and Procurement Canada",
+      "url": "https://open.canada.ca/data/en/dataset/aaf6462d-eab9-4165-9329-24095451121d",
+      "licence": {
+        "id": "OGL-Canada-2.0",
+        "name": "Open Government Licence – Canada 2.0",
+        "url": "https://open.canada.ca/en/open-government-licence-canada",
+        "status": "open"
+      },
+      "cadence": "Not planned (one-off; assessed 2020–2021)",
+      "counted": {
+        "value": 71,
+        "unit": "records",
+        "kind": "counted",
+        "method": "Downloaded the 72,924-byte CSV and counted rows with Province-code ON (205 rows Canada-wide).",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "canada_rows": 205,
+        "ontario_rows": 71
+      },
+      "accessibilityFields": "Accessibility-score (0–100 against CSA B651-18), Compliance-standard-applied, Assessment fiscal year; names and addresses EN and FR",
+      "coveredBy": null,
+      "lane": "D1",
+      "inTotal": true,
+      "importPlan": "Lane D1: score is stored as the publisher's building-level score with its standard and fiscal year; never turned into step-free or washroom facts.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"Public Services and Procurement Canada: Total Accessibility Score of PSPC owned and lease-purchased buildings (CSA B651-18)\"; sourceId = \"pspc-building-accessibility\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Open Government Licence – Canada 2.0\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "statcan-csd-2022",
+      "group": "Federal",
+      "name": "Canadian Survey on Disability 2022 tables 13-10-0374, 13-10-0376, 13-10-0377, 13-10-0750",
+      "publisher": "Statistics Canada",
+      "url": "https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1310037401",
+      "licence": {
+        "id": "StatCan-Open-Licence",
+        "name": "Statistics Canada Open Licence",
+        "url": "https://www.statcan.gc.ca/en/reference/licence",
+        "status": "open"
+      },
+      "cadence": "Every 5 years (released 2024-12-03 and 2025-03-25)",
+      "counted": {
+        "value": 118764,
+        "unit": "statistical datapoints (not place records)",
+        "kind": "counted",
+        "method": "WDS getCubeMetadata nbDatapointsCube per table (Canada-wide, all geographies)",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "13100374": 14688,
+        "13100376": 36720,
+        "13100377": 66096,
+        "13100750": 1260
+      },
+      "accessibilityFields": "Aggregates only",
+      "coveredBy": null,
+      "lane": null,
+      "inTotal": false,
+      "importPlan": "Context statistics for help-centre copy; not place records. Excluded from the total.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"Statistics Canada: Canadian Survey on Disability 2022 tables 13-10-0374, 13-10-0376, 13-10-0377, 13-10-0750\"; sourceId = \"statcan-csd-2022\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Statistics Canada Open Licence\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "cmhc-housing",
+      "group": "Federal",
+      "name": "CMHC Housing Market Information Portal",
+      "publisher": "CMHC",
+      "url": "https://open.canada.ca/data/en/dataset/c2a1fdbf-d9b7-4c84-b7eb-c845b6ffd5e6",
+      "licence": {
+        "id": "OGL-Canada-2.0",
+        "name": "Open Government Licence – Canada 2.0",
+        "url": "https://open.canada.ca/en/open-government-licence-canada",
+        "status": "open"
+      },
+      "cadence": "Monthly",
+      "counted": {
+        "value": null,
+        "unit": "records",
+        "kind": "not-counted",
+        "method": "Not counted: market statistics, no accessible-unit place data found.",
+        "date": "2026-11-15"
+      },
+      "accessibilityFields": "None",
+      "coveredBy": null,
+      "lane": null,
+      "inTotal": false,
+      "importPlan": "None.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"CMHC: CMHC Housing Market Information Portal\"; sourceId = \"cmhc-housing\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Open Government Licence – Canada 2.0\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "accessibility-standards-canada",
+      "group": "Federal",
+      "name": "Accessibility Standards Canada",
+      "publisher": "Accessibility Standards Canada",
+      "url": "https://open.canada.ca/data/en/dataset/15c31fd7-3bcf-40f8-bd91-af6a315a83cc",
+      "licence": {
+        "id": "OGL-Canada-2.0",
+        "name": "Open Government Licence – Canada 2.0",
+        "url": "https://open.canada.ca/en/open-government-licence-canada",
+        "status": "open"
+      },
+      "cadence": "Every 3 years",
+      "counted": {
+        "value": null,
+        "unit": "records",
+        "kind": "not-counted",
+        "method": "Not counted: publishes its accessibility plan, not place data.",
+        "date": "2026-11-15"
+      },
+      "accessibilityFields": "None",
+      "coveredBy": null,
+      "lane": null,
+      "inTotal": false,
+      "importPlan": "Reference only (standards text for docs).",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"Accessibility Standards Canada: Accessibility Standards Canada\"; sourceId = \"accessibility-standards-canada\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"Open Government Licence – Canada 2.0\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "wikidata-p2846-ontario",
+      "group": "Wikidata",
+      "name": "Wikidata items in Ontario with wheelchair accessibility (P2846)",
+      "publisher": "Wikidata contributors",
+      "url": "https://query.wikidata.org/",
+      "licence": {
+        "id": "CC0-1.0",
+        "name": "CC0 1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "status": "open"
+      },
+      "cadence": "Continuous",
+      "counted": {
+        "value": 276,
+        "unit": "records",
+        "kind": "counted",
+        "method": "SPARQL: items with wdt:P2846 and wdt:P17 wd:Q16, then wdt:P131+ wd:Q1904, grouped by value.",
+        "date": "2026-11-15"
+      },
+      "breakdown": {
+        "Q24192067_accessible": 241,
+        "Q24192069_partially": 33,
+        "Q24192068_inaccessible": 2,
+        "ontario_items_with_coordinates_any": 85284
+      },
+      "accessibilityFields": "P2846 value; qualifiers and references if present",
+      "coveredBy": null,
+      "lane": "D2",
+      "inTotal": true,
+      "importPlan": "Lane D2: import a committed SPARQL JSON result; the 85,284 Ontario items with coordinates are context and not imported (no accessibility statement).",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"Wikidata contributors: Wikidata items in Ontario with wheelchair accessibility (P2846)\"; sourceId = \"wikidata-p2846-ontario\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"CC0 1.0\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    },
+    {
+      "id": "overture-places",
+      "group": "Overture Maps",
+      "name": "Overture Maps places theme",
+      "publisher": "Overture Maps Foundation",
+      "url": "https://docs.overturemaps.org/attribution/",
+      "licence": {
+        "id": "CDLA-Permissive-2.0",
+        "name": "CDLA Permissive 2.0 (places theme)",
+        "url": "https://cdla.dev/permissive-2-0/",
+        "status": "excluded"
+      },
+      "cadence": "Monthly releases",
+      "counted": {
+        "value": null,
+        "unit": "records",
+        "kind": "not-counted",
+        "method": "Not counted: licence is outside the allowed list (ODbL, OGL-Ontario, OGL-Canada, CC-BY, CC0) and the places theme has no accessibility attributes.",
+        "date": "2026-11-15"
+      },
+      "accessibilityFields": "None",
+      "coveredBy": null,
+      "lane": null,
+      "inTotal": false,
+      "importPlan": "Excluded until a licence decision is recorded.",
+      "placeSchemaMapping": {
+        "source": "Provenance.sourceName = \"Overture Maps Foundation: Overture Maps places theme\"; sourceId = \"overture-places\" plus the upstream feature id; sourceUrl = dataset URL",
+        "licence": "Provenance.licence = \"CDLA Permissive 2.0 (places theme)\"",
+        "retrievedOn": "Provenance.retrievedAt = run date (YYYY-MM-DD); sourceDate = upstream last-modified date, or UNKNOWN-dated run date with a note if the source gives none",
+        "tier": "Provenance.tier = 0, prototypeLabel = SEEDED-OPEN-DATA, verifierType = open-data-import. Never 2, 3 or 4 from an import."
+      }
+    }
+  ]
+}
