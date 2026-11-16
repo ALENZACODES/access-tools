@@ -69,6 +69,33 @@ const VERIFIED = [
     bookingUrl: "https://www.londontransit.ca/booking-specialized-transit-services/",
     sourceUrl: "https://www.londontransit.ca/booking-specialized-transit-services/",
   },
+  {
+    id: "ottawa-para-transpo",
+    agencyName: "Para Transpo",
+    phone: "613-560-5000",
+    websiteUrl: "https://octranspo.com/en/para-transpo/",
+    bookingUrl: "https://octranspo.com/en/para-transpo/",
+    sourceUrl: "https://octranspo.com/en/para-transpo/",
+    retrievedOn: "2026-11-16",
+  },
+  {
+    id: "waterloo-mobilityplus",
+    agencyName: "MobilityPLUS",
+    phone: "519-744-2241",
+    websiteUrl: "https://www.grt.ca/mobilityplus/mobilityplus-booking-riding-and-notifications/booking-mobilityplus-trips/",
+    bookingUrl: "https://mplus.grt.ca/Account/Login",
+    sourceUrl: "https://www.grt.ca/mobilityplus/mobilityplus-booking-riding-and-notifications/booking-mobilityplus-trips/",
+    retrievedOn: "2026-11-16",
+  },
+  {
+    id: "sudbury-gova-plus",
+    agencyName: "GOVA Plus Specialized Transit",
+    phone: "705-670-2300",
+    websiteUrl: "https://www.greatersudbury.ca/live/transit/gova-plus-specialized-transit/riding-gova-plus/booking-your-trip/",
+    bookingUrl: "https://book.govaplus.rideco.com/",
+    sourceUrl: "https://www.greatersudbury.ca/live/transit/gova-plus-specialized-transit/riding-gova-plus/booking-your-trip/",
+    retrievedOn: "2026-11-16",
+  },
 ] as const;
 
 describe("paratransit directory", () => {
@@ -76,12 +103,13 @@ describe("paratransit directory", () => {
     expect(PARATRANSIT.map((entry) => entry.id)).toEqual(VERIFIED.map((entry) => entry.id));
     const blob = JSON.stringify(PARATRANSIT);
     for (const pattern of FORBIDDEN) expect(blob).not.toMatch(pattern);
-    expect(blob).not.toMatch(/OC Transpo|Para Transpo|Mobility Plus/i);
+    // York Region's former service name was never read from a page and stays out.
+    expect(blob).not.toMatch(/Mobility Plus/);
     for (const expected of VERIFIED) {
       const entry = PARATRANSIT.find((item) => item.id === expected.id);
       expect(entry).toMatchObject({
-        ...expected,
         retrievedOn: "2026-11-14",
+        ...expected,
         verificationTier: "administrator_page",
         notEligibilityAdvice: true,
       });
@@ -122,7 +150,9 @@ describe("paratransit directory", () => {
     expect(screen.getByRole("link", { name: "Wheel-Trans booking page" })).toHaveAttribute("href", "https://mywheel-trans.ttc.ca");
     expect(screen.getByRole("link", { name: "Call 416-393-4222" })).toHaveAttribute("href", "tel:+14163934222");
     expect(screen.getByRole("link", { name: "Call 905-529-1717" })).toHaveAttribute("href", "tel:+19055291717");
-    expect(screen.queryByText(/you qualify|days in advance|OC Transpo/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/you qualify|days in advance/i)).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Call 613-560-5000" })).toHaveAttribute("href", "tel:+16135605000");
+    expect(screen.getAllByText(/Not stated on the page that was read/)).toHaveLength(2);
     const user = userEvent.setup();
     await user.type(screen.getByLabelText("Search agencies"), "DARTS");
     expect(screen.getByRole("link", { name: "DARTS website" })).toBeInTheDocument();
