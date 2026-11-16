@@ -10,10 +10,11 @@ const contributeLink: CSSProperties = { display: "inline-flex", alignItems: "cen
 
 export interface PackFindersPageProps { source: PackSource; lang?: FinderLang }
 
-function ResultList({ rows, lang }: { rows: PackFinderRow[]; lang: FinderLang }) {
+function ResultList({ rows, lang, headingLevel = 2 }: { rows: PackFinderRow[]; lang: FinderLang; headingLevel?: 2 | 3 }) {
+  const Heading = headingLevel === 3 ? "h3" : "h2";
   return <>
     {rows.map((row) => <article key={`${row.tranche}:${row.id}`} data-pack-row={row.id} style={{ border: "1px solid currentColor", padding: 12, marginBlock: 12 }}>
-      <h3>{row.name === "UNKNOWN" ? finderCopy("finder.unknown", lang) : row.name}</h3>
+      <Heading>{row.name === "UNKNOWN" ? finderCopy("finder.unknown", lang) : row.name}</Heading>
       <p>{finderFill("finder.pack.summary", lang, { yes: row.knownYes, no: row.knownNo, unknown: row.unknownNeeds })}</p>
       <dl>{row.fields.map((field) => <div key={field.key} id={`field-${encodeURIComponent(row.id)}-${field.key}`} style={{ paddingBlock: 8 }}>
         <dt><strong>{packFieldLabel(field.key, lang)}</strong></dt>
@@ -91,13 +92,13 @@ export function PackFindersPage({ source, lang = "en" }: PackFindersPageProps) {
     {!loading && !error && result && result.rows.length > 0 && (kind === "changing"
       ? <section data-pack-known-yes="" aria-labelledby="pack-known-yes">
           <h2 id="pack-known-yes">{finderCopy("finder.pack.known-yes", lang)}</h2>
-          <ResultList rows={result.rows} lang={lang} />
+          <ResultList rows={result.rows} lang={lang} headingLevel={3} />
         </section>
       : <ResultList rows={result.rows} lang={lang} />)}
     {!loading && !error && result && result.unknownRows.length > 0 && <section data-pack-unknown-group="" aria-labelledby="pack-unknown-group">
       <h2 id="pack-unknown-group">{finderCopy("finder.pack.unknown-group", lang)}</h2>
       <p>{finderCopy("finder.pack.unknown-group-note", lang)}</p>
-      <ResultList rows={result.unknownRows} lang={lang} />
+      <ResultList rows={result.unknownRows} lang={lang} headingLevel={3} />
     </section>}
   </main>;
 }
