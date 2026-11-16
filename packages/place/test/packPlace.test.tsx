@@ -65,6 +65,14 @@ describe("web pack place", () => {
     });
   }
 
+  it("uses an h2 for the place name, and locale as an alias for lang", () => {
+    const { container, rerender } = render(<PackPlaceView record={record} sources={sources} lang="en" />);
+    expect(screen.getByRole("heading", { level: 2, name: "Demonstration washroom" })).toBeTruthy();
+    expect(container.querySelector("h1")).toBeNull();
+    rerender(<PackPlaceView record={record} sources={sources} locale="fr" />);
+    expect(screen.getAllByText("Inconnu").length).toBeGreaterThan(0);
+  });
+
   it("does not accept arbitrary image hosts or fetch on mount", async () => {
     expect(commonsTitle("https://bad.example/wiki/File:X.jpg")).toBeNull();
     expect(commonsTitle("https://commons.wikimedia.org/wiki/File:Sample.jpg")).toBe("File:Sample.jpg");

@@ -341,6 +341,7 @@ export const FINDER_COPY = {
   "finder.pack.field.sink_height": { en: "Sink height", fr: "Hauteur du lavabo" },
   "finder.pack.field.step_free": { en: "Step-free", fr: "Sans marche" },
   "finder.pack.field.changing_table": { en: "Changing table", fr: "Table à langer" },
+  "finder.pack.field.changing_table:adult": { en: "Adult change table", fr: "Table à langer pour adultes" },
   "finder.pack.field.adult_changing_table": { en: "Adult change table", fr: "Table à langer pour adultes" },
   "finder.pack.field.adult_change_table": { en: "Adult change table", fr: "Table à langer pour adultes" },
   "finder.pack.field.change_table": { en: "Changing table", fr: "Table à langer" },

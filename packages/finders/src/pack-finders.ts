@@ -1,4 +1,4 @@
-import { ADULT_CHANGE_KEYS, adultChangeVerdict, type AdultChangeVerdict } from "@access-tools/place/pack-aliases";
+import { ADULT_CHANGE_KEYS, adultChangeVerdict, type AdultChangeVerdict } from "@access-tools/place";
 import type { FieldValue, PackManifest, PackRecord, PackSource, PackSourceEntry, Tranche } from "./pack-types.js";
 
 export { ADULT_CHANGE_KEYS, adultChangeVerdict };
@@ -53,11 +53,11 @@ export interface PackFinderResult {
   kind: FinderKind;
 }
 
-/** The fourteen recorded washroom facts, never inferred from a venue's accessibility. */
+/** Recorded washroom facts, including changing_table:adult. Never inferred from a venue's accessibility. */
 export const WASHROOM_KEYS = [
   "name", "wheelchair", "access", "door_width", "turning_diameter",
   "transfer_side", "grab_rails", "toilet_height", "sink_height", "step_free",
-  "changing_table", "adult_changing_table", "hoist", "opening_hours",
+  "changing_table", "changing_table:adult", "adult_changing_table", "hoist", "opening_hours",
 ] as const;
 const PARKING_KEYS = ["name", "amenity", "parking", "capacity_disabled", "wheelchair", "access", "surface", "fee"];
 const CHARGING_KEYS = ["name", "wheelchair_charging", "mobility_device_charging", "charging_point", "power_supply", "socket", "access", "opening_hours"];
@@ -103,7 +103,7 @@ function provenance(key: string, field: FieldValue | undefined, sources: Map<str
 function keysFor(kind: FinderKind): readonly string[] {
   if (kind === "washroom") return WASHROOM_KEYS;
   if (kind === "parking") return PARKING_KEYS;
-  if (kind === "changing") return ["name", "changing_table", "adult_changing_table", "wheelchair", "access"];
+  if (kind === "changing") return ["name", "changing_table", "changing_table:adult", "adult_changing_table", "wheelchair", "access"];
   if (kind === "charging") return CHARGING_KEYS;
   return REPAIR_KEYS;
 }

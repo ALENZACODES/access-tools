@@ -35,3 +35,4 @@ export type {
   ReadingContext,
   SearchQuery,
 } from "./types.js";
+export { navigatorShellModule, listNavigatorForShell } from "./shell.js";
