@@ -60,7 +60,7 @@
           "id": { "type": "string", "minLength": 1 },
           "venueId": { "type": "string", "pattern": "^demo-" },
           "actor": { "enum": ["auditor", "venue-owner"] },
-          "action": { "enum": ["measurement", "claim", "fix", "dispute"] },
+          "action": { "enum": ["measurement", "claim", "acknowledge", "fix", "dispute"] },
           "detail": { "type": "string", "minLength": 1 },
           "at": { "type": "string", "format": "date-time" }
         }

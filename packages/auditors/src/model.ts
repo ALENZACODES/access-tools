@@ -8,7 +8,7 @@ export const FIELDS = [
 ] as const;
 export type Field = (typeof FIELDS)[number];
 export type Role = "auditor" | "venue-owner";
-export type Action = "measurement" | "claim" | "fix" | "dispute";
+export type Action = "measurement" | "claim" | "acknowledge" | "fix" | "dispute";
 
 /** Same provenance field names as packages/place; tier 0 means no verification. */
 export interface Provenance {
