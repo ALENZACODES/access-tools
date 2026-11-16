@@ -23,6 +23,37 @@ function booleanStatus(value: unknown): FitStatus {
   return "unknown";
 }
 
+
+/** Convert a door-width value to millimetres only when the unit is explicit. Otherwise return null (Unknown). */
+export function doorWidthMm(key: string, raw: unknown): number | null {
+  if (typeof raw === "number") {
+    if (!Number.isFinite(raw) || raw <= 0) return null;
+    return key.endsWith("_mm") ? raw : null;
+  }
+  if (typeof raw !== "string") return null;
+  const trimmed = raw.trim();
+  const mm = trimmed.match(/^([0-9]+(?:\.[0-9]+)?)\s*mm$/i);
+  if (mm) {
+    const value = Number(mm[1]);
+    return Number.isFinite(value) && value > 0 ? value : null;
+  }
+  const cm = trimmed.match(/^([0-9]+(?:\.[0-9]+)?)\s*cm$/i);
+  if (cm) {
+    const value = Number(cm[1]);
+    return Number.isFinite(value) && value > 0 ? value * 10 : null;
+  }
+  const metres = trimmed.match(/^([0-9]+(?:\.[0-9]+)?)\s*m$/i);
+  if (metres) {
+    const value = Number(metres[1]);
+    return Number.isFinite(value) && value > 0 ? value * 1000 : null;
+  }
+  if (key.endsWith("_mm")) {
+    const value = Number(trimmed);
+    return Number.isFinite(value) && value > 0 ? value : null;
+  }
+  return null;
+}
+
 /** All five observations stay visible, including needs absent from the saved profile. */
 export function fitWithProfile(place: PackPlaceProjection, profile: EquipmentProfile | null): FitItem[] {
   const needs: FitNeed[] = ["stepFree", "washroom", "doorWidth", "changeTable", "parking"];
@@ -32,10 +63,8 @@ export function fitWithProfile(place: PackPlaceProjection, profile: EquipmentPro
     if (need === "doorWidth") {
       status = "unknown";
       const required = profile?.widthMm;
-      const raw = detail.value;
-      const parsed = typeof raw === "number" ? raw : typeof raw === "string" ? Number(raw.replace(/\s*mm\s*$/i, "")) : NaN;
-      const measuredMm = detail.key.endsWith("_mm") ? parsed : parsed <= 10 ? parsed * 1000 : parsed;
-      if (required !== null && required !== undefined && Number.isFinite(measuredMm) && measuredMm > 0) {
+      const measuredMm = doorWidthMm(detail.key, detail.value);
+      if (required !== null && required !== undefined && measuredMm !== null) {
         status = measuredMm >= required ? "known-yes" : "known-no";
       }
     }

@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { EquipmentProfile } from "../profile.js";
 import { fetchCommonsPhoto, commonsTitle, type CommonsPhoto } from "../pack/commons.js";
 import { copy } from "../i18n.js";
-import { fitItemLine, photoCreditLine, recordedLine, sourceIdIsOsm } from "../pack/catalog.js";
+import { fitItemLine, packFieldLabel, photoCreditLine, recordedLine, sourceIdIsOsm } from "../pack/catalog.js";
 import { fitWithProfile } from "../pack/fit.js";
 import type { PackField, PackRecord, PackSourceEntry } from "../pack/pack-types.js";
 import { fromPackRecord, type PackDetail } from "../pack/projection.js";
@@ -15,6 +15,21 @@ export interface PackPlaceViewProps {
   profile?: EquipmentProfile | null;
   /** Optional for tests; by default no network is used until the visitor requests a photo. */
   photoRequest?: typeof fetch;
+}
+
+
+const targetStyle = { display: "inline-flex", alignItems: "center", minHeight: 44, minWidth: 44, padding: 8, boxSizing: "border-box" } as const;
+
+function acceptedSources(sources: PackSourceEntry[]): PackSourceEntry[] {
+  return sources.filter((source) => !source.heldReason && source.inWebPack !== false);
+}
+
+function dropHeldFields(record: PackRecord, sources: PackSourceEntry[]): PackRecord {
+  const allowed = new Set(sources.map((source) => source.sourceId));
+  return {
+    ...record,
+    fields: Object.fromEntries(Object.entries(record.fields).filter(([, field]) => allowed.has(field.source_id))),
+  };
 }
 
 function formatValue(value: unknown, lang: Lang): string {
@@ -44,7 +59,7 @@ function Evidence({ detail, lang }: { detail: PackDetail; lang: Lang }) {
 function FactRow({ detail, lang }: { detail: PackDetail; lang: Lang }) {
   return (
     <tr id={`pack-field-${encodeURIComponent(detail.key)}`}>
-      <th scope="row">{detail.key}</th>
+      <th scope="row">{packFieldLabel(detail.key, lang)}</th>
       <td>{formatValue(detail.value, lang)}</td>
       <td><Evidence detail={detail} lang={lang} /></td>
     </tr>
@@ -81,13 +96,13 @@ function PhotoPanel({ record, lang, request }: { record: PackRecord; lang: Lang;
       setState("error");
     }
   }
-  if (!title) return <p>{copy("pack.photo-none", lang)}. <a href="/contribute">{copy("pack.photo-add", lang)}</a></p>;
+  if (!title) return <p>{copy("pack.photo-none", lang)}. <a href="/contribute" style={targetStyle}>{copy("pack.photo-add", lang)}</a></p>;
   return (
     <section aria-live="polite">
       {state === "idle" || state === "error" ? <button type="button" onClick={() => void show()} style={{ minWidth: 44, minHeight: 44 }}>{copy("pack.photo-show", lang)}</button> : null}
       {state === "loading" ? <p>{copy("pack.photo-loading", lang)}</p> : null}
       {state === "error" ? <p>{copy("pack.photo-error", lang)}</p> : null}
-      {state === "unavailable" ? <p>{copy("pack.photo-unavailable", lang)}. <a href="/contribute">{copy("pack.photo-add", lang)}</a></p> : null}
+      {state === "unavailable" ? <p>{copy("pack.photo-unavailable", lang)}. <a href="/contribute" style={targetStyle}>{copy("pack.photo-add", lang)}</a></p> : null}
       {state === "ready" && photo ? (
         <figure>
           <a href={photo.pageUrl} rel="noopener noreferrer" target="_blank"><img src={photo.thumbUrl} alt={photo.title.slice(5)} loading="lazy" /></a>
@@ -100,7 +115,9 @@ function PhotoPanel({ record, lang, request }: { record: PackRecord; lang: Lang;
 
 /** Place detail for real venue, washroom, and transit web-pack records. */
 export function PackPlaceView({ record, sources, lang = "en", profile = null, photoRequest }: PackPlaceViewProps) {
-  const place = fromPackRecord(record, sources);
+  const visibleSources = acceptedSources(sources);
+  const visibleRecord = dropHeldFields(record, visibleSources);
+  const place = fromPackRecord(visibleRecord, visibleSources);
   const fit = fitWithProfile(place, profile);
   const present = new Set(place.allDetails.map((item) => item.key));
   const coreDetails = Object.values(place.facts).filter((detail) => present.has(detail.key));
@@ -120,7 +137,7 @@ export function PackPlaceView({ record, sources, lang = "en", profile = null, ph
         <ul>{fit.map((item) => (
           <li key={item.need}>
             {fitItemLine(item.need, item.status, lang)}{" "}
-            <a href={`#pack-field-${encodeURIComponent(item.decidingField)}`}>{item.decidingField}</a>
+            <a href={`#pack-field-${encodeURIComponent(item.decidingField)}`} style={targetStyle}>{packFieldLabel(item.decidingField, lang)}</a>
           </li>
         ))}</ul>
       </section>
@@ -132,10 +149,10 @@ export function PackPlaceView({ record, sources, lang = "en", profile = null, ph
         <h2 id="pack-other-heading">{copy("pack.other", lang)}</h2>
         <FactTable rows={place.otherDetails} title={copy("pack.other", lang)} lang={lang} />
       </section>
-      <PhotoPanel key={record.id} record={record} lang={lang} request={photoRequest} />
+      <PhotoPanel key={visibleRecord.id} record={visibleRecord} lang={lang} request={photoRequest} />
       <nav aria-label={copy("pack.correction", lang)}>
-        <a href={`/contribute?place=${encodeURIComponent(record.id)}&action=correction`}>{copy("pack.correction", lang)}</a>{" · "}
-        <a href={`/contribute?place=${encodeURIComponent(record.id)}&action=photo`}>{copy("pack.photo-add", lang)}</a>
+        <a href={`/contribute?place=${encodeURIComponent(visibleRecord.id)}&action=correction`} style={targetStyle}>{copy("pack.correction", lang)}</a>{" · "}
+        <a href={`/contribute?place=${encodeURIComponent(visibleRecord.id)}&action=photo`} style={targetStyle}>{copy("pack.photo-add", lang)}</a>
       </nav>
     </article>
   );

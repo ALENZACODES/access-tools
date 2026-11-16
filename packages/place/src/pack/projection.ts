@@ -27,7 +27,7 @@ const FIELD_ALIASES: Record<PackFactName, readonly string[]> = {
   stepFree: ["entrance:step_free", "step_free", "wheelchair:entrance", "wheelchair"],
   washroom: ["toilets:wheelchair", "wheelchair:toilet", "accessible_toilet", "washroom_accessible"],
   doorWidth: ["door:width", "entrance:width", "door_clear_width_mm", "door_width_mm"],
-  changeTable: ["changing_table:adult", "adult_changing_table", "changing_table"],
+  changeTable: ["changing_table:adult", "adult_changing_table", "adult_change_table"],
   parking: ["parking:wheelchair", "disabled:parking", "accessible_parking", "parking:access"],
 };
 

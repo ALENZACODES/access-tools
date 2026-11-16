@@ -36,3 +36,42 @@ export function fitItemLine(need: FitNeed, status: FitStatus, lang: Lang): strin
 export function sourceIdIsOsm(sourceId: string): boolean {
   return sourceId.startsWith("osm");
 }
+
+const FIELD_LABELS: Record<string, CopyKey> = {
+  name: "pack.field-key.name",
+  address: "pack.field-key.address",
+  "addr:full": "pack.field-key.addr-full",
+  "addr:street": "pack.field-key.addr-street",
+  official_name: "pack.field-key.official-name",
+  "name:en": "pack.field-key.name",
+  ref: "pack.field-key.ref",
+  "entrance:step_free": "pack.field-key.entrance-step-free",
+  step_free: "pack.field-key.step-free",
+  wheelchair: "pack.field-key.wheelchair",
+  "wheelchair:entrance": "pack.field-key.wheelchair-entrance",
+  "toilets:wheelchair": "pack.field-key.toilets-wheelchair",
+  "wheelchair:toilet": "pack.field-key.wheelchair-toilet",
+  accessible_toilet: "pack.field-key.accessible-toilet",
+  washroom_accessible: "pack.field-key.washroom-accessible",
+  "door:width": "pack.field-key.door-width",
+  "entrance:width": "pack.field-key.entrance-width",
+  door_clear_width_mm: "pack.field-key.door-clear-width-mm",
+  door_width_mm: "pack.field-key.door-width-mm",
+  "changing_table:adult": "pack.field-key.changing-table-adult",
+  adult_changing_table: "pack.field-key.adult-changing-table",
+  adult_change_table: "pack.field-key.adult-change-table",
+  changing_table: "pack.field-key.changing-table",
+  "parking:wheelchair": "pack.field-key.parking-wheelchair",
+  "disabled:parking": "pack.field-key.disabled-parking",
+  accessible_parking: "pack.field-key.accessible-parking",
+  "parking:access": "pack.field-key.parking-access",
+  "survey:note": "pack.field-key.survey-note",
+  wikimedia_commons: "pack.field-key.wikimedia-commons",
+  image: "pack.field-key.image",
+  changeTable: "pack.field-key.change-table",
+};
+
+export function packFieldLabel(key: string, lang: Lang): string {
+  const catalogKey = FIELD_LABELS[key];
+  return catalogKey ? copy(catalogKey, lang) : key.replaceAll("_", " ").replaceAll(":", " ");
+}
