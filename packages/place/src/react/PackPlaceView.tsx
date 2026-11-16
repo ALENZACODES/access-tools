@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { EquipmentProfile } from "../profile.js";
 import { fetchCommonsPhoto, commonsTitle, type CommonsPhoto } from "../pack/commons.js";
 import { copy } from "../i18n.js";
+import { DOOR_WIDTH_KEYS } from "../pack/alias-resolve.js";
 import { fitItemLine, packFieldLabel, photoCreditLine, recordedLine, sourceIdIsOsm } from "../pack/catalog.js";
 import { fitWithProfile } from "../pack/fit.js";
 import type { PackField, PackRecord, PackSourceEntry } from "../pack/pack-types.js";
@@ -120,8 +121,14 @@ export function PackPlaceView({ record, sources, lang = "en", profile = null, ph
   const place = fromPackRecord(visibleRecord, visibleSources);
   const fit = fitWithProfile(place, profile);
   const present = new Set(place.allDetails.map((item) => item.key));
-  const coreDetails = Object.values(place.facts).filter((detail) => present.has(detail.key));
-  const showDetails = [...coreDetails, ...Object.values(place.facts).filter((detail) => !present.has(detail.key))];
+  const doorWidthConflict = place.facts.doorWidth.field === null && place.facts.doorWidth.value === null
+    && place.allDetails.some((item) => (DOOR_WIDTH_KEYS as readonly string[]).includes(item.key) && item.value !== null);
+  const coreDetails = Object.values(place.facts).filter((detail) => present.has(detail.key) && detail.field);
+  const conflictWidths = doorWidthConflict
+    ? place.allDetails.filter((item) => (DOOR_WIDTH_KEYS as readonly string[]).includes(item.key))
+    : [];
+  const missingFacts = Object.values(place.facts).filter((detail) => !present.has(detail.key) && detail.key !== "doorWidth");
+  const showDetails = [...coreDetails, ...conflictWidths, ...missingFacts];
   const category = copy(record.tranche === "washroom" ? "pack.washroom" : record.tranche === "transit" ? "pack.transit" : record.tranche === "path" ? "pack.path" : "pack.venue", lang);
   const osm = place.allDetails.some((detail) => isOsm(detail.source, detail.field)) || sources.some((source) => sourceIdIsOsm(source.sourceId));
   return (
@@ -141,7 +148,7 @@ export function PackPlaceView({ record, sources, lang = "en", profile = null, ph
           </li>
         ))}</ul>
       </section>
-      <section aria-labelledby="pack-detail-heading">
+      <section aria-labelledby="pack-detail-heading" id={doorWidthConflict ? "pack-field-doorWidth" : undefined}>
         <h2 id="pack-detail-heading">{copy("pack.details", lang)}</h2>
         <FactTable rows={showDetails} title={copy("pack.details", lang)} lang={lang} />
       </section>

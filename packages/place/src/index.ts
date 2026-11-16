@@ -23,6 +23,14 @@ export { auditFixtureLanguage, englishFixtureSamples } from "./frenchFixtureLang
 export { a11yCss } from "./react/a11yCss.js";
 export { PackPlaceView } from "./react/PackPlaceView.js";
 export { fromPackRecord } from "./pack/projection.js";
+export {
+  ADULT_CHANGE_KEYS,
+  adultChangeVerdict,
+  DOOR_WIDTH_KEYS,
+  explicitDoorWidthsDisagree,
+  resolveAliasKey,
+} from "./pack/alias-resolve.js";
+export type { AdultChangeVerdict, PackFactName } from "./pack/alias-resolve.js";
 export { fitWithProfile } from "./pack/fit.js";
 export type { PackRecord, PackField, PackSourceEntry } from "./pack/pack-types.js";
 export type { PackPlaceProjection } from "./pack/projection.js";

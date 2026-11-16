@@ -54,6 +54,7 @@ const FIELD_LABELS: Record<string, CopyKey> = {
   accessible_toilet: "pack.field-key.accessible-toilet",
   washroom_accessible: "pack.field-key.washroom-accessible",
   "door:width": "pack.field-key.door-width",
+  doorWidth: "pack.field-key.door-width",
   "entrance:width": "pack.field-key.entrance-width",
   door_clear_width_mm: "pack.field-key.door-clear-width-mm",
   door_width_mm: "pack.field-key.door-width-mm",

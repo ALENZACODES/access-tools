@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import axe from "axe-core";
 import { PackPlaceView } from "../src/react/PackPlaceView.js";
 import { commonsTitle, fetchCommonsPhoto } from "../src/pack/commons.js";
@@ -218,6 +218,46 @@ describe("web pack place", () => {
     expect(fit?.status).not.toBe("known-yes");
     expect(projection.allDetails.some((detail) => detail.key === "door_clear_width_mm" && detail.value === first)).toBe(true);
     expect(projection.allDetails.some((detail) => detail.key === "door_width_mm" && detail.value === second)).toBe(true);
+  });
+
+  it.each([
+    { need: "stepFree" as const, firstKey: "entrance:step_free", secondKey: "wheelchair", first: "yes", second: "no" },
+    { need: "stepFree" as const, firstKey: "entrance:step_free", secondKey: "wheelchair", first: "no", second: "yes" },
+    { need: "washroom" as const, firstKey: "toilets:wheelchair", secondKey: "accessible_toilet", first: "yes", second: "no" },
+    { need: "washroom" as const, firstKey: "toilets:wheelchair", secondKey: "accessible_toilet", first: "no", second: "yes" },
+    { need: "parking" as const, firstKey: "parking:wheelchair", secondKey: "accessible_parking", first: "yes", second: "no" },
+    { need: "parking" as const, firstKey: "parking:wheelchair", secondKey: "accessible_parking", first: "no", second: "yes" },
+  ])("treats a $need yes/no conflict as known-no ($firstKey=$first, $secondKey=$second)", ({ need, firstKey, secondKey, first, second }) => {
+    const conflicting: PackRecord = {
+      ...record,
+      fields: {
+        name: field("Conflicting need"),
+        [firstKey]: field(first),
+        [secondKey]: field(second),
+      },
+    };
+    const projection = fromPackRecord(conflicting, sources);
+    const fit = fitWithProfile(projection, profile).find((item) => item.need === need);
+    expect(fit?.status).toBe("known-no");
+    expect(fit?.status).not.toBe("known-yes");
+    expect(projection.facts[need].value).toBe("no");
+  });
+
+  it("shows both original door-width measurements in the details table when they disagree", () => {
+    const conflicting: PackRecord = {
+      ...record,
+      fields: {
+        name: field("Conflicting door"),
+        door_clear_width_mm: field(900),
+        door_width_mm: field(700),
+      },
+    };
+    render(<PackPlaceView record={conflicting} sources={sources} lang="en" profile={profile} />);
+    const details = screen.getByRole("table", { name: "Recorded fields" });
+    expect(within(details).getByText("900")).toBeTruthy();
+    expect(within(details).getByText("700")).toBeTruthy();
+    expect(screen.getByText(/Door width for your chair:\s*Unknown/)).toBeTruthy();
+    expect(screen.queryByRole("table", { name: "Other recorded details" })?.textContent ?? "").not.toContain("900");
   });
 
   it("uses Oui connu / Non connu in French and drops Vérification from photo-loading copy", () => {

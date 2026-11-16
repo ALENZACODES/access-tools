@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Accessible place pages: every field with source, date, and verification tier.",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./pack-aliases": "./src/pack/alias-resolve.ts"
   },
   "scripts": {
     "pretest": "tsc -p ../../node_modules/access-main/packages/schema/tsconfig.json",
