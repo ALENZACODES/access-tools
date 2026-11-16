@@ -166,7 +166,7 @@ describe("repair and supply finder", () => {
       datasetStatus: "labelled-fixture",
       publicationContext: "prototype",
       honestyNote: "Labelled fixture. Not a real repairer.",
-      honestyNoteFr: "Jeu d'essai étiqueté. Pas un réparateur réel.",
+      honestyNoteFr: "Jeu d’essai étiqueté. Pas un réparateur réel.",
       servicesPublished: ["tyre"],
       coverageNote: null,
       mobileRadiusKm: null,

@@ -46,7 +46,7 @@ export const MODEL_COPY = {
   "format.mirror-height": { en: "Mirror height", fr: "Hauteur du miroir" },
   "format.cord.not-tested": {
     en: "Not tested. The application does not activate emergency alarms.",
-    fr: "Non testé. L'application ne déclenche pas les alarmes.",
+    fr: "Non testé. L’application ne déclenche pas les alarmes.",
   },
   "format.reaches-floor": { en: "Reaches the floor", fr: "Descend au sol" },
   "format.working": { en: "Working", fr: "Fonctionnement" },
@@ -62,7 +62,7 @@ export const MODEL_COPY = {
   "format.hoist.absent": { en: "No hoist recorded", fr: "Aucun lève-personne enregistré" },
   "format.sling.absent": {
     en: "No. The sling is recorded as not provided.",
-    fr: "Non. Le harnais n'est pas fourni selon cette fiche.",
+    fr: "Non. Le harnais n’est pas fourni selon cette fiche.",
   },
   "format.hoist-type": { en: "Type", fr: "Type" },
   "format.sling-policy": { en: "Sling policy", fr: "Politique du harnais" },
@@ -71,38 +71,38 @@ export const MODEL_COPY = {
   "format.weight-capacity": { en: "Weight capacity", fr: "Capacité" },
   "tier.prototype-seed": {
     en: "PROTOTYPE-UNVERIFIED. Prototype seed. Unverified by the App.",
-    fr: "PROTOTYPE-UNVERIFIED. Graine de prototype. Non vérifié par l'application.",
+    fr: "PROTOTYPE-UNVERIFIED. Graine de prototype. Non vérifié par l’application.",
   },
   "tier.fixture": {
     en: "PROTOTYPE-UNVERIFIED. Labelled fixture. Unverified by the App.",
-    fr: "PROTOTYPE-UNVERIFIED. Jeu d'essai étiqueté. Non vérifié par l'application.",
+    fr: "PROTOTYPE-UNVERIFIED. Jeu d’essai étiqueté. Non vérifié par l’application.",
   },
   "tier.surveyor": { en: "Verified by surveyor", fr: "Vérifié par un enquêteur" },
   "tier.insufficient": {
     en: "Tier 3 without enough evidence. Not shown as verified. Protocol version, verifier role, method, and visit date are required.",
-    fr: "Niveau 3 sans preuve suffisante. Pas affiché comme vérifié. Il faut la version du protocole, le rôle de l'enquêteur, la méthode et la date de visite.",
+    fr: "Niveau 3 sans preuve suffisante. Pas affiché comme vérifié. Il faut la version du protocole, le rôle de l’enquêteur, la méthode et la date de visite.",
   },
   "tier.open-data": {
     en: "SEEDED-OPEN-DATA. Open-data import, unverified by the App.",
-    fr: "SEEDED-OPEN-DATA. Import de données ouvertes, non vérifié par l'application.",
+    fr: "SEEDED-OPEN-DATA. Import de données ouvertes, non vérifié par l’application.",
   },
   "tier.peer": { en: "Peer-reported", fr: "Signalé par un pair" },
   "tier.business": { en: "Business-claimed, unverified", fr: "Déclaré par le lieu, non vérifié" },
   "tier.live": { en: "Live status", fr: "Statut en direct" },
   "tier.desk": {
     en: "Desk check, with no eligibility decision",
-    fr: "Vérification documentaire, sans décision d'admissibilité",
+    fr: "Vérification documentaire, sans décision d’admissibilité",
   },
   "tier.unknown": { en: "Unknown tier", fr: "Niveau inconnu" },
   "tier.none": { en: "No tier. Unverified.", fr: "Aucun niveau. Non vérifié." },
   "fresh.none": { en: "No source on file.", fr: "Pas de source au dossier." },
   "fresh.import": {
     en: "Source date shown. This tier is not verification by the App.",
-    fr: "Date de source affichée. Ce niveau n'est pas une vérification par l'application.",
+    fr: "Date de source affichée. Ce niveau n’est pas une vérification par l’application.",
   },
   "fresh.stale": {
     en: "Stale under the plan's estimate ({limit} days). The field stays visible.",
-    fr: "Périmé selon l'estimation du plan ({limit} jours). La fiche reste affichée.",
+    fr: "Périmé selon l’estimation du plan ({limit} jours). La fiche reste affichée.",
   },
   "fresh.window": {
     en: "Within the plan's estimated window. An estimate only. The time is not confirmed.",
@@ -114,15 +114,15 @@ export const MODEL_COPY = {
   },
   "fresh.live-unknown": {
     en: "Live status unknown. The feed is missing, has no clock time, is expired, or is older than {hours} hours. A stale status is not shown as working.",
-    fr: "Statut en direct inconnu. Le flux est absent, sans horloge, expiré, ou plus vieux que {hours} heures. Un statut périmé n'est pas affiché comme fonctionnel.",
+    fr: "Statut en direct inconnu. Le flux est absent, sans horloge, expiré, ou plus vieux que {hours} heures. Un statut périmé n’est pas affiché comme fonctionnel.",
   },
   "fresh.live-ok": {
     en: "Feed timestamp: {observed}. Within the {hours}-hour window. This is not a promise the equipment is working.",
-    fr: "Horodatage du flux\u00A0: {observed}. Dans la fenêtre de {hours} heures. Ce n'est pas une promesse que l'équipement fonctionne.",
+    fr: "Horodatage du flux\u00A0: {observed}. Dans la fenêtre de {hours} heures. Ce n’est pas une promesse que l’équipement fonctionne.",
   },
   "winter.last": {
     en: "Last recorded clearance: {date}. The winter label applies from November through April.",
-    fr: "Dernier déneigement enregistré\u00A0: {date}. L'étiquette d'hiver s'applique de novembre à avril.",
+    fr: "Dernier déneigement enregistré\u00A0: {date}. L’étiquette d’hiver s’applique de novembre à avril.",
   },
   "winter.unknown": { en: "Winter clearance unknown", fr: "Déneigement hivernal inconnu" },
   "winter.recorded": { en: "Clearance recorded on {date}.", fr: "Déneigement enregistré le {date}." },
@@ -132,7 +132,7 @@ export const MODEL_COPY = {
   },
   "use.call-ahead": {
     en: "Unverified — call ahead. This record is not a recommendation.",
-    fr: "Non vérifié — appelez avant d'y aller. Cette fiche n'est pas une recommandation.",
+    fr: "Non vérifié — appelez avant d’y aller. Cette fiche n’est pas une recommandation.",
   },
   "lift.aisle": {
     en: "An aisle and a width are recorded for this Type A bay. That does not say your lift will fit.",
@@ -140,7 +140,7 @@ export const MODEL_COPY = {
   },
   "lift.type-b": {
     en: "Type B bay. No side-lift deployment space is recorded.",
-    fr: "Place de type B. Aucun espace de déploiement de hayon latéral n'est enregistré.",
+    fr: "Place de type B. Aucun espace de déploiement de hayon latéral n’est enregistré.",
   },
   "lift.drop-off": { en: "Drop-off point, not a parking bay.", fr: "Point de dépose, pas une place de stationnement." },
   "lift.unknown": { en: "Lift space is unknown.", fr: "Espace de hayon inconnu." },
@@ -159,31 +159,31 @@ export const MODEL_COPY = {
   },
   "disclaimer.availability": {
     en: "This list does not show whether a bay is free right now. No live availability feed is connected.",
-    fr: "Cette liste ne dit pas si une place est libre maintenant. Aucun flux de disponibilité en direct n'est branché.",
+    fr: "Cette liste ne dit pas si une place est libre maintenant. Aucun flux de disponibilité en direct n’est branché.",
   },
   "disclaimer.repair": {
     en: "The application lists services a record publishes. It does not recommend a repairer, a product, or a repair. It does not promise funding. It does not give medical or supply advice.",
-    fr: "L'application liste les services publiés dans la fiche. Elle ne recommande ni réparateur, ni produit, ni réparation. Elle ne promet pas de financement. Elle ne donne pas de conseil médical ni de conseil sur les fournitures.",
+    fr: "L’application liste les services publiés dans la fiche. Elle ne recommande ni réparateur, ni produit, ni réparation. Elle ne promet pas de financement. Elle ne donne pas de conseil médical ni de conseil sur les fournitures.",
   },
   "disclaimer.supply": {
     en: "A published category is not a statement that a specific product is in stock. Call the store to check stock.",
-    fr: "Une catégorie publiée ne dit pas qu'un produit précis est en stock. Appelez le magasin pour vérifier le stock.",
+    fr: "Une catégorie publiée ne dit pas qu’un produit précis est en stock. Appelez le magasin pour vérifier le stock.",
   },
   "notice.prototype": {
     en: "PROTOTYPE-UNVERIFIED. This screen is a prototype. Unknown means unknown. A labelled fixture is not a real place and not a verified visit.",
-    fr: "PROTOTYPE-UNVERIFIED. Cet écran est un prototype. Inconnu veut dire inconnu. Un jeu d'essai étiqueté n'est pas un lieu réel ni une visite vérifiée.",
+    fr: "PROTOTYPE-UNVERIFIED. Cet écran est un prototype. Inconnu veut dire inconnu. Un jeu d’essai étiqueté n’est pas un lieu réel ni une visite vérifiée.",
   },
   "photo.none": { en: "No photograph on file.", fr: "Aucune photographie au dossier." },
   "photo.missing": { en: "Photograph slot is missing from the record.", fr: "Emplacement de photo manquant." },
   "photo.withheld": { en: "Photograph withheld to protect privacy.", fr: "Photographie retenue pour protéger la vie privée." },
   "photo.no-description": {
     en: "A photograph has a date and no access description. It is not evidence.",
-    fr: "Une photo a une date mais pas de description d'accès. Elle n'est pas une preuve.",
+    fr: "Une photo a une date mais pas de description d’accès. Elle n’est pas une preuve.",
   },
   "photo.date-unknown": { en: "date unknown", fr: "date inconnue" },
   "photo.file-absent": {
     en: "The image file is not in this package. access-maps holds photograph files.",
-    fr: "Le fichier image n'est pas dans ce paquet. access-maps conserve les fichiers photo.",
+    fr: "Le fichier image n’est pas dans ce paquet. access-maps conserve les fichiers photo.",
   },
   "photo.caption": { en: "{description} ({date}). {file}", fr: "{description} ({date}). {file}" },
   "source.none": { en: "No source", fr: "Aucune source" },
@@ -198,7 +198,7 @@ export const MODEL_COPY = {
   },
   "summary.directory": {
     en: "Directory records are linked. See repair and supply.",
-    fr: "Des fiches d'annuaire sont liées. Voir réparation et fournitures.",
+    fr: "Des fiches d’annuaire sont liées. Voir réparation et fournitures.",
   },
   "summary.photos": {
     en: "{slots} slots, {described} described, {empty} empty.",
@@ -210,11 +210,11 @@ export const MODEL_COPY = {
   },
   "trust.dispute": {
     en: "A venue can submit a correction with evidence. Nothing is overwritten silently. This prototype does not decide disputes.",
-    fr: "Un lieu peut proposer une correction avec une preuve. Rien n'est écrasé en silence. Ce prototype ne tranche pas les contestations.",
+    fr: "Un lieu peut proposer une correction avec une preuve. Rien n’est écrasé en silence. Ce prototype ne tranche pas les contestations.",
   },
   "trust.peer-none": {
     en: "No peer tip is on file. A peer tip is not a fact.",
-    fr: "Aucune note de pair au dossier. Une note de pair n'est pas un fait.",
+    fr: "Aucune note de pair au dossier. Une note de pair n’est pas un fait.",
   },
   "trust.peer-count": {
     en: "{count} peer tip, kept separate from facts.",
@@ -222,11 +222,11 @@ export const MODEL_COPY = {
   },
   "trust.bilingual-note": {
     en: "The interface is in English and French. Measurements are not machine-translated. A French name exists only when the record has one.",
-    fr: "L'interface est en français et en anglais. Les mesures ne sont pas traduites automatiquement. Le nom français n'existe que s'il est écrit dans la fiche.",
+    fr: "L’interface est en français et en anglais. Les mesures ne sont pas traduites automatiquement. Le nom français n’existe que s’il est écrit dans la fiche.",
   },
   "section.approach": {
     en: "Stop, drop-off, and approach. A straight-line distance is not a route.",
-    fr: "Arrêt, dépose et approche. Une distance à vol d'oiseau n'est pas un chemin.",
+    fr: "Arrêt, dépose et approche. Une distance à vol d’oiseau n’est pas un chemin.",
   },
   "section.entrance": { en: "Entrance", fr: "Entrée" },
   "section.washrooms": { en: "Washrooms", fr: "Toilettes" },
@@ -245,7 +245,7 @@ export const MODEL_COPY = {
   "group.inside": { en: "Inside", fr: "Intérieur" },
   "washroom.none-linked": {
     en: "No washroom record is linked. That is not a statement that no washroom exists.",
-    fr: "Aucune fiche de toilettes n'est liée. Ce n'est pas une affirmation qu'il n'y a pas de toilettes.",
+    fr: "Aucune fiche de toilettes n’est liée. Ce n’est pas une affirmation qu’il n’y a pas de toilettes.",
   },
   "washroom.each-record": {
     en: "Each washroom is its own record. A summary does not replace the measurements.",
@@ -253,19 +253,19 @@ export const MODEL_COPY = {
   },
   "parking.separate": {
     en: "Bay type and the municipal privilege are separate. No live availability is shown.",
-    fr: "Le type de place et le privilège municipal sont séparés. Aucune disponibilité en direct n'est affichée.",
+    fr: "Le type de place et le privilège municipal sont séparés. Aucune disponibilité en direct n’est affichée.",
   },
   "policy.quoted": {
     en: "A policy is quoted only when the record has text. The application does not give eligibility advice.",
-    fr: "Une politique est citée seulement si la fiche a un texte. L'application ne donne pas de conseil d'admissibilité.",
+    fr: "Une politique est citée seulement si la fiche a un texte. L’application ne donne pas de conseil d’admissibilité.",
   },
   "photo.not-evidence": {
     en: "A photograph without a date or an access description is not evidence.",
-    fr: "Une photo sans date ou sans description d'accès n'est pas une preuve.",
+    fr: "Une photo sans date ou sans description d’accès n’est pas une preuve.",
   },
   "trail.template": {
     en: "Trail-template fields. They are not shown on a café.",
-    fr: "Champs du modèle sentier. Ils ne s'affichent pas sur un café.",
+    fr: "Champs du modèle sentier. Ils ne s’affichent pas sur un café.",
   },
   "place.source-line": {
     en: "Source: {source}. Source date: {sourceDate}. Record date: {recordDate}. {licence}",
@@ -273,7 +273,7 @@ export const MODEL_COPY = {
   },
   "place.skeleton": {
     en: "Skeleton seed for {municipality}. Facts present: the name and the municipality. Entrance, washroom, parking, charging, and repair measurements are absent from this seed.",
-    fr: "Graine incomplète pour {municipality}. Faits présents\u00A0: le nom et la municipalité. Les mesures d'entrée, de toilettes, de stationnement, de recharge et de réparation sont absentes de cette graine.",
+    fr: "Graine incomplète pour {municipality}. Faits présents\u00A0: le nom et la municipalité. Les mesures d’entrée, de toilettes, de stationnement, de recharge et de réparation sont absentes de cette graine.",
   },
   "place.peer-tip": {
     en: "Peer tip dated {date}, not moderated, not a fact: {body}",
@@ -285,8 +285,8 @@ export const MODEL_COPY = {
   "washroom.gender": { en: "Recorded gender: {gender}", fr: "Genre enregistré\u00A0: {gender}" },
   "washroom.attendant": { en: "Attendant access: Unknown", fr: "Accès accompagnateur\u00A0: Inconnu" },
   "bay.width": { en: "Bay width", fr: "Largeur de la place" },
-  "bay.aisle": { en: "Aisle width", fr: "Largeur de l'allée" },
-  "bay.entrance-distance": { en: "Distance to the entrance", fr: "Distance jusqu'à l'entrée" },
+  "bay.aisle": { en: "Aisle width", fr: "Largeur de l’allée" },
+  "bay.entrance-distance": { en: "Distance to the entrance", fr: "Distance jusqu’à l’entrée" },
   "bay.snow": { en: "Snow clearance", fr: "Déneigement" },
   "bay.step-free": { en: "Step-free route", fr: "Chemin sans marche" },
   "charging.location": { en: "Location", fr: "Emplacement" },
@@ -305,7 +305,7 @@ export const MODEL_COPY = {
   "directory.services": { en: "Published services: {services}", fr: "Services publiés\u00A0: {services}" },
   "directory.coverage": { en: "Coverage: {note}", fr: "Couverture\u00A0: {note}" },
   "directory.radius": { en: "Mobile radius: {radius}", fr: "Rayon mobile\u00A0: {radius}" },
-  "directory.hours": { en: "Hours: {hours}", fr: "Heures d'ouverture\u00A0: {hours}" },
+  "directory.hours": { en: "Hours: {hours}", fr: "Heures d’ouverture\u00A0: {hours}" },
   "directory.phone": { en: "Phone: {phone}", fr: "Téléphone\u00A0: {phone}" },
   "directory.website": { en: "Website: {website}", fr: "Site\u00A0: {website}" },
   "directory.no-categories": {
@@ -315,7 +315,7 @@ export const MODEL_COPY = {
   "directory.categories": { en: "Published categories: {categories}", fr: "Catégories publiées\u00A0: {categories}" },
   "directory.not-stock": {
     en: "A category is not stock of a specific product.",
-    fr: "Une catégorie n'est pas un stock d'un produit précis.",
+    fr: "Une catégorie n’est pas un stock d’un produit précis.",
   },
   "directory.delivery": { en: "Delivery: {delivery}", fr: "Livraison\u00A0: {delivery}" },
   "entrance.no-single-status": { en: "Overall status", fr: "Statut global" },
@@ -333,18 +333,18 @@ export const MODEL_COPY = {
     fr: "Pente, largeur, palier, mains courantes, surface, drainage",
   },
   "entrance.ramp-length-rise": { en: "Ramp length and rise", fr: "Longueur et dénivelé de la rampe" },
-  "entrance.elevator": { en: "Elevator to the entrance", fr: "Ascenseur jusqu'à l'entrée" },
-  "entrance.lighting-signage": { en: "Entrance lighting and signage", fr: "Éclairage et signalisation de l'entrée" },
+  "entrance.elevator": { en: "Elevator to the entrance", fr: "Ascenseur jusqu’à l’entrée" },
+  "entrance.lighting-signage": { en: "Entrance lighting and signage", fr: "Éclairage et signalisation de l’entrée" },
   "washroom.location-and-route": { en: "Location and step-free route", fr: "Emplacement et chemin sans marche" },
   "washroom.door": { en: "Washroom door", fr: "Porte des toilettes" },
   "washroom.turning-diameter-mm": { en: "Turning space, door closed", fr: "Espace de rotation, porte fermée" },
   "washroom.transfer": { en: "Transfer side and clear floor", fr: "Côté de transfert et dégagement" },
-  "washroom.grab-bars": { en: "Grab bars", fr: "Barres d'appui" },
+  "washroom.grab-bars": { en: "Grab bars", fr: "Barres d’appui" },
   "washroom.seat-height-mm": { en: "Toilet seat height", fr: "Hauteur de la cuvette" },
   "washroom.sink": { en: "Sink and knee clearance", fr: "Lavabo et dégagement des genoux" },
   "washroom.shelf-hook-supplies": { en: "Shelf, hook, and supplies space", fr: "Tablette, crochet et espace pour les fournitures" },
   "washroom.privacy-lock": { en: "Privacy and lock", fr: "Intimité et verrou" },
-  "washroom.emergency-cord": { en: "Emergency cord", fr: "Cordon d'alarme" },
+  "washroom.emergency-cord": { en: "Emergency cord", fr: "Cordon d’alarme" },
   "washroom.change-table": { en: "Adult change table", fr: "Table à langer pour adultes" },
   "washroom.hoist": { en: "Hoist", fr: "Lève-personne" },
   "washroom.access-policy": { en: "Lock, key, and code policy", fr: "Politique de clé, code et accès" },
@@ -354,7 +354,7 @@ export const MODEL_COPY = {
   "interior.seating": { en: "Seating", fr: "Sièges" },
   "interior.sensory": { en: "Quiet, scent, lighting, and sound", fr: "Calme, parfum, éclairage et bruit" },
   "interior.assistance-policy": { en: "Assistance and support-person policy", fr: "Aide et politique de personne de soutien" },
-  "interior.assistive-listening": { en: "Assistive listening and communication", fr: "Aide à l'écoute et communication" },
+  "interior.assistive-listening": { en: "Assistive listening and communication", fr: "Aide à l’écoute et communication" },
   "interior.rest-space": { en: "Rest and pressure-relief space", fr: "Espace de repos" },
   "parking.bay-summary": { en: "Accessible parking records", fr: "Fiches de stationnement accessible" },
   "parking.route": { en: "Bay location and route", fr: "Emplacement et chemin" },
@@ -362,14 +362,14 @@ export const MODEL_COPY = {
   "parking.surface-snow": { en: "Surface, gradient, and snow", fr: "Surface, pente et neige" },
   "parking.payment": { en: "Payment method", fr: "Mode de paiement" },
   "parking.drop-off": { en: "Drop-off and pick-up", fr: "Dépose et reprise" },
-  "parking.curb-cuts": { en: "Curb cuts on the approach", fr: "Bateaux de trottoir sur l'approche" },
-  "parking.approach-obstacles": { en: "Approach width and obstacles", fr: "Largeur de l'approche et obstacles" },
+  "parking.curb-cuts": { en: "Curb cuts on the approach", fr: "Bateaux de trottoir sur l’approche" },
+  "parking.approach-obstacles": { en: "Approach width and obstacles", fr: "Largeur de l’approche et obstacles" },
   "transport.nearest-stop": { en: "Nearest transit stop", fr: "Arrêt de transport le plus proche" },
-  "transport.elevator-status": { en: "Elevator dimensions and status", fr: "Dimensions et statut de l'ascenseur" },
+  "transport.elevator-status": { en: "Elevator dimensions and status", fr: "Dimensions et statut de l’ascenseur" },
   "transport.paratransit": { en: "Paratransit for this place", fr: "Transport adapté pour ce lieu" },
   "transport.charging": { en: "Charging for mobility devices", fr: "Recharge des aides à la mobilité" },
   "transport.repair-supply": { en: "Repair and supply proximity", fr: "Réparation et fournitures à proximité" },
-  "transport.emergency-contacts": { en: "Emergency and help contacts", fr: "Contacts d'urgence et d'aide" },
+  "transport.emergency-contacts": { en: "Emergency and help contacts", fr: "Contacts d’urgence et d’aide" },
   "trust.tier": { en: "Verification tier", fr: "Niveau de vérification" },
   "trust.last-verified": { en: "Last recorded date", fr: "Dernière date enregistrée" },
   "trust.source": { en: "Source", fr: "Source" },
@@ -387,7 +387,7 @@ export const MODEL_COPY = {
   "identity.hours": { en: "Hours", fr: "Heures" },
   "identity.phone": { en: "Phone", fr: "Téléphone" },
   "identity.languages": { en: "Languages of service", fr: "Langues de service" },
-  "identity.statement": { en: "Accessibility statement", fr: "Énoncé d'accessibilité" },
+  "identity.statement": { en: "Accessibility statement", fr: "Énoncé d’accessibilité" },
   "identity.dataset": { en: "Dataset", fr: "Jeu de données" },
   "identity.depth": { en: "Seed depth", fr: "Profondeur de la graine" },
   "trail.surface": { en: "Trail surface", fr: "Surface du sentier" },
@@ -399,15 +399,15 @@ export const MODEL_COPY = {
     en: "Saved on this device as pending. This prototype does not moderate or publish reports. The displayed record does not change.",
     fr: "Enregistré sur cet appareil comme en attente. Ce prototype ne modère ni ne publie les signalements. La fiche affichée ne change pas.",
   },
-  "profile.title": { en: "Equipment profile", fr: "Profil d'équipement" },
+  "profile.title": { en: "Equipment profile", fr: "Profil d’équipement" },
   "profile.intro": {
     en: "Saved on this device only. It filters records in the App. It is not medical advice and it does not decide eligibility.",
-    fr: "Enregistré seulement sur cet appareil. Il filtre les fiches dans l'application. Ce n'est pas un avis médical et ce n'est pas une décision d'admissibilité.",
+    fr: "Enregistré seulement sur cet appareil. Il filtre les fiches dans l’application. Ce n’est pas un avis médical et ce n’est pas une décision d’admissibilité.",
   },
   "profile.chair": { en: "Chair type", fr: "Type de fauteuil" },
   "profile.chair-hint": {
     en: "Stored on this device. A power wheelchair adds a note when an entrance is not recorded as step-free. It does not hide records.",
-    fr: "Enregistré sur cet appareil. Un fauteuil roulant motorisé ajoute une note quand une entrée n'est pas enregistrée comme sans marche. Il ne cache aucune fiche.",
+    fr: "Enregistré sur cet appareil. Un fauteuil roulant motorisé ajoute une note quand une entrée n’est pas enregistrée comme sans marche. Il ne cache aucune fiche.",
   },
   "profile.chair.unset": { en: "Not set", fr: "Non précisé" },
   "profile.chair.manual": { en: "Manual wheelchair", fr: "Fauteuil roulant manuel" },
@@ -417,17 +417,17 @@ export const MODEL_COPY = {
   "profile.width": { en: "Chair width for door clearance (mm)", fr: "Largeur du fauteuil pour le passage de porte (mm)" },
   "profile.width-hint": {
     en: "Leave this blank to ignore door width. A missing measurement stays visible. A measured door that is narrower is not a match.",
-    fr: "Laisser vide pour ignorer la largeur de porte. Une mesure manquante reste visible. Une porte mesurée plus étroite n'est pas une correspondance.",
+    fr: "Laisser vide pour ignorer la largeur de porte. Une mesure manquante reste visible. Une porte mesurée plus étroite n’est pas une correspondance.",
   },
   "profile.step-free": { en: "Step-free required", fr: "Sans marche exigé" },
   "profile.step-free-hint": {
     en: "Hides a record unless step-free is recorded as yes. Unknown is not a match.",
-    fr: "Cache une fiche sauf si sans marche est enregistré comme oui. Inconnu n'est pas une correspondance.",
+    fr: "Cache une fiche sauf si sans marche est enregistré comme oui. Inconnu n’est pas une correspondance.",
   },
   "profile.change-table": { en: "Adult change table needed", fr: "Table à langer pour adultes nécessaire" },
   "profile.change-table-hint": {
     en: "Hides a record unless an adult change table is recorded as present. Unknown is not a match.",
-    fr: "Cache une fiche sauf si une table à langer pour adultes est enregistrée comme présente. Inconnu n'est pas une correspondance.",
+    fr: "Cache une fiche sauf si une table à langer pour adultes est enregistrée comme présente. Inconnu n’est pas une correspondance.",
   },
   "profile.save": { en: "Save profile", fr: "Enregistrer le profil" },
   "profile.saved": { en: "Profile saved on this device.", fr: "Profil enregistré sur cet appareil." },
@@ -445,19 +445,19 @@ export const MODEL_COPY = {
   },
   "profile.storage-failed": {
     en: "This browser did not store the profile.",
-    fr: "Ce navigateur n'a pas enregistré le profil.",
+    fr: "Ce navigateur n’a pas enregistré le profil.",
   },
   "profile.highlight": {
     en: "Does not meet the saved profile. Unknown is not a match.",
-    fr: "Ne correspond pas au profil enregistré. Inconnu n'est pas une correspondance.",
+    fr: "Ne correspond pas au profil enregistré. Inconnu n’est pas une correspondance.",
   },
   "profile.reason.step-free": {
     en: "Profile setting “Step-free required”. Step-free is not recorded as yes, so this record is not shown as a match.",
-    fr: "Réglage du profil «\u00A0Sans marche exigé\u00A0». Sans marche n'est pas enregistré comme oui, donc cette fiche n'est pas un résultat.",
+    fr: "Réglage du profil «\u00A0Sans marche exigé\u00A0». Sans marche n’est pas enregistré comme oui, donc cette fiche n’est pas un résultat.",
   },
   "profile.reason.change-table": {
     en: "Profile setting “Adult change table needed”. An adult change table is not recorded as present, so this record is not shown as a match.",
-    fr: "Réglage du profil «\u00A0Table à langer pour adultes nécessaire\u00A0». Aucune table à langer pour adultes n'est enregistrée comme présente, donc cette fiche n'est pas un résultat.",
+    fr: "Réglage du profil «\u00A0Table à langer pour adultes nécessaire\u00A0». Aucune table à langer pour adultes n’est enregistrée comme présente, donc cette fiche n’est pas un résultat.",
   },
   "profile.reason.missing": {
     en: "Profile setting “Chair width for door clearance”. Cannot judge, measurement missing.",
@@ -465,10 +465,10 @@ export const MODEL_COPY = {
   },
   "profile.reason.narrower": {
     en: "Profile setting “Chair width for door clearance”. The measured door is narrower than the saved chair width, so this record is not shown as a match.",
-    fr: "Réglage du profil «\u00A0Largeur du fauteuil pour le passage de porte\u00A0». La porte mesurée est plus étroite que la largeur enregistrée, donc cette fiche n'est pas un résultat.",
+    fr: "Réglage du profil «\u00A0Largeur du fauteuil pour le passage de porte\u00A0». La porte mesurée est plus étroite que la largeur enregistrée, donc cette fiche n’est pas un résultat.",
   },
   "profile.note.power-step-free": {
     en: "Profile setting “Chair type: Power wheelchair”. The entrance is not recorded as step-free. Unknown is not a match. Check with the place before you go.",
-    fr: "Réglage du profil «\u00A0Type de fauteuil\u00A0: Fauteuil roulant motorisé\u00A0». L'entrée n'est pas enregistrée comme sans marche. Inconnu n'est pas une correspondance. Vérifiez auprès du lieu avant de partir.",
+    fr: "Réglage du profil «\u00A0Type de fauteuil\u00A0: Fauteuil roulant motorisé\u00A0». L’entrée n’est pas enregistrée comme sans marche. Inconnu n’est pas une correspondance. Vérifiez auprès du lieu avant de partir.",
   },
 } as const;
