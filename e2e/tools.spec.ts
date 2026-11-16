@@ -50,7 +50,7 @@ test("place, search, finders, and paratransit pass axe in English and French", a
     { width: 1280, height: 800 },
     { width: 320, height: 700 },
   ];
-  for (const screen of ["Place", "Search", "Finders", "Paratransit"]) {
+  for (const screen of ["Place", "Search", "Finders", "Pack finders", "Paratransit"]) {
     await page.getByRole("button", { name: screen, exact: true }).click();
     await expect.poll(() => page.evaluate(() => document.documentElement.lang)).toBe("en");
     for (const viewport of viewports) {
@@ -80,6 +80,39 @@ test("place, search, finders, and paratransit pass axe in English and French", a
         });
         expect(violations, `${screen} ${lang} ${viewport.width}`).toEqual([]);
       }
+    }
+  }
+});
+
+test("PackFindersPage passes axe in English and French", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Pack finders", exact: true }).click();
+  await expect(page.locator("[data-pack-finders]")).toBeVisible();
+  await page.addScriptTag({ content: axe.source });
+  for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 700 }]) {
+    await page.setViewportSize(viewport);
+    for (const lang of ["en", "fr"] as const) {
+      const current = await page.evaluate(() => document.documentElement.lang);
+      if (current !== lang) {
+        await page.getByRole("button", { name: lang === "fr" ? "Français" : "English" }).click();
+      }
+      await expect.poll(() => page.evaluate(() => document.documentElement.lang)).toBe(lang);
+      await expect(page.locator("[data-pack-finders]")).toHaveAttribute("lang", lang);
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+      expect(overflow, `PackFindersPage ${lang} ${viewport.width}`).toBeLessThanOrEqual(0);
+      const violations = await page.evaluate(async () => {
+        const axeRuntime = (window as unknown as { axe: typeof axe }).axe;
+        const root = document.querySelector("[data-pack-finders]");
+        if (!root) return ["missing PackFindersPage"];
+        const results = await axeRuntime.run(root, {
+          runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"] },
+        });
+        return results.violations.map((violation) => {
+          const target = violation.nodes[0]?.target.join(" ") ?? "";
+          return `${violation.id}: ${violation.help}${target ? ` [${target}]` : ""}`;
+        });
+      });
+      expect(violations, `PackFindersPage ${lang} ${viewport.width}`).toEqual([]);
     }
   }
 });

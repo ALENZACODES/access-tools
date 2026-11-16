@@ -41,6 +41,8 @@ export interface PackFinderRow {
 }
 export interface PackFinderResult {
   rows: PackFinderRow[];
+  /** Known-yes changing-table records only appear in `rows`. Unknown records, if shown, are only here. */
+  unknownRows: PackFinderRow[];
   hidden: PackFinderRow[];
   count: number;
   examined: number;
@@ -56,6 +58,9 @@ export const WASHROOM_KEYS = [
 const PARKING_KEYS = ["name", "amenity", "parking", "capacity_disabled", "wheelchair", "access", "surface", "fee"];
 const CHARGING_KEYS = ["name", "wheelchair_charging", "mobility_device_charging", "charging_point", "power_supply", "socket", "access", "opening_hours"];
 const REPAIR_KEYS = ["name", "wheelchair_repair", "mobility_device_repair", "repair", "service", "shop", "access", "opening_hours"];
+/** Adult-specific keys only. A generic changing_table tag is not an adult table. */
+export const ADULT_CHANGE_KEYS = ["adult_changing_table", "adult_change_table"] as const;
+const GENERIC_CHANGE_KEYS = ["changing_table", "change_table"] as const;
 const TRUE = new Set(["yes", "true", "1", "designated"]);
 const FALSE = new Set(["no", "false", "0"]);
 const recognised = (value: unknown): boolean => value !== null && value !== undefined && value !== "UNKNOWN" && value !== "";
@@ -65,11 +70,34 @@ const has = (record: PackRecord, key: string): boolean => recognised(read(record
 const isYes = (value: unknown): boolean => TRUE.has(scalar(value));
 const isNo = (value: unknown): boolean => FALSE.has(scalar(value));
 
+
+export type AdultChangeVerdict = "yes" | "no" | "unknown";
+
+/**
+ * Adult change-table honesty: only an adult-specific yes is a known yes.
+ * A generic changing_table tag alone is unknown. A recorded no is not listed.
+ * Returns null when the record has no changing-table evidence at all.
+ */
+export function adultChangeVerdict(record: PackRecord): AdultChangeVerdict | null {
+  const adultValues = ADULT_CHANGE_KEYS.map((key) => read(record, key));
+  if (adultValues.some(isYes)) return "yes";
+  if (adultValues.some(isNo)) return "no";
+  const genericValues = GENERIC_CHANGE_KEYS.map((key) => read(record, key));
+  const adultPresent = ADULT_CHANGE_KEYS.some((key) => key in record.fields);
+  const genericPresent = GENERIC_CHANGE_KEYS.some((key) => key in record.fields);
+  if (adultPresent) return "unknown";
+  if (genericValues.some(isNo)) return "no";
+  if (genericValues.some(isYes) || genericPresent) return "unknown";
+  return null;
+}
+
 /** A kind requires source-backed evidence; merely being a venue is not enough. */
 export function supportsKind(record: PackRecord, kind: FinderKind): boolean {
   if (kind === "washroom") return record.tranche === "washroom" || (record.tranche === "venue" && scalar(read(record, "amenity")) === "toilets");
   if (kind === "parking") return record.tranche === "venue" && (scalar(read(record, "amenity")) === "parking" || has(record, "capacity_disabled"));
-  if (kind === "changing") return (record.tranche === "washroom" || scalar(read(record, "amenity")) === "toilets") && (has(record, "changing_table") || has(record, "adult_changing_table"));
+  if (kind === "changing") {
+    return (record.tranche === "washroom" || scalar(read(record, "amenity")) === "toilets") && adultChangeVerdict(record) !== null;
+  }
   if (kind === "charging") return CHARGING_KEYS.slice(1, 6).some((key) => has(record, key));
   return REPAIR_KEYS.slice(1, 6).some((key) => has(record, key));
 }
@@ -149,6 +177,21 @@ export async function queryPackFinders(source: PackSource, request: FinderReques
   }
   const rows = [...records.values()].filter((record) => supportsKind(record, request.kind))
     .map((record) => rowFor(record, request.kind, request.needs ?? [], request.broaden ?? false, sources));
+  if (request.kind === "changing") {
+    const yes: PackFinderRow[] = [];
+    const unknown: PackFinderRow[] = [];
+    for (const row of rows) {
+      const record = records.get(row.id);
+      if (!record) continue;
+      const verdict = adultChangeVerdict(record);
+      if (verdict === "yes") yes.push(row);
+      else if (verdict === "unknown") unknown.push(row);
+      // known-no is not listed, including in hidden or unknown groups
+    }
+    yes.sort((a, b) => a.name.localeCompare(b.name));
+    unknown.sort((a, b) => a.name.localeCompare(b.name));
+    return { rows: yes, unknownRows: unknown, hidden: [], count: yes.length, examined: records.size, kind: request.kind };
+  }
   const shown = rows.filter((row) => !row.excluded).sort((a, b) => a.name.localeCompare(b.name));
-  return { rows: shown, hidden: rows.filter((row) => row.excluded), count: shown.length, examined: records.size, kind: request.kind };
+  return { rows: shown, unknownRows: [], hidden: rows.filter((row) => row.excluded), count: shown.length, examined: records.size, kind: request.kind };
 }

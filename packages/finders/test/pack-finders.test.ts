@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { queryPackFinders, WASHROOM_KEYS } from "../src/pack-finders.js";
+import { adultChangeVerdict, queryPackFinders, WASHROOM_KEYS } from "../src/pack-finders.js";
 import type { PackManifest, PackRecord, PackSource, PackSourceEntry, Tranche } from "../src/pack-types.js";
 import { readFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
@@ -13,6 +13,10 @@ function record(id: string, tranche: Tranche, fields: Record<string, unknown>, s
 const fixtures = [
   record("osm-toilet", "washroom", { name: "Public toilet", wheelchair: "UNKNOWN", changing_table: "yes" }),
   record("municipal-toilet", "washroom", { name: "Kingston washroom", adult_changing_table: "yes" }),
+  record("no-table", "washroom", { name: "No change table", changing_table: "no" }),
+  record("adult-no", "washroom", { name: "Adult table absent", adult_changing_table: "no" }),
+  record("generic-and-adult-no", "washroom", { name: "Baby table only", changing_table: "yes", adult_changing_table: "no" }),
+  record("unknown-adult", "washroom", { name: "Adult table unknown", adult_changing_table: "UNKNOWN" }),
   record("parking", "venue", { name: "Parking lot", amenity: "parking", capacity_disabled: 3 }),
   record("charging", "venue", { name: "Charging stop", wheelchair_charging: "yes" }),
   record("repair", "venue", { name: "Repair shop", wheelchair_repair: "yes" }),
@@ -63,6 +67,29 @@ describe("pack-backed finders", () => {
     expect((await queryPackFinders(source, { kind: "parking", needs: ["wheelchair"] })).count).toBe(1);
     expect((await queryPackFinders(source, { kind: "parking", needs: ["amenity"] })).count).toBe(0);
     expect((await queryPackFinders(source, { kind: "parking", needs: ["amenity"], broaden: true })).count).toBe(1);
+  });
+  it("lists only known-yes adult change tables and keeps no and unknown apart", async () => {
+    const result = await queryPackFinders(fixtureSource(), { kind: "changing" });
+    expect(result.rows.map((row) => row.id)).toEqual(["municipal-toilet"]);
+    expect(result.unknownRows.map((row) => row.id).sort()).toEqual(["osm-toilet", "unknown-adult"]);
+    expect(result.hidden).toEqual([]);
+    expect(result.rows.some((row) => row.id === "no-table" || row.id === "adult-no" || row.id === "generic-and-adult-no")).toBe(false);
+    expect(result.unknownRows.some((row) => row.id === "no-table" || row.id === "adult-no" || row.id === "generic-and-adult-no")).toBe(false);
+  });
+  it("treats a generic changing_table tag as unknown for the adult need", () => {
+    expect(adultChangeVerdict(fixtures.find((value) => value.id === "osm-toilet")!)).toBe("unknown");
+    expect(adultChangeVerdict(fixtures.find((value) => value.id === "municipal-toilet")!)).toBe("yes");
+    expect(adultChangeVerdict(fixtures.find((value) => value.id === "no-table")!)).toBe("no");
+    expect(adultChangeVerdict(fixtures.find((value) => value.id === "adult-no")!)).toBe("no");
+    expect(adultChangeVerdict(fixtures.find((value) => value.id === "generic-and-adult-no")!)).toBe("no");
+    expect(adultChangeVerdict(fixtures.find((value) => value.id === "unknown-adult")!)).toBe("unknown");
+    expect(adultChangeVerdict(fixtures.find((value) => value.id === "parking")!)).toBe(null);
+  });
+  it("does not list known-no changing tables even when broadened", async () => {
+    const result = await queryPackFinders(fixtureSource(), { kind: "changing", broaden: true });
+    expect(result.rows.map((row) => row.id)).toEqual(["municipal-toilet"]);
+    expect(result.hidden).toEqual([]);
+    expect(result.rows.concat(result.unknownRows, result.hidden).some((row) => ["no-table", "adult-no", "generic-and-adult-no"].includes(row.id))).toBe(false);
   });
   it("keeps demonstration imports out of the shell entry graph", () => {
     for (const file of ["react/pack-module.tsx", "react/PackFindersPage.tsx", "pack-finders.ts", "pack-types.ts"]) {
