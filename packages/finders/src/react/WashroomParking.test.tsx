@@ -194,7 +194,7 @@ describe("parking finder logic", () => {
     for (const suffix of ["type", "van", "distance", "surface", "payment"]) {
       expect(byId(suffix)).toMatchObject({
         unknown: false,
-        tierText: "PROTOTYPE-UNVERIFIED. Labelled fixture. Unverified by the App.",
+        tierText: "PROTOTYPE-UNVERIFIED. Labelled fixture. Not independently checked by the App.",
         sourceName: "access-tools labelled fixture",
         recordDate: "2026-11-13",
       });
@@ -206,7 +206,7 @@ describe("parking finder logic", () => {
       expect(lotField(suffix)).toMatchObject({
         unknown: true,
         valueText: "Unknown",
-        tierText: "No tier. Unverified.",
+        tierText: "No tier. Not independently checked.",
         sourceName: "No source",
         recordDate: "Unknown",
       });
@@ -252,7 +252,7 @@ describe("washroom finder screen", () => {
         const text = field.textContent ?? "";
         expect(text).toMatch(/Tier: \S/);
         expect(text).toMatch(/Source: \S/);
-        expect(text).toMatch(/Verification date: (2026-11-13|Unknown)/);
+        expect(text).toMatch(/Evidence date: (2026-11-13|Unknown)/);
       }
     }
     const blank = container.querySelector('[data-washroom="fix-cc-wash-2"]') as HTMLElement;
@@ -371,12 +371,12 @@ describe("parking finder screen", () => {
         const text = field.textContent ?? "";
         expect(text).toMatch(/Tier: \S/);
         expect(text).toMatch(/Source: \S/);
-        expect(text).toMatch(/Verification date: (2026-11-13|Unknown)/);
+        expect(text).toMatch(/Evidence date: (2026-11-13|Unknown)/);
       }
     }
     const surface = container.querySelector('[data-field="fix-lot-bay.surface"]') as HTMLElement;
     expect(surface).toHaveClass("unknown");
-    expect(surface).toHaveTextContent("SurfaceUnknownTier: No tier. Unverified.Source: No sourceVerification date: Unknown");
+    expect(surface).toHaveTextContent("SurfaceUnknownTier: No tier. Not independently checked.Source: No sourceEvidence date: Unknown");
   });
 
   it("gives an honest empty state that names the filter and the seeded count, and broadens", async () => {
