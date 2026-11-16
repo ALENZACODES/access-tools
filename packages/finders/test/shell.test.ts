@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { createFindersModule } from "../src/react/pack-module.js";
-import { searchFindersForShell } from "../src/shell.js";
+import { FINDERS_NO_MATCHES, searchFindersForShell } from "../src/shell.js";
+import { finderCopy } from "../src/i18n.js";
 import type { PackManifest, PackRecord, PackSource, PackSourceEntry, Tranche } from "../src/pack-types.js";
 
 const open: PackSourceEntry = {
@@ -93,5 +94,18 @@ describe("createFindersModule shell search", () => {
   it("filters by destination text", async () => {
     const result = await searchFindersForShell(sourceOf(fixtures), { kind: "parking", text: "lot" }, ctx);
     expect(result.items.map((item) => item.id)).toEqual(["parking"]);
+    expect(result.messageKey).toBe("modules.ready");
+  });
+
+  it("returns an honest no-matches state when a search has zero hits", async () => {
+    const result = await searchFindersForShell(sourceOf(fixtures), { kind: "parking", text: "no-such-destination" }, ctx);
+    expect(result.availability).toBe("ready");
+    expect(result.items).toEqual([]);
+    expect(result.messageKey).toBe(FINDERS_NO_MATCHES);
+    expect(result.messageKey).not.toBe("modules.ready");
+    expect(finderCopy("finder.shell.noMatches", "en")).toBe("No matching records were found. Unknown is not a yes.");
+    expect(finderCopy("finder.shell.noMatches", "fr")).toBe("Aucune fiche correspondante n’a été trouvée. Inconnu n’est pas un oui.");
+    expect(finderCopy("finder.shell.noMatches", "fr")).toContain("\u2019");
+    expect(finderCopy("finder.shell.noMatches", "fr")).not.toContain("'");
   });
 });

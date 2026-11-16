@@ -16,6 +16,9 @@ import type { PackSource } from "./pack-types.js";
 export const SHELL_FINDER_KINDS = ["washroom", "parking", "charging", "repair", "adult-change"] as const;
 export type ShellFinderKind = (typeof SHELL_FINDER_KINDS)[number];
 
+/** Successful search with no sourced hits. Not modules.ready, and not “not available yet.” */
+export const FINDERS_NO_MATCHES = "finder.shell.noMatches";
+
 export interface ShellFinderContext {
   locale: "en" | "fr";
   offline: boolean;
@@ -123,6 +126,9 @@ export async function searchFindersForShell(
         provenance,
         detail: "unknown",
       });
+    }
+    if (items.length === 0) {
+      return emptyFinderResult(FINDERS_NO_MATCHES, "ready");
     }
     const dates = items.map((item) => item.provenance.source_date).sort();
     return {

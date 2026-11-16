@@ -293,6 +293,10 @@ export const FINDER_COPY = {
     en: "No sourced records for this finder in the searched area (0). Try broadening the area or change the filters.",
     fr: "Aucune fiche sourcée pour cette recherche dans la zone (0). Essayez d’élargir la zone ou changez les filtres.",
   },
+  "finder.shell.noMatches": {
+    en: "No matching records were found. Unknown is not a yes.",
+    fr: "Aucune fiche correspondante n’a été trouvée. Inconnu n’est pas un oui.",
+  },
   "finder.pack.contribute": { en: "Contribute information", fr: "Contribuer des renseignements" },
   "finder.pack.source": { en: "Source", fr: "Source" },
   "finder.pack.licence": { en: "Licence", fr: "Licence" },

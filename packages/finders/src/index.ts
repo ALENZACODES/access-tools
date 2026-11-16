@@ -24,4 +24,4 @@ export { PackFindersPage } from "./react/PackFindersPage.js";
 export { queryPackFinders, WASHROOM_KEYS, supportsKind } from "./pack-finders.js";
 export type { FinderKind, FinderRequest, PackFinderRow, PackFinderResult } from "./pack-finders.js";
 export type { PackSource, PackRecord, PackManifest } from "./pack-types.js";
-export { searchFindersForShell, SHELL_FINDER_KINDS } from "./shell.js";
+export { searchFindersForShell, SHELL_FINDER_KINDS, FINDERS_NO_MATCHES } from "./shell.js";

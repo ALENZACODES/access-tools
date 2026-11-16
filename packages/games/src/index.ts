@@ -39,4 +39,3 @@ export type {
   Pace,
   TaskFamily,
 } from "./types.js";
-export { gamesShellModule, listGamesForShell } from "./shell.js";
