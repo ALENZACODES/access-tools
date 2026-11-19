@@ -78,3 +78,52 @@ Each place, search, and finder demo binds Vite's default port. The interface is 
 ## Third-party notices
 
 Runtime libraries include React (MIT), Ajv (MIT), and idb (ISC). Tests use Vitest (MIT), Testing Library (MIT), Playwright, and axe-core (MPL-2.0). axe-core is linked, not modified. No organisation named in the master plan endorses this repository.
+
+## Project structure
+
+```text
+access-tools/
+├── .github/                    # CI workflows (1 file)
+├── data/                       # Source and generated data (1 file)
+├── docs/                       # Documentation (1 file)
+├── e2e/                        # End-to-end tests (17 files)
+├── packages/
+│   ├── acceptance/             # Master-plan acceptance tests, Days 1 to 6 (2 files)
+│   ├── auditors/               # Access audit capture and venue corrections (38 files)
+│   ├── diary/                  # Consent-gated supply diary with suppressed export (18 files)
+│   ├── directory-links/        # 15 files
+│   ├── employment/             # 28 files
+│   ├── finder-essentials/      # 8 files
+│   ├── finders/                # Washroom, parking, charging, and repair and supply finders (31 files)
+│   ├── games/                  # Accessible optional games (48 files)
+│   ├── handoff/                # Dated navigation hand-offs and freshness audits (18 files)
+│   ├── housing/                # 31 files
+│   ├── importer-gtfs-stops/    # 20 files
+│   ├── importer-ontario-open/  # 17 files
+│   ├── importer-ottawa-parks/  # 17 files
+│   ├── importer-parking/       # 19 files
+│   ├── importer-pspc/          # 23 files
+│   ├── importer-sidewalks/     # 20 files
+│   ├── importer-toronto/       # 22 files
+│   ├── importer-wikidata/      # 24 files
+│   ├── navigator/              # Ontario and federal benefits (22 files)
+│   ├── normalise/              # 4 files
+│   ├── place/                  # Accessible place pages (49 files)
+│   ├── place-import/           # 19 files
+│   ├── release/                # Release checks for Days 19 to 24 (5 files)
+│   ├── safety/                 # On-device trip check-in (24 files)
+│   ├── sci-fields/             # 11 files
+│   ├── search/                 # Offline place search with SCI-relevant filters (15 files)
+│   ├── tile-cache/             # 12 files
+│   └── timing/                 # Emergency pathway links: 911, 9-8-8, and ConnexOntario (8 files)
+├── scripts/                    # Build and check scripts (1 file)
+├── .gitignore
+├── eslint.config.js            # Lint rules
+├── package-lock.json
+├── package.json                # npm scripts and dependencies
+├── README.md                   # This file
+├── tsconfig.base.json
+├── tsconfig.json               # TypeScript settings
+├── vitest.config.ts            # Test runner settings
+└── vitest.setup.ts
+```
